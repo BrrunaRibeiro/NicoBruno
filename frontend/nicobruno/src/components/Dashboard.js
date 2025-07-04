@@ -1,18 +1,18 @@
 import React from "react";
 import NavBar from "./NavBar";
-import Countdown from "./Countdown";
-
 
 const Dashboard = () => {
-    return (
-        <div>
-            <NavBar class={"NavBar"}/>
-            <h1>Nicole & Bruno</h1>
-            <h5>SAVE THE DATE</h5>
-            <h2>00|00|2026</h2>
-            <Countdown class={"Countdown"}></Countdown>
-        </div>
-    );
-}
+  // // 🎯 Set the actual wedding date here once confirmed
+  // const weddingDate = new Date("2026-01-15T15:00:00").getTime();
+
+  return (
+    <div>
+      <NavBar className="NavBar" />
+      <h1>Nicole & Bruno</h1>
+      <h5>SAVE THE DATE</h5>
+      <h2>15|01|2026</h2>
+    </div>
+  );
+};
 
 export default Dashboard;

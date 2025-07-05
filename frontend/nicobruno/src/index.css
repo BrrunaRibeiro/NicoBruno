@@ -17,6 +17,7 @@ body {
       var(--floral-white) 75%);
   padding-left: 120px;
   padding-top: 200px;
+  color: var(--dark-green);
 }
 
 h1 {
@@ -24,7 +25,7 @@ h1 {
   font-weight: 700;
   font-size: 57px;
   font-style: normal;
-  color: var(--dark-green);
+  
 }
 
 .Dashboard {
@@ -47,6 +48,6 @@ ul>li {
 
 a {
   text-decoration: none;
-  color: #424242;
+  color: #383838;
 }
 

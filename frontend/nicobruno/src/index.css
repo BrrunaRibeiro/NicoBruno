@@ -7,7 +7,8 @@
 body {
   margin: 0;
   font-family: "inter-variable", sans-serif;
-  font-variation-settings: 'wght' 300, 'slnt' 0;
+  font-variation-settings: 'wght' 500, 'slnt' 0;
+  color: #383838;
 }
 
 .content {
@@ -25,6 +26,7 @@ h1 {
   font-weight: 700;
   font-size: 57px;
   font-style: normal;
+  padding-bottom: 160px;
   
 }
 
@@ -37,7 +39,7 @@ h1 {
 }
 
 .menu {
-  height: 18px;
+  height: 24px;
   display: flex;
   justify-content: space-around;
 }

@@ -3,7 +3,7 @@ import { Link } from "react-scroll";
 
 const NavBar = () => {
   return (
-    <nav>
+    <nav className="navbar">
       <ul className="menu">
         <li><Link to="home" smooth={true} duration={500}>Início</Link></li>
         <li><Link to="informacoes" smooth={true} duration={500}>Informações</Link></li>

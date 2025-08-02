@@ -15,7 +15,7 @@ SMTP_SERVER = "smtp.office365.com"
 SMTP_PORT = 587
 
 # Agora uma lista com os e-mails dos noivos
-GROOMS_EMAILS = ["noivo@email.com", "noiva@email.com"]
+GROOMS_EMAILS = ["brrunarib@gmail.com", "noiva@email.com"]
 
 SITE_URL = "http://localhost:3000"
 CSV_FILE = "backend/rsvp_list.csv"

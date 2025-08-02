@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import Countdown from "./Countdown";
 import { Element, scroller } from "react-scroll";
-
-const ScrollToTopButton = ({ visible }) => (
-  <div
-    className={`scroll-top-btn ${visible ? 'visible' : 'hidden'}`}
-    onClick={() => scroller.scrollTo("home", { smooth: true, duration: 500 })}
-  >
-    ↑
-  </div>
-);
+import AnimatedArrowButton from "./AnimatedArrowButton"; // Ensure this is your animated up arrow
 
 const ScrollDownArrow = ({ to }) => (
   <div
@@ -60,11 +52,32 @@ const Dashboard = () => {
 
   return (
     <div>
-      <NavBar />
-      <ScrollToTopButton visible={showScrollTop} />
+      {/* 🔝 Animated Scroll to Top Arrow */}
+      {showScrollTop && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            right: "2rem",
+            zIndex: 1000,
+          }}
+        >
+          <AnimatedArrowButton
+            direction="up"
+            onClick={() =>
+              scroller.scrollTo("home", {
+                duration: 800,
+                delay: 0,
+                smooth: "easeInOutQuart",
+              })
+            }
+          />
+        </div>
+      )}
 
       {/* Início */}
       <Element name="home" className="section home-section" id="home">
+        <NavBar />
         <div className="home-content">
           <div className="text-left">
             <h1>Nicole & Bruno</h1>
@@ -117,7 +130,7 @@ const Dashboard = () => {
             <h2>Confirme sua Presença</h2>
             <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
               <input type="text" placeholder="Seu nome" required />
-              <input type="number" placeholder="Número de convidados (excluindo você mesmo)" required />
+              <input type="number" placeholder="Quantas pessoas voce trara com voce? (Nao conte voce mesmo)" required />
               <textarea placeholder="Mensagem para os noivos (opcional)" />
               <button type="submit">Enviar Confirmação</button>
             </form>

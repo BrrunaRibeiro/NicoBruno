@@ -1,36 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import NavBar from "./NavBar";
 import Countdown from "./Countdown";
 import { Element, scroller } from "react-scroll";
-import AnimatedArrowButton from "./AnimatedArrowButton"; // Ensure this is your animated up arrow
-
-const ScrollDownArrow = ({ to }) => (
-  <div
-    className="scroll-arrow scroll-down"
-    onClick={() =>
-      scroller.scrollTo(to, {
-        smooth: true,
-        duration: 500,
-        offset: -60,
-      })
-    }
-  >
-    ↓
-  </div>
-);
 
 const Dashboard = () => {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
+  const [currentSection, setCurrentSection] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const sections = useMemo(() => ["home", "informacoes", "confirmar", "presentes", "countdown"], []);
+
+  const scrollToSection = useCallback((sectionIndex) => {
+    scroller.scrollTo(sections[sectionIndex], {
+      duration: 600,
+      delay: 0,
+      smooth: "easeInOutQuart",
+    });
+    setCurrentSection(sectionIndex);
+  }, [sections]);
+
+  const handleArrowClick = (direction) => {
+    if (direction === "down" && currentSection < sections.length - 1) {
+      scrollToSection(currentSection + 1);
+    } else if (direction === "up" && currentSection > 0) {
+      scrollToSection(currentSection - 1);
+    }
+  };
+
+  const handleRSVPSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
 
   useEffect(() => {
     if (submitted && redirectCountdown > 0) {
@@ -39,44 +39,43 @@ const Dashboard = () => {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (submitted && redirectCountdown === 0) {
-      scroller.scrollTo("presentes", { smooth: true, duration: 500 });
+      scrollToSection(3);
       setSubmitted(false);
       setRedirectCountdown(15);
     }
-  }, [submitted, redirectCountdown]);
+  }, [submitted, redirectCountdown, scrollToSection]);
 
-  const handleRSVPSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
+  const Arrow = ({ direction }) => {
+    const isUp = direction === "up";
+    return (
+      <div 
+        className={`scroll-arrow ${isUp ? "up-arrow" : "down-arrow"}`}
+        onClick={() => handleArrowClick(direction)}
+        style={{
+          cursor: "pointer",
+          width: "50px",
+          height: "50px",
+          bottom: "65px", 
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "center",
+          fontSize: "32px",
+          fontWeight: "bold",
+          backgroundColor: isUp ? "rgba(136, 136, 136, 1)" : "rgba(56, 56, 56, 1)",
+          color: "white",
+          borderRadius: "50%",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+        }}
+      >
+        {isUp ? "↑" : "↓"}
+      </div>
+    );
   };
 
   return (
     <div>
-      {/* 🔝 Animated Scroll to Top Arrow */}
-      {showScrollTop && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "2rem",
-            right: "2rem",
-            zIndex: 1000,
-          }}
-        >
-          <AnimatedArrowButton
-            direction="up"
-            onClick={() =>
-              scroller.scrollTo("home", {
-                duration: 800,
-                delay: 0,
-                smooth: "easeInOutQuart",
-              })
-            }
-          />
-        </div>
-      )}
-
-      {/* Início */}
-      <Element name="home" className="section home-section" id="home">
+      {/* 🏠 Home Section */}
+      <Element name="home" className="section" style={{minHeight: "100vh", position: "relative"}}>
         <NavBar />
         <div className="home-content">
           <div className="text-left">
@@ -85,72 +84,123 @@ const Dashboard = () => {
             <h2>28|03|2026</h2>
           </div>
           <div className="image-right">
-            <img
-              src="/sunset-nicobruno.webp"
-              alt="Nicole & Bruno"
-              id="sidephoto"
-            />
+            <img src="/sunset-nicobruno.webp" alt="Nicole & Bruno" id="sidephoto" />
           </div>
         </div>
-        <ScrollDownArrow to="informacoes" />
+        <div style={{
+          position: "absolute", 
+          bottom: "65px", 
+          left: "50%", 
+          transform: "translateX(-50%)", 
+          display: "flex",
+          justifyContent: "space-between",
+          width: "120px",
+          gap: "2px"
+        }}>
+          <Arrow direction="down" />
+        </div>
       </Element>
 
-      {/* Informações do Casamento */}
-      <Element name="informacoes" className="section info-thanks" id="informacoes">
+      {/* 📝 Wedding Info Section */}
+      <Element name="informacoes" className="section" style={{minHeight: "100vh", position: "relative"}}>
         <div className="left">
           <h2>Informações do Casamento</h2>
           <ul>
             <li><strong>Data:</strong> 28/03/2026</li>
             <li><strong>Horário:</strong> 16h</li>
             <li><strong>Local:</strong> Espaço Jardim, São Paulo</li>
-            <li><strong>Endereço:</strong> <a href="https://www.google.com/maps" target="_blank" rel="noreferrer">Rua das Flores, 123 - SP</a></li>
+            <li><strong>Endereço:</strong> <a href="https://www.google.com/maps">Rua das Flores, 123 - SP</a></li>
             <li><strong>Traje:</strong> Esporte fino</li>
           </ul>
         </div>
         <div className="right">
           <p>Estamos muito felizes que você irá compartilhar esse momento tão especial conosco.</p>
         </div>
-        <ScrollDownArrow to="confirmar" />
+        <div style={{
+          position: "absolute", 
+          bottom: "65px", 
+          left: "50%", 
+          transform: "translateX(-50%)", 
+          display: "flex",
+          justifyContent: "space-between",
+          width: "120px",
+          gap: "2px"
+        }}>
+          <Arrow direction="up" />
+          <Arrow direction="down" />
+        </div>
       </Element>
 
-      {/* Confirmar Presença */}
-      <Element name="confirmar" className="section" id="confirmar">
+      {/* ✅ RSVP Section */}
+      <Element name="confirmar" className="section" style={{minHeight: "100vh", position: "relative"}}>
         {submitted ? (
           <div className="confirmation-message">
             <h2>Obrigado por confirmar presença!</h2>
-            <p>
-              Estamos muito felizes que você irá compartilhar esse momento tão especial conosco.
-            </p>
-            <small>
-              Você será redirecionado para a página de presentes em {redirectCountdown} segundos...
-            </small>
+            <p>Estamos muito felizes que você irá compartilhar esse momento tão especial conosco.</p>
+            <small>Você será redirecionado para a página de presentes em {redirectCountdown} segundos...</small>
           </div>
         ) : (
           <>
             <h2>Confirme sua Presença</h2>
             <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
               <input type="text" placeholder="Seu nome" required />
-              <input type="number" placeholder="Quantas pessoas voce trara com voce? (Nao conte voce mesmo)" required />
-              <textarea placeholder="Mensagem para os noivos (opcional)" />
+              <input type="number" placeholder="Quantas pessoas?" required />
+              <textarea placeholder="Mensagem (opcional)" />
               <button type="submit">Enviar Confirmação</button>
             </form>
           </>
         )}
-        <ScrollDownArrow to="presentes" />
+        <div style={{
+          position: "absolute", 
+          bottom: "65px", 
+          left: "50%", 
+          transform: "translateX(-50%)", 
+          display: "flex",
+          justifyContent: "space-between",
+          width: "120px",
+          gap: "2px"
+        }}>
+          <Arrow direction="up" />
+          <Arrow direction="down" />
+        </div>
       </Element>
 
-      {/* Presentes */}
-      <Element name="presentes" className="section" id="presentes">
+      {/* 🎁 Gift Section */}
+      <Element name="presentes" className="section" style={{minHeight: "100vh", position: "relative"}}>
         <h2>Presentes</h2>
         <p>Se desejar nos presentear, você pode usar o PIX:</p>
         <p><strong>Chave PIX:</strong> nicolebruno@casamento.com</p>
         <p>Obrigado pelo seu carinho!</p>
-        <ScrollDownArrow to="countdown" />
+        <div style={{
+          position: "absolute", 
+          bottom: "65px", 
+          left: "50%", 
+          transform: "translateX(-50%)", 
+          display: "flex",
+          justifyContent: "space-between",
+          width: "120px",
+          gap: "2px"
+        }}>
+          <Arrow direction="up" />
+          <Arrow direction="down" />
+        </div>
       </Element>
 
-      {/* Contagem Regressiva */}
-      <Element name="countdown" className="section" id="countdown">
+      {/* ⏳ Countdown Section */}
+      <Element name="countdown" className="section" style={{minHeight: "100vh", position: "relative"}}>
         <Countdown date="2026-03-28T16:00:00" />
+        <div style={{
+          position: "absolute", 
+          bottom: "65px", 
+          left: "50%", 
+          transform: "translateX(-50%)", 
+          display: "flex",
+          justifyContent: "space-between",
+          width: "60px",
+          gap: "2px"
+        }}>
+          <Arrow direction="up" />
+        </div>
       </Element>
     </div>
   );

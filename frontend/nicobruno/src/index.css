@@ -32,6 +32,7 @@ body {
   padding: 20px;
   box-sizing: border-box;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .home-section {
@@ -76,7 +77,7 @@ body {
 
 /* Form */
 .rsvp-form {
-  margin-top: 40px;
+  /* margin-top: 40px; */
 
 }
 
@@ -96,7 +97,7 @@ body {
 /* Countdown Section */
 .countdown-container {
   text-align: center;
-  margin-top: 40px;
+  /* margin-top: 40px; */
   font-family: 'Arial', sans-serif;
 }
 
@@ -193,39 +194,9 @@ body {
   font-size: 0.9rem;
 }
 
-/* Scroll to Top Button */
-.scroll-top-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(31, 46, 22, 0.9);
-  color: white;
-  font-size: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 40px;
-  cursor: pointer;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.scroll-top-btn.visible {
-  opacity: 1;
-}
-
-.scroll-top-btn.hidden {
-  opacity: 0;
-}
-
-.scroll-arrow {
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #3f3f3fe6;
+/* Scroll Button */
+.scroll-arrow, .scroll-down {
+  position: relative; /* Change to relative for flexbox positioning */
   color: #fff;
   border-radius: 50%;
   width: 42px;
@@ -235,14 +206,13 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 18px;
-  z-index: 1000;
+  z-index: 1000; /* Ensure arrows are on top */
   transition: background-color 0.3s ease;
 }
 
 .scroll-arrow:hover {
   background-color: rgba(31, 46, 22, 1);
 }
-
 
 /* Links & Menu */
 .navbar {

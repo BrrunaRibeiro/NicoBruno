@@ -103,7 +103,7 @@ const Dashboard = () => {
 
       {/* 📝 Wedding Info Section */}
       <Element name="informacoes" className="section" style={{minHeight: "100vh", position: "relative"}}>
-        <div className="left">
+        <div>
           <h2>Informações do Casamento</h2>
           <ul>
             <li><strong>Data:</strong> 28/03/2026</li>
@@ -113,7 +113,7 @@ const Dashboard = () => {
             <li><strong>Traje:</strong> Esporte fino</li>
           </ul>
         </div>
-        <div className="right">
+        <div>
           <p>Estamos muito felizes que você irá compartilhar esse momento tão especial conosco.</p>
         </div>
         <div style={{

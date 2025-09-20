@@ -1,9 +1,7 @@
-
 import os
 import csv
 import smtplib
 from email.mime.text import MIMEText
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -11,13 +9,18 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # ========== CONFIGURAÇÕES ==========
-EMAIL_SENDER = "convite.nicolebruno@outlook.com"
-EMAIL_PASSWORD = "senha-do-app-ou-normal"
-SMTP_SERVER = "smtp.office365.com"
+EMAIL_SENDER = "brrunarib@gmail.com"
+EMAIL_PASSWORD = "zuxa tkee uvsj qzyo"  # Gmail App Password
+SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 # Lista de e-mails dos noivos
-GROOMS_EMAILS = ["brrunarib@gmail.com", "noiva@email.com"]
+GROOMS_EMAILS = [
+    "brrunarib@gmail.com", 
+    "brunaaparecidaribeiro@hotmail.com",
+    # "groom@email.com"  ← Add here once known
+    # "nicolerealeochove@hotmail.com"  ← Uncomment when ready
+]
 
 SITE_URL = "http://localhost:3000"
 CSV_FILE = "backend/rsvp_list.csv"
@@ -47,12 +50,13 @@ def enviar_email(destinatarios, assunto, corpo):
 def confirmar_presenca():
     data = request.json
     nome = data.get("nome")
+    email = data.get("email")
     acompanhantes = int(data.get("acompanhantes", 0))
     mensagem = data.get("mensagem", "")
-    vai_vir = data.get("vai_vir", True)  # True if attending, False if not
+    vai_vir = data.get("vai_vir", True)
 
-    if not nome:
-        return jsonify({"erro": "Nome é obrigatório"}), 400
+    if not nome or not email:
+        return jsonify({"erro": "Nome e e-mail são obrigatórios"}), 400
 
     # Salvar confirmação no CSV
     os.makedirs("backend", exist_ok=True)
@@ -60,8 +64,8 @@ def confirmar_presenca():
     with open(CSV_FILE, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         if is_new_file:
-            writer.writerow(["Nome", "Acompanhantes", "Mensagem", "Vai Vir"])
-        writer.writerow([nome, acompanhantes, mensagem, "Sim" if vai_vir else "Não"])
+            writer.writerow(["Nome", "Email", "Acompanhantes", "Mensagem", "Vai Vir"])
+        writer.writerow([nome, email, acompanhantes, mensagem, "Sim" if vai_vir else "Não"])
 
     # Ler confirmações
     total_pessoas = 0
@@ -77,6 +81,7 @@ def confirmar_presenca():
     if vai_vir:
         corpo_noivos = (
             f"🎉 YEYYY! {nome} confirmou presença com mais {acompanhantes} acompanhante(s)!\n\n"
+            f"📧 Email: {email}\n\n"
             f"📋 Lista de confirmados até agora:\n" +
             "\n".join(lista_confirmados) +
             f"\n\n👥 Total de pessoas esperadas: {total_pessoas}"
@@ -86,13 +91,12 @@ def confirmar_presenca():
     # Email para o convidado
     corpo_convidado = (
         f"Olá {nome},\n\n"
-        f"{'Obrigado por confirmar presença' if vai_vir else 'Lamentamos que você não possa comparecer'} no casamento de Nicole e Bruno! 💍\n"
-        "Estamos muito felizes em te receber nesse momento tão especial.\n\n"
-        "Se você ainda não deixou seu presente e quiser fazer isso, clique no link abaixo:\n"
-        f"{SITE_URL}#presentes\n\n"
+        f"{'Obrigado por confirmar presença' if vai_vir else 'Sentiremos sua falta'} no casamento de Nicole & Bruno! 💍\n"
+        f"Estamos muito felizes com sua resposta.\n\n"
+        f"Se quiser deixar um presente, acesse:\n{SITE_URL}#presentes\n\n"
         "Com carinho,\nNicole & Bruno"
     )
-    enviar_email(nome, "Obrigado por confirmar presença!" if vai_vir else "Sentimos sua falta!", corpo_convidado)
+    enviar_email(email, "Obrigado por confirmar presença!" if vai_vir else "Sentiremos sua falta!", corpo_convidado)
 
     return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"})
 

@@ -8,6 +8,12 @@ const Dashboard = () => {
   const [redirectCountdown, setRedirectCountdown] = useState(15);
   const [currentSection, setCurrentSection] = useState(0);
 
+  // RSVP form state
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState(""); // ✅ new line
+  const [acompanhantes, setAcompanhantes] = useState(0);
+  const [mensagem, setMensagem] = useState("");
+
   const sections = useMemo(() => ["home", "informacoes", "confirmar", "presentes", "countdown"], []);
 
   const scrollToSection = useCallback((sectionIndex) => {
@@ -27,9 +33,30 @@ const Dashboard = () => {
     }
   };
 
-  const handleRSVPSubmit = (e) => {
+  const handleRSVPSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome,
+          email, // ✅ added here
+          acompanhantes: parseInt(acompanhantes, 10),
+          mensagem,
+          vai_vir: true,
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        console.error("Erro ao enviar RSVP");
+      }
+    } catch (error) {
+      console.error("Erro de rede:", error);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +102,7 @@ const Dashboard = () => {
   return (
     <div>
       {/* 🏠 Home Section */}
-      <Element name="home" className="section" style={{minHeight: "100vh", position: "relative"}}>
+      <Element name="home" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         <NavBar />
         <div className="home-content">
           <div className="text-left">
@@ -88,10 +115,10 @@ const Dashboard = () => {
           </div>
         </div>
         <div style={{
-          position: "absolute", 
-          bottom: "65px", 
-          left: "50%", 
-          transform: "translateX(-50%)", 
+          position: "absolute",
+          bottom: "65px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           justifyContent: "space-between",
           width: "120px",
@@ -102,7 +129,7 @@ const Dashboard = () => {
       </Element>
 
       {/* 📝 Wedding Info Section */}
-      <Element name="informacoes" className="section" style={{minHeight: "100vh", position: "relative"}}>
+      <Element name="informacoes" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         <div className="left">
           <h2>Informações do Casamento</h2>
           <ul>
@@ -117,10 +144,10 @@ const Dashboard = () => {
           <p>Estamos muito felizes que você irá compartilhar esse momento tão especial conosco.</p>
         </div>
         <div style={{
-          position: "absolute", 
-          bottom: "65px", 
-          left: "50%", 
-          transform: "translateX(-50%)", 
+          position: "absolute",
+          bottom: "65px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           justifyContent: "space-between",
           width: "120px",
@@ -132,7 +159,7 @@ const Dashboard = () => {
       </Element>
 
       {/* ✅ RSVP Section */}
-      <Element name="confirmar" className="section" style={{minHeight: "100vh", position: "relative"}}>
+      <Element name="confirmar" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         {submitted ? (
           <div className="confirmation-message">
             <h2>Obrigado por confirmar presença!</h2>
@@ -143,18 +170,41 @@ const Dashboard = () => {
           <>
             <h2>Confirme sua Presença</h2>
             <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
-              <input type="text" placeholder="Seu nome" required />
-              <input type="number" placeholder="Quantas pessoas?" required />
-              <textarea placeholder="Mensagem (opcional)" />
+              <input
+                type="text"
+                placeholder="Seu nome"
+                required
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                type="email"
+                placeholder="Seu e-mail"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Quantas pessoas virao com voce? (Excluindo voce mesmo)"
+                required
+                value={acompanhantes}
+                onChange={(e) => setAcompanhantes(e.target.value)}
+              />
+              <textarea
+                placeholder="Mensagem (opcional)"
+                value={mensagem}
+                onChange={(e) => setMensagem(e.target.value)}
+              />
               <button type="submit">Enviar Confirmação</button>
             </form>
           </>
         )}
         <div style={{
-          position: "absolute", 
-          bottom: "65px", 
-          left: "50%", 
-          transform: "translateX(-50%)", 
+          position: "absolute",
+          bottom: "65px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           justifyContent: "space-between",
           width: "120px",
@@ -166,16 +216,16 @@ const Dashboard = () => {
       </Element>
 
       {/* 🎁 Gift Section */}
-      <Element name="presentes" className="section" style={{minHeight: "100vh", position: "relative"}}>
+      <Element name="presentes" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         <h2>Presentes</h2>
         <p>Se desejar nos presentear, você pode usar o PIX:</p>
         <p><strong>Chave PIX:</strong> nicolebruno@casamento.com</p>
         <p>Obrigado pelo seu carinho!</p>
         <div style={{
-          position: "absolute", 
-          bottom: "65px", 
-          left: "50%", 
-          transform: "translateX(-50%)", 
+          position: "absolute",
+          bottom: "65px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           justifyContent: "space-between",
           width: "120px",
@@ -187,13 +237,13 @@ const Dashboard = () => {
       </Element>
 
       {/* ⏳ Countdown Section */}
-      <Element name="countdown" className="section" style={{minHeight: "100vh", position: "relative"}}>
+      <Element name="countdown" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         <Countdown date="2026-03-28T16:00:00" />
         <div style={{
-          position: "absolute", 
-          bottom: "65px", 
-          left: "50%", 
-          transform: "translateX(-50%)", 
+          position: "absolute",
+          bottom: "65px",
+          left: "50%",
+          transform: "translateX(-50%)",
           display: "flex",
           justifyContent: "space-between",
           width: "60px",

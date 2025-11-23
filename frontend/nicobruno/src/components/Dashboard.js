@@ -138,37 +138,7 @@ const Dashboard = () => {
 
       <Element name="informacoes" className="section" style={{ minHeight: "100vh", position: "relative", display: "flex", justifyContent: "center", alignItems: "center", padding: "3rem 1rem" }}>
         <div style={{ display: "flex", gap: "3rem", maxWidth: "1200px", width: "100%", flexWrap: "wrap" }}>
-
-          {/* Left Column: Map, address, dress code */}
-          <div style={{ flex: "1 1 400px", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "1.5s" }}>
-            <h3 style={{ marginBottom: "0.5rem" }}>Dress Code</h3>
-            <p>
-              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima leve e descontraído,
-              e pede apenas um traje esporte fino, com aquele toque de conforto que combina perfeitamente com a festa.
-            </p>
-
-            <h3 style={{ marginTop: "2rem", marginBottom: "0.5rem" }}>Local</h3>
-            <p>
-              📍<strong><a href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254" target="_blank" rel="noopener noreferrer">Chácara Refúgio do Vale</a></strong><br />
-              Rua João Wicki, 263 - Jardim São Carlos,<br />
-              Almirante Tamandaré - PR, 83507-254
-            </p>
-
-            <div style={{ marginTop: "1rem", borderRadius: "12px", overflow: "hidden", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "2.5s" }}>
-              <iframe
-                title="Chácara Refúgio do Vale"
-                src={`https://www.google.com/maps/embed/v1/directions?key=${googleMapsApiKey}&origin=My+Location&destination=Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254&zoom=14`}
-                width="100%"
-                height="300"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-          </div>
-
-          {/* Right Column: Typed message */}
+          {/* Left Column: Typed message */}
           <div id="typed-text" style={{ flex: "1 1 400px" }}>
             <ReactTyped
               strings={[
@@ -189,6 +159,33 @@ const Dashboard = () => {
               showCursor={false}
               loop={false}
             />
+          </div>
+          {/* Right Column: Map, address, dress code */}
+          <div style={{ flex: "1 1 400px", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "34.5s" }}>
+            <h3 style={{ marginBottom: "0.5rem" }}>Dress Code</h3>
+            <p>
+              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima leve e descontraído,
+              e pede apenas um traje esporte fino, com aquele toque de conforto que combina perfeitamente com a festa.
+            </p>
+
+            <h3 style={{ marginTop: "2rem", marginBottom: "0.5rem" }}>Local</h3>
+            <p>
+              📍<strong><a href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254" target="_blank" rel="noopener noreferrer">Chácara Refúgio do Vale</a></strong><br />
+              Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR, 83507-254
+            </p>
+
+            <div style={{ marginTop: "1rem", borderRadius: "12px", overflow: "hidden", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "2.5s" }}>
+              <iframe
+                title="Chácara Refúgio do Vale"
+                src={`https://www.google.com/maps/embed/v1/directions?key=${googleMapsApiKey}&origin=My+Location&destination=Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254&zoom=14`}
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
           </div>
         </div>
 

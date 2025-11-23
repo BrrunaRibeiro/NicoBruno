@@ -21,6 +21,9 @@ const Dashboard = () => {
 
   const sections = useMemo(() => ["home", "informacoes", "confirmar", "presentes", "countdown"], []);
 
+  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  console.log("Maps key test from React:", googleMapsApiKey);
+
   const scrollToSection = useCallback((sectionIndex) => {
     scroller.scrollTo(sections[sectionIndex], {
       duration: 600,
@@ -29,6 +32,7 @@ const Dashboard = () => {
     });
     setCurrentSection(sectionIndex);
   }, [sections]);
+
 
   const handleArrowClick = (direction) => {
     if (direction === "down" && currentSection < sections.length - 1) {
@@ -95,7 +99,7 @@ const Dashboard = () => {
           cursor: "pointer",
           width: "50px",
           height: "50px",
-          bottom: "65px",
+          bottom: "30px",
           display: "flex",
           alignItems: "baseline",
           justifyContent: "center",
@@ -132,41 +136,63 @@ const Dashboard = () => {
         </div>
       </Element>
 
-      <Element name="informacoes" className="section" style={{ minHeight: "100vh", position: "relative" }}>
-        <div style={{ width: "80%", maxWidth: "800px", margin: "auto", padding: "2rem" }}>
-          <h3 style={{ alignItems: "center" }}>Família e amigos queridos,</h3>
-          <div>
+      <Element name="informacoes" className="section" style={{ minHeight: "100vh", position: "relative", display: "flex", justifyContent: "center", alignItems: "center", padding: "3rem 1rem" }}>
+        <div style={{ display: "flex", gap: "3rem", maxWidth: "1200px", width: "100%", flexWrap: "wrap" }}>
+
+          {/* Left Column: Map, address, dress code */}
+          <div style={{ flex: "1 1 400px", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "1.5s" }}>
+            <h3 style={{ marginBottom: "0.5rem" }}>Dress Code</h3>
+            <p>
+              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima leve e descontraído,
+              e pede apenas um traje esporte fino, com aquele toque de conforto que combina perfeitamente com a festa.
+            </p>
+
+            <h3 style={{ marginTop: "2rem", marginBottom: "0.5rem" }}>Local</h3>
+            <p>
+              📍<strong><a href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254" target="_blank" rel="noopener noreferrer">Chácara Refúgio do Vale</a></strong><br />
+              Rua João Wicki, 263 - Jardim São Carlos,<br />
+              Almirante Tamandaré - PR, 83507-254
+            </p>
+
+            <div style={{ marginTop: "1rem", borderRadius: "12px", overflow: "hidden", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "2.5s" }}>
+              <iframe
+                title="Chácara Refúgio do Vale"
+                src={`https://www.google.com/maps/embed/v1/directions?key=${googleMapsApiKey}&origin=My+Location&destination=Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254&zoom=14`}
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+          </div>
+
+          {/* Right Column: Typed message */}
+          <div id="typed-text" style={{ flex: "1 1 400px" }}>
             <ReactTyped
               strings={[
-                "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas: ^1000 o nosso casamento...^1500" +
+                "<h3>Família e amigos queridos,</h3>" +
+                "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas: ^900 o nosso casamento...^1000" +
                 "<br><br>" +
-                "Criamos este espaço para tornar tudo mais simples: informações, lembranças e um convite aberto para comemorar ao nosso lado. ^1000" +
+                "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado. ^500" +
                 "<br>" +
-                "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirme sua Presença’. ^1000" +
+                "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirme sua Presença’. ^500" +
                 "<br><br>" +
-                "Contamos com vocês ^500 e mal podemos esperar para celebrar juntos!^1500" +
+                "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!^1000" +
                 "<br><br>" +
-                "Com carinho, ^500 Nicole e Bruno."
+                "Com carinho," +
+                "<p id='signature'>^400 Nicole e Bruno.</p"
               ]}
               typeSpeed={35}
-              loop={false}
               backSpeed={0}
-            /></div>
-          <div style={{ marginTop: "2rem" }}>
-            <h5>Traje: Esporte fino</h5>
-            <p>Endereço: <a href="https://www.google.com/maps?q=Espaço+Lumière+Indaiatuba" target="_blank" rel="noopener noreferrer">Espaço Lumière - Indaiatuba</a></p>
-            <iframe
-              title="Google Maps"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3676.3195912715664!2d-47.200327684875924!3d-23.580761184670736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c5d9e0c6757cf3%3A0xe7a9bcd7d5e0a56e!2sEspa%C3%A7o%20Lumi%C3%A8re!5e0!3m2!1spt-BR!2sbr!4v1700000000000"
-              width="100%"
-              height="300"
-              style={{ border: 0, borderRadius: "12px", marginTop: "1rem" }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+              showCursor={false}
+              loop={false}
+            />
           </div>
         </div>
+
+        {/* Navigation Arrows */}
         <div style={{ position: "absolute", bottom: "65px", left: "50%", transform: "translateX(-50%)", display: "flex", justifyContent: "space-between", width: "120px", gap: "2px" }}>
           <Arrow direction="up" />
           <Arrow direction="down" />

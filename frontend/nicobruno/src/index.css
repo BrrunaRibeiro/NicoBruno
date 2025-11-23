@@ -292,6 +292,22 @@ h1 {
   font-style: normal;
 }
 
+#typed-text {
+  font-weight: 300;
+  font-size: 17px;
+}
+
+#signature {
+  font-family: "playfair-display", serif;
+  font-size: 22px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .home-content {

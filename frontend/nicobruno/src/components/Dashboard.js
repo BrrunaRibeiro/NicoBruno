@@ -214,12 +214,22 @@ const Dashboard = () => {
           <>
             <h2>Confirme sua Presença</h2>
             <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
-              <button type="button" className="update-button" onClick={() => setIsUpdating(!isUpdating)}>
-                {isUpdating ? "Voltar para confirmação" : "Ou deseja alterar sua resposta?"}
-              </button>
+
               <div className="toggle-group">
-                <button type="button" className={`toggle-option ${vaiVir === "yes" ? "selected" : ""}`} onClick={() => setVaiVir("yes")}>Sim</button>
-                <button type="button" className={`toggle-option ${vaiVir === "no" ? "selected" : ""}`} onClick={() => setVaiVir("no")}>Não</button>
+                <button
+                  type="button"
+                  className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""}`}
+                  onClick={() => setVaiVir("yes")}
+                >
+                  ✅ Sim
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""}`}
+                  onClick={() => setVaiVir("no")}
+                >
+                  ❌ Não
+                </button>
               </div>
               <input type="text" placeholder="Seu nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
               <input type="email" placeholder="Seu e-mail" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -231,6 +241,9 @@ const Dashboard = () => {
               )}
               <input type="text" placeholder="Mensagem (opcional)" value={mensagem} onChange={(e) => setMensagem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()} />
               <button type="submit" disabled={vaiVir === null || submitting}>Enviar Confirmação</button>
+              <button type="button" className="update-button" onClick={() => setIsUpdating(!isUpdating)}>
+                {isUpdating ? "Voltar para confirmação" : "Ou deseja alterar sua resposta?"}
+              </button>
             </form>
           </>
         )}
@@ -243,7 +256,7 @@ const Dashboard = () => {
       <Element name="presentes" className="section" style={{ minHeight: "100vh", position: "relative" }}>
         <h2>Presentes</h2>
         <p>Se desejar nos presentear, você pode usar o PIX:</p>
-        <p><strong>Chave PIX:</strong> nicolebruno@casamento.com</p>
+        <p><strong>Chave PIX:</strong> 41999754987</p>
         <p>Obrigado pelo seu carinho!</p>
         <div style={{ position: "absolute", bottom: "65px", left: "50%", transform: "translateX(-50%)", display: "flex", justifyContent: "space-between", width: "120px", gap: "2px" }}>
           <Arrow direction="up" />

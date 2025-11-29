@@ -221,14 +221,14 @@ const Dashboard = () => {
                   className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""}`}
                   onClick={() => setVaiVir("yes")}
                 >
-                  ✅ Sim
+                  Sim
                 </button>
                 <button
                   type="button"
                   className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""}`}
                   onClick={() => setVaiVir("no")}
                 >
-                  ❌ Não
+                  Não
                 </button>
               </div>
               <input type="text" placeholder="Seu nome" required value={nome} onChange={(e) => setNome(e.target.value)} />

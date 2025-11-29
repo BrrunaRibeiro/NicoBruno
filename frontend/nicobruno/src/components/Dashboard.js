@@ -343,8 +343,8 @@ const Dashboard = () => {
       </Element>
 
       <Element name="presentes" className="section" style={{ minHeight: "100vh", position: "relative" }}>
-        <h2>Presentes</h2>
-        <p>Se desejar nos presentear, você pode usar o PIX:</p>
+        <h2>Lista de Presentes</h2>
+        <p>Se quiser nos presentear, fique à vontade para escolher um item da nossa Lista de Casamento e comprar pelo site ou, se preferir mais praticidade, utilize nossa chave PIX abaixo.</p>
         <p><strong>Chave PIX:</strong> 41999754987</p>
         <p>Obrigado pelo seu carinho!</p>
         <div style={{ position: "absolute", bottom: "65px", left: "50%", transform: "translateX(-50%)", display: "flex", justifyContent: "space-between", width: "120px", gap: "2px" }}>

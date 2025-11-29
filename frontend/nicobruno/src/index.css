@@ -21,6 +21,7 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
+  text-decoration: none;
 }
 
 .section {
@@ -77,7 +78,7 @@ body {
 
 /* Form */
 .rsvp-form {
-  /* margin-top: 40px; */
+  margin-top: 40px;
 
 }
 
@@ -92,6 +93,24 @@ body {
 .rsvp-form>*:focus {
   outline: none;
   border-color: #222;
+}
+
+.update-button {
+  background-color: #7979792c;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.message-input {
+  color: #797979;
+  height: 60px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  line-height: 1.4;
+  box-sizing: border-box;
+  white-space: pre-wrap; /* simulate wrapping */
 }
 
 /* Countdown Section */
@@ -270,6 +289,67 @@ h1 {
   font-size: 57px;
   font-style: normal;
 }
+
+#typed-text {
+  font-weight: 300;
+  font-size: 17px;
+}
+
+#signature {
+  font-family: "playfair-display", serif;
+  font-size: 22px;
+}
+
+.toggle-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.toggle-option {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #5454546e;
+  border-radius: 999px;
+  background: #61616153;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.toggle-option.sim.selected {
+  background-color: #3bb54a;
+  color: white;
+  border-color: #3bb54a;
+}
+
+.toggle-option.nao.selected {
+  background-color: #c0392b;
+  color: white;
+  border-color: #c0392b;
+}
+
+/* Maintain same width and height for form no matter what */
+.rsvp-form {
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 460px;
+  transition: all 0.3s ease;
+}
+                                                             
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {

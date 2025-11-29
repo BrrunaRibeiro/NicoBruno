@@ -42,7 +42,39 @@ def enviar_email(destinatarios, assunto, corpo):
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
 
-# ========== ENDPOINT DE RSVP ==========
+# ========== ENDPOINT PARA BUSCAR RSVP EXISTENTE ==========
+@app.route("/api/rsvp", methods=["GET"])
+def get_rsvp():
+    email = request.args.get("email", "").strip().lower()
+    if not email:
+        return jsonify({"erro": "E-mail não fornecido"}), 400
+
+    if not os.path.exists(CSV_FILE):
+        return jsonify({"existe": False}), 200
+
+    latest = {}
+    with open(CSV_FILE, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row_email = row["Email"].strip().lower()
+            latest[row_email] = row
+
+    if email not in latest:
+        return jsonify({"existe": False}), 200
+
+    row = latest[email]
+
+    return jsonify({
+        "existe": True,
+        "nome": row["Nome"],
+        "email": row["Email"],
+        "acompanhantes": row["Acompanhantes"],
+        "criancas": row["Criancas"],
+        "mensagem": row["Mensagem"],
+        "vai_vir": row["Vai Vir"].lower() == "sim"
+    }), 200
+
+# ========== ENDPOINT DE RSVP (CRIAR / ATUALIZAR) ==========
 @app.route("/api/rsvp", methods=["POST", "PUT"])
 def confirmar_presenca():
     data = request.json
@@ -57,15 +89,31 @@ def confirmar_presenca():
     if not nome or not email:
         return jsonify({"erro": "Nome e e-mail são obrigatórios"}), 400
 
+    # ========== CRIAR ARQUIVO SE NÃO EXISTE ==========
     os.makedirs("backend", exist_ok=True)
-    is_new_file = not os.path.exists(CSV_FILE)
+    if not os.path.exists(CSV_FILE):
+        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"])
+
+    # ========== LER CONFIRMAÇÕES EXISTENTES ==========
+    latest = {}
+    with open(CSV_FILE, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row_email = row["Email"].strip().lower()
+            latest[row_email] = row
+
+    # ========== CHECAR SE EMAIL EXISTE NO POST ==========
+    if metodo == "POST" and email in latest:
+        return jsonify({"erro": "Email já cadastrado", "code": 409}), 409
+
+    # ========== ADICIONAR NOVA LINHA NO CSV ==========
     with open(CSV_FILE, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        if is_new_file:
-            writer.writerow(["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"])
         writer.writerow([nome, email, acompanhantes, criancas, mensagem, "Sim" if vai_vir else "Não"])
 
-    # ========== FILTRAR RESPOSTAS MAIS RECENTES ==========
+    # ========== RECRIAR LISTA FINAL ==========
     latest_confirmations = {}
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -73,36 +121,31 @@ def confirmar_presenca():
             row_email = row["Email"].strip().lower()
             latest_confirmations[row_email] = row
 
-    # ========== LISTA DE CONFIRMADOS ==========
+    # ========== LISTA FINAL FORMATADA ==========
     lista_confirmados = []
     total_pessoas = 0
+
     for row in latest_confirmations.values():
         if row["Vai Vir"].strip().lower() == "sim":
-            nome = row["Nome"]
+            nome_c = row["Nome"]
             adultos = int(row["Acompanhantes"])
-            criancas = int(row.get("Criancas", 0))
+            cri = int(row.get("Criancas", 0))
 
             partes = []
             if adultos > 1:
                 partes.append(f"{adultos - 1} acompanhante(s) adulto")
-            if criancas > 0:
-                partes.append(f"{criancas} acompanhante(s) infantil")
+            if cri > 0:
+                partes.append(f"{cri} acompanhante(s) infantil")
 
             if partes:
-                descricao = f"💌 {nome}, com " + " e ".join(partes)
+                descricao = f"💌 {nome_c}, com " + " e ".join(partes)
             else:
-                descricao = f"💌 {nome}"
+                descricao = f"💌 {nome_c}"
 
             lista_confirmados.append(descricao)
-            total_pessoas += adultos + criancas
+            total_pessoas += adultos + cri
 
-    # ========== PRINT PARA CONSOLE ==========
-    print("📋 Lista atualizada de confirmados:")
-    for pessoa in lista_confirmados:
-        print(pessoa)
-    print(f"👥 Total confirmado: {total_pessoas} pessoas\n")
-
-    # ========== MENSAGEM PARA OS NOIVOS ==========
+    # ========== EMAIL PARA OS NOIVOS ==========
     if vai_vir:
         if metodo == "PUT":
             assunto = "Alteração na confirmação 💡"
@@ -123,6 +166,7 @@ def confirmar_presenca():
         + "\n".join(lista_confirmados)
         + f"\n\n👥 Total de pessoas esperadas: {total_pessoas}"
     )
+
     enviar_email(GROOMS_EMAILS, assunto, corpo)
 
     # ========== EMAIL PARA O CONVIDADO ==========
@@ -133,9 +177,14 @@ def confirmar_presenca():
         f"Caso queira deixar-nos um presente, acesse:\n{SITE_URL}#presentes\n\n"
         "Com carinho,\nNicole & Bruno ✨"
     )
-    enviar_email(email, "Obrigado por confirmar sua presença!" if vai_vir else "Sentiremos sua falta!", corpo_convidado)
 
-    return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"})
+    enviar_email(
+        email,
+        "Obrigado por confirmar sua presença!" if vai_vir else "Sentiremos sua falta!",
+        corpo_convidado
+    )
+
+    return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"}), 200
 
 
 # ========== RODAR SERVIDOR ==========

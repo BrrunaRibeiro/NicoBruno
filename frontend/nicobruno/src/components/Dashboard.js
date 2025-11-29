@@ -143,16 +143,16 @@ const Dashboard = () => {
             <ReactTyped
               strings={[
                 "<h3>Família e amigos queridos,</h3>" +
-                "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas: ^900 o nosso casamento...^1000" +
+                "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
                 "<br><br>" +
-                "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado. ^500" +
+                "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
                 "<br>" +
-                "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirme sua Presença’. ^500" +
+                "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirme sua Presença’.  ^500" +
                 "<br><br>" +
-                "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!^1000" +
+                "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
                 "<br><br>" +
                 "Com carinho," +
-                "<p id='signature'>^400 Nicole e Bruno.</p"
+                "<p id='signature'> ^400 Nicole e Bruno.</p"
               ]}
               typeSpeed={35}
               backSpeed={0}
@@ -162,17 +162,17 @@ const Dashboard = () => {
           </div>
           {/* Right Column: Map, address, dress code */}
           <div style={{ flex: "1 1 400px", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "34.5s" }}>
-            <h3 style={{ marginBottom: "0.5rem" }}>Dress Code</h3>
-            <p>
+            <h4 style={{ marginBottom: "0.1rem" }}>Dress Code</h4>
+            <h5>
               Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima leve e descontraído,
               e pede apenas um traje esporte fino, com aquele toque de conforto que combina perfeitamente com a festa.
-            </p>
+            </h5>
 
-            <h3 style={{ marginTop: "2rem", marginBottom: "0.5rem" }}>Local</h3>
-            <p>
+            <h4 style={{ marginTop: "2rem", marginBottom: "0.1rem" }}>Local</h4>
+            <h5>
               📍<strong><a href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254" target="_blank" rel="noopener noreferrer">Chácara Refúgio do Vale</a></strong><br />
               Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR, 83507-254
-            </p>
+            </h5>
 
             <div style={{ marginTop: "1rem", borderRadius: "12px", overflow: "hidden", opacity: 0, animation: "fadeIn 1s ease-in forwards", animationDelay: "2.5s" }}>
               <iframe
@@ -197,24 +197,46 @@ const Dashboard = () => {
       </Element>
 
       <Element name="confirmar" className="section" style={{ minHeight: "100vh", position: "relative" }}>
-        {emailExists ? (
+        {emailExists && !isUpdating ? (
           <div className="confirmation-message">
-            <h2>Esse email já foi usado para confirmar presença.</h2>
-            <p>Se deseja alterar sua confirmação, clique abaixo.</p>
-            <button onClick={() => { setEmailExists(false); setIsUpdating(true); }}>Alterar Confirmação</button>
-            <button onClick={() => { setEmailExists(false); scrollToSection(0); }}>Voltar à página inicial</button>
+            <h2>Esse e-mail já foi usado para confirmar presença.</h2>
+            <p>Se deseja mudar sua confirmação ou número de convidados, você pode abaixo:</p>
+            <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+              <button
+                onClick={() => {
+                  setEmailExists(false);
+                  setIsUpdating(true);
+                }}
+              >
+                Alterar Confirmação
+              </button>
+              <button
+                onClick={() => {
+                  setEmailExists(false);
+                  scrollToSection(0);
+                }}
+              >
+                Voltar à página inicial
+              </button>
+            </div>
           </div>
         ) : submitted ? (
           <div className="confirmation-message">
             <h2>{vaiVir === "yes" ? "Obrigado por confirmar presença!" : "Sentiremos sua falta!"}</h2>
-            <p>{vaiVir === "yes" ? "Estamos muito felizes que você irá compartilhar esse momento tão especial conosco." : "Que pena que você não poderá comparecer. Obrigada por nos avisar!"}</p>
-            <small>Você será redirecionado para a página de <a href="/Presentes">Presentes</a> em {redirectCountdown} segundos...</small>
+            <p>
+              {vaiVir === "yes"
+                ? "Estamos muito felizes que você irá compartilhar esse momento tão especial conosco."
+                : "Que pena que você não poderá comparecer. Obrigada por nos avisar!"}
+            </p>
+            <small>
+              Você será redirecionado para a página de{" "}
+              <a href="/Presentes">Presentes</a> em {redirectCountdown} segundos...
+            </small>
           </div>
         ) : (
           <>
-            <h2>Confirme sua Presença</h2>
+            <h2>{isUpdating ? "Alterar Confirmação de Presença" : "Confirme sua Presença"}</h2>
             <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
-
               <div className="toggle-group">
                 <button
                   type="button"
@@ -231,23 +253,90 @@ const Dashboard = () => {
                   Não
                 </button>
               </div>
-              <input type="text" placeholder="Seu nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
-              <input type="email" placeholder="Seu e-mail" required value={email} onChange={(e) => setEmail(e.target.value)} />
+
+              <input
+                type="text"
+                placeholder="Seu nome"
+                required
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                type="email"
+                placeholder="Seu e-mail"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
               {(vaiVir === "yes" || isUpdating) && (
                 <>
-                  <input type="number" placeholder="Número de acompanhantes (incluindo você)" required value={acompanhantes} onChange={(e) => setAcompanhantes(e.target.value)} />
-                  <input type="number" placeholder="Número de crianças" value={criancas} onChange={(e) => setCriancas(e.target.value)} />
+                  <input
+                    type="number"
+                    placeholder="Número de acompanhantes (incluindo você)"
+                    required
+                    value={acompanhantes}
+                    onChange={(e) => setAcompanhantes(e.target.value)}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Número de crianças"
+                    value={criancas}
+                    onChange={(e) => setCriancas(e.target.value)}
+                  />
                 </>
               )}
-              <input type="text" placeholder="Mensagem (opcional)" value={mensagem} onChange={(e) => setMensagem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()} />
-              <button type="submit" disabled={vaiVir === null || submitting}>Enviar Confirmação</button>
-              <button type="button" className="update-button" onClick={() => setIsUpdating(!isUpdating)}>
-                {isUpdating ? "Voltar para confirmação" : "Ou deseja alterar sua resposta?"}
+
+              <input
+                type="text"
+                placeholder="Mensagem (opcional)"
+                value={mensagem}
+                onChange={(e) => setMensagem(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+              />
+
+              <button type="submit" disabled={vaiVir === null || submitting}>
+                {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
               </button>
+
+              {!isUpdating && (
+                <button
+                  type="button"
+                  className="update-button"
+                  onClick={() => setIsUpdating(true)}
+                >
+                  Ou deseja alterar sua resposta?
+                </button>
+              )}
+
+              {isUpdating && (
+                <button
+                  type="button"
+                  className="update-button"
+                  onClick={() => {
+                    setIsUpdating(false);
+                    setEmailExists(false);
+                  }}
+                >
+                  Voltar para nova confirmação
+                </button>
+              )}
             </form>
           </>
         )}
-        <div style={{ position: "absolute", bottom: "65px", left: "50%", transform: "translateX(-50%)", display: "flex", justifyContent: "space-between", width: "120px", gap: "2px" }}>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: "65px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            justifyContent: "space-between",
+            width: "120px",
+            gap: "2px",
+          }}
+        >
           <Arrow direction="up" />
           <Arrow direction="down" />
         </div>

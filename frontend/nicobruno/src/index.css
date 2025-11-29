@@ -77,9 +77,12 @@ body {
 }
 
 /* Form */
+/* Maintain same width and height for form no matter what */
 .rsvp-form {
-  margin-top: 40px;
-
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 460px;
+  transition: all 0.3s ease;
 }
 
 .rsvp-form>* {
@@ -334,15 +337,6 @@ h1 {
   background-color: #c03a2b38;
   color: #444;
   border-color: transparent;
-}
-
-/* Maintain same width and height for form no matter what */
-.rsvp-form {
-  max-width: 500px;
-  margin: 0 auto;
-  min-height: 460px;
-  transition: all 0.3s ease;
-  font-family: ;
 }
                                                              
 

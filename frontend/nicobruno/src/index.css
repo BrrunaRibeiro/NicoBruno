@@ -25,16 +25,20 @@ body {
 }
 
 .section {
-  height: 100vh;
+  min-height: 100vh;            /* keep full-page feeling, but allow taller content */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+
+  /* navbar ≈ 58px → give 70px to have breathing room */
+  padding: 70px 20px 20px;      /* top, right/left, bottom */
   box-sizing: border-box;
+
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
+
 
 .home-section {
   display: flex;
@@ -85,7 +89,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.rsvp-form>* {
+.rsvp-form > * {
   padding: 10px;
   margin: 7px;
   width: -webkit-fill-available;
@@ -94,7 +98,7 @@ body {
   font-family: "inter-variable", sans-serif;
 }
 
-.rsvp-form>*:focus {
+.rsvp-form > *:focus {
   outline: none;
   border-color: #222;
 }
@@ -215,8 +219,45 @@ body {
   font-size: 0.9rem;
 }
 
+/* === Buttons inside "email já usado" box === */
+/* Flex row centered, wraps on small screens */
+.confirmation-message > div {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Base style for both buttons */
+.confirmation-message > div button {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  background: #61616153;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+/* Primary action: Alterar Confirmação */
+.confirmation-message > div button:first-child {
+  background-color: #b5993b3a;
+}
+
+/* Secondary action: Voltar à página inicial */
+.confirmation-message > div button:last-child {
+  background-color: #7979792c;
+}
+
+/* Hover states */
+.confirmation-message > div button:hover {
+  filter: brightness(0.95);
+}
+
 /* Scroll Button */
-.scroll-arrow, .scroll-down {
+.scroll-arrow,
+.scroll-down {
   position: relative; /* Change to relative for flexbox positioning */
   color: #fff;
   border-radius: 50%;
@@ -238,7 +279,7 @@ body {
 /* Links & Menu */
 .navbar {
   width: 100%;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 999;
@@ -248,9 +289,8 @@ body {
   display: flex;
   justify-content: center;
   padding: 10px 0;
+  backdrop-filter: blur(4px);
 }
-
-
 
 .menu {
   display: flex;
@@ -284,7 +324,6 @@ ul {
   transition: color 0.3s ease;
   cursor: pointer;
 }
-
 
 h1 {
   font-family: "playfair-display", serif;
@@ -338,13 +377,11 @@ h1 {
   color: #444;
   border-color: transparent;
 }
-                                                             
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -369,5 +406,11 @@ h1 {
   .info-thanks {
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Extra safety: stack buttons nicely on very small screens */
+  .confirmation-message > div button {
+    width: 100%;
+    max-width: 260px;
   }
 }

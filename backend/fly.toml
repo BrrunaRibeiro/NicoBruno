@@ -1,0 +1,16 @@
+app = "nicobruno-backend"   # <-- must be globally unique; change if Fly complains
+primary_region = "gru"      # "gru" = São Paulo; you can use "ams" if you prefer NL
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+  processes = ["app"]

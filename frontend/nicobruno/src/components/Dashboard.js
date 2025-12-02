@@ -138,7 +138,7 @@ const Dashboard = () => {
     {
       id: "garanta_novos_filhos",
       title: "Garanta novos filhos para os pais de planta",
-      price: 5.00,
+      price: 50.00,
     },
     {
       id: "taxa_buque",

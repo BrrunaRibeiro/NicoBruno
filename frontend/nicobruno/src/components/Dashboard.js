@@ -138,7 +138,7 @@ const Dashboard = () => {
     {
       id: "garanta_novos_filhos",
       title: "Garanta novos filhos para os pais de planta",
-      price: 289.2,
+      price: 5.00,
     },
     {
       id: "taxa_buque",
@@ -330,7 +330,7 @@ const Dashboard = () => {
                   "<br><br>" +
                   "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
                   "<br>" +
-                  "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirme sua Presença’.  ^500" +
+                  "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
                   "<br><br>" +
                   "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
                   "<br><br>" +
@@ -361,8 +361,7 @@ const Dashboard = () => {
               com aquele toque de conforto que combina perfeitamente com a
               festa.
             </h5>
-
-            <h4 style={{ marginTop: "2rem", marginBottom: "0.1rem" }}>Local</h4>
+            <h4 style={{ marginBottom: "0.1rem" }}>Local</h4>
             <h5>
               📍
               <strong>
@@ -374,7 +373,6 @@ const Dashboard = () => {
                   Chácara Refúgio do Vale
                 </a>
               </strong>
-              <br />
               Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR,
               83507-254
             </h5>
@@ -641,15 +639,11 @@ const Dashboard = () => {
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
         >
-          <h3>Pix direto (opcional)</h3>
+          <h3>Pix direto</h3>
           <p style={{ marginBottom: "0.4rem" }}>
             Se você preferir, também pode nos presentear diretamente pelo Pix:
           </p>
           <p style={{ fontWeight: "bold" }}>Chave Pix: 41999754987</p>
-          <p style={{ fontSize: "0.9rem", color: "#555" }}>
-            Se usar o Pix direto, conta pra gente na mensagem do RSVP ou por
-            WhatsApp para sabermos quem agradecer. 💚
-          </p>
         </div>
 
         {/* GRID GIFTS + CART */}

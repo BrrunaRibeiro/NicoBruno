@@ -1,6 +1,7 @@
 import os
 import csv
-from flask import Flask, request, jsonify
+from io import StringIO   # NEW
+from flask import Flask, request, jsonify, Response  # Response added
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -19,7 +20,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # SendGrid (para envio de e-mails)
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
-EMAIL_SENDER = os.getenv("EMAIL_SENDER", "noreply@casar.net.br")
+EMAIL_SENDER = os.getenv("EMAIL_SENDER", "nicolebruno@casar.net.br")
 
 # URL do site (usado nos e-mails de RSVP e nos back_urls do MP)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
@@ -28,6 +29,9 @@ SITE_URL = FRONTEND_URL  # mantém o nome antigo usado no código
 # Mercado Pago
 MP_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN", "")
 sdk = mercadopago.SDK(MP_ACCESS_TOKEN) if MP_ACCESS_TOKEN else None
+
+# Admin token para exportar RSVPs
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "Admin7849")
 
 # Lista de e-mails dos noivos
 GROOMS_EMAILS = [
@@ -216,6 +220,59 @@ def confirmar_presenca():
     return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"}), 200
 
 
+# ========== NOVO: EXPORTAR RSVPs (APENAS ADMIN) ==========
+
+@app.route("/api/admin/rsvp-export", methods=["GET"])
+def rsvp_export():
+    """
+    Exporta a lista de RSVPs como CSV.
+
+    Protegido por token simples: ?token=Admin7849
+    (na produção usaremos o valor de ADMIN_TOKEN).
+    """
+    token = request.args.get("token", "")
+
+    if token != ADMIN_TOKEN:
+        return jsonify({"erro": "Não autorizado"}), 401
+
+    if not os.path.exists(CSV_FILE):
+        return jsonify({"erro": "Ainda não há RSVPs salvos."}), 404
+
+    # Lê o CSV e mantém apenas a última linha por email (igual ao resto do código)
+    latest = {}
+    with open(CSV_FILE, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row_email = row["Email"].strip().lower()
+            latest[row_email] = row
+
+    # Gera um CSV em memória
+    output = StringIO()
+    fieldnames = ["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for row in latest.values():
+        writer.writerow({
+            "Nome": row.get("Nome", ""),
+            "Email": row.get("Email", ""),
+            "Acompanhantes": row.get("Acompanhantes", ""),
+            "Criancas": row.get("Criancas", ""),
+            "Mensagem": row.get("Mensagem", ""),
+            "Vai Vir": row.get("Vai Vir", ""),
+        })
+
+    csv_data = output.getvalue()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=rsvp_export.csv"
+        },
+    )
+
+
 # ========== MERCADO PAGO CHECKOUT PRO (REDIRECT) ==========
 
 @app.route("/api/mercadopago/checkout", methods=["POST"])
@@ -322,4 +379,5 @@ def criar_preferencia_checkout():
 
 if __name__ == "__main__":
     print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
+    print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
     app.run(debug=True)

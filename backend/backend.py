@@ -21,7 +21,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
 EMAIL_SENDER = os.getenv("EMAIL_SENDER", "noreply@casar.net.br")
 
-# URL do site (usado nos e-mails de RSVP)
+# URL do site (usado nos e-mails de RSVP e nos back_urls do MP)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 SITE_URL = FRONTEND_URL  # mantém o nome antigo usado no código
 
@@ -216,85 +216,110 @@ def confirmar_presenca():
     return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"}), 200
 
 
-# ========== MERCADO PAGO CHECKOUT API (PAYMENT BRICK) ==========
+# ========== MERCADO PAGO CHECKOUT PRO (REDIRECT) ==========
 
-@app.route("/api/mp/payment", methods=["POST"])
-def process_payment():
-    """Endpoint chamado pelo Payment Brick do Mercado Pago.
-
-    Espera um JSON no formato geral:
-    {
-      "transaction_amount": 123.45,
-      "description": "Presentes de casamento",
-      "token": "...",
-      "installments": 1,
-      "payment_method_id": "visa",
-      "payer": {
-        "email": "convidado@exemplo.com",
-        "first_name": "Convidado"
-      }
-    }
-    """
+@app.route("/api/mercadopago/checkout", methods=["POST"])
+def criar_preferencia_checkout():
+    """Cria uma preferência de pagamento do Mercado Pago e retorna o init_point
+    para redirecionar o convidado para o checkout (cartão / Pix / boleto)."""
 
     if not sdk:
-        return jsonify({"erro": "Mercado Pago não configurado no servidor."}), 500
+        return jsonify({"erro": "Mercado Pago não configurado no servidor (MP_ACCESS_TOKEN ausente)."}), 500
 
     data = request.json or {}
 
-    # Validações básicas
-    try:
-        amount = float(data.get("transaction_amount", 0))
-    except (TypeError, ValueError):
-        return jsonify({"erro": "Valor inválido de transaction_amount."}), 400
+    items = data.get("items", [])
+    nome = data.get("nome", "Convidado")
+    email = data.get("email", "")
+    mensagem = data.get("mensagem", "")
 
-    token = data.get("token")
-    payment_method_id = data.get("payment_method_id")
-    installments = int(data.get("installments", 1) or 1)
-    payer = data.get("payer", {}) or {}
-    payer_email = payer.get("email")
+    if not items:
+        return jsonify({"erro": "Nenhum item recebido para pagamento."}), 400
 
-    if amount <= 0 or not token or not payment_method_id or not payer_email:
-        return jsonify({"erro": "Dados de pagamento incompletos."}), 400
+    # Monta a lista de itens no formato que o MP espera
+    mp_items = []
+    for item in items:
+        try:
+            title = item.get("title", "Presente de casamento")
+            unit_price = float(item.get("unit_price", 0))
+            quantity = int(item.get("quantity", 1))
+        except (TypeError, ValueError):
+            return jsonify({"erro": "Dados inválidos em um dos itens."}), 400
 
-    description = data.get("description", "Presentes de casamento - Nicole & Bruno")
+        if unit_price <= 0 or quantity <= 0:
+            return jsonify({"erro": "Preço ou quantidade inválidos em um dos itens."}), 400
 
-    payment_data = {
-        "transaction_amount": amount,
-        "token": token,
-        "description": description,
-        "installments": installments,
-        "payment_method_id": payment_method_id,
+        mp_items.append(
+            {
+                "title": title,
+                "unit_price": unit_price,
+                "quantity": quantity,
+                "currency_id": "BRL",
+            }
+        )
+
+    descricao_geral = "Presentes de casamento - Nicole & Bruno"
+
+    preference_data = {
+        "items": mp_items,
         "payer": {
-            "email": payer_email,
-            "first_name": payer.get("first_name", ""),
+            "name": nome,
+            "email": email or None,
         },
-        # ⚠️ Aqui podemos, no futuro, adicionar metadata, split, etc.
-        # "metadata": {...}
+        "back_urls": {
+            "success": f"{SITE_URL}#presentes",
+            "failure": f"{SITE_URL}#presentes",
+            "pending": f"{SITE_URL}#presentes",
+        },
+        # auto_return removido para evitar erro "auto_return invalid"
+        "metadata": {
+            "guest_name": nome,
+            "guest_email": email,
+            "mensagem": mensagem,
+        },
+        "statement_descriptor": "NICOLE & BRUNO",
+        "additional_info": descricao_geral,
     }
 
+    print("[MP preference_data enviado]", preference_data)
+
     try:
-        result = sdk.payment().create(payment_data)
+        result = sdk.preference().create(preference_data)
     except Exception as e:
-        print("Erro ao criar pagamento no Mercado Pago:", e)
-        return jsonify({"erro": "Erro ao processar o pagamento."}), 500
+        print("Erro ao criar preferência no Mercado Pago (exception):", e)
+        return jsonify({"erro": "Erro ao criar preferência de pagamento."}), 500
 
-    payment = result.get("response", {}) or {}
-    http_status = result.get("status", 200)
+    # result geralmente tem: {"status": 201, "response": {...}}
+    status_code = result.get("status")
+    response = result.get("response", {}) or {}
 
-    # Aqui, no futuro, você pode:
-    # - verificar se payment["status"] == "approved"
-    # - enviar e-mail de "presente recebido" com SendGrid
-    # - gravar no CSV/DB qual presente foi comprado
+    print("[MP preference.create result]", result)  # log completo no console
 
-    return jsonify({
-        "id": payment.get("id"),
-        "status": payment.get("status"),
-        "status_detail": payment.get("status_detail"),
-        "transaction_amount": payment.get("transaction_amount"),
-    }), http_status
+    init_point = response.get("init_point") or response.get("sandbox_init_point")
+    preference_id = response.get("id")
+
+    if status_code not in (200, 201) or not init_point:
+        erro_msg = (
+            response.get("message")
+            or response.get("error")
+            or "Falha ao criar preferência no Mercado Pago."
+        )
+        return jsonify({
+            "erro": erro_msg,
+            "mp_status": status_code,
+            "mp_response": response,
+        }), 500
+
+    return jsonify(
+        {
+            "init_point": init_point,
+            "preferenceId": preference_id,
+        }
+    ), 200
 
 
 # ========== RODAR SERVIDOR ==========
 
 if __name__ == "__main__":
+    print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
     app.run(debug=True)

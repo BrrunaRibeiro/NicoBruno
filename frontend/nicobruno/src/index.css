@@ -13,32 +13,35 @@ body {
   overflow-y: scroll;
   margin: 0;
   font-family: "inter-variable", sans-serif;
-  font-variation-settings: 'wght' 500, 'slnt' 0;
+  font-variation-settings: "wght" 500, "slnt" 0;
   color: #383838;
-  background: radial-gradient(circle at bottom right,
-      var(--drab-dark-brown) 25%,
-      var(--floral-white) 75%);
+  background: radial-gradient(
+    circle at bottom right,
+    var(--drab-dark-brown) 25%,
+    var(--floral-white) 75%
+  );
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
   text-decoration: none;
 }
 
+/* ===================== SECTIONS / LAYOUT ===================== */
+
 .section {
-  min-height: 100vh;            /* keep full-page feeling, but allow taller content */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   /* navbar ≈ 58px → give 70px to have breathing room */
-  padding: 70px 20px 20px;      /* top, right/left, bottom */
+  padding: 70px 20px 20px;
   box-sizing: border-box;
 
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
-
 
 .home-section {
   display: flex;
@@ -55,6 +58,8 @@ body {
   align-items: center;
   flex-wrap: wrap;
   width: 80%;
+  max-width: 1100px;
+  gap: 2rem;
 }
 
 .text-left {
@@ -76,12 +81,11 @@ body {
   width: 100%;
   max-width: 500px;
   height: auto;
-  /* filter: grayscale(1); */
   border-radius: 12px;
 }
 
-/* Form */
-/* Maintain same width and height for form no matter what */
+/* ===================== FORM (RSVP) ===================== */
+
 .rsvp-form {
   max-width: 500px;
   margin: 0 auto;
@@ -118,14 +122,14 @@ body {
   resize: none;
   line-height: 1.4;
   box-sizing: border-box;
-  white-space: pre-wrap; /* simulate wrapping */
+  white-space: pre-wrap;
 }
 
-/* Countdown Section */
+/* ===================== COUNTDOWN ===================== */
+
 .countdown-container {
   text-align: center;
-  /* margin-top: 40px; */
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 .countdown-title {
@@ -171,19 +175,14 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Informações section split layout */
+/* ===================== INFORMAÇÕES SECTION ===================== */
+
 .info-thanks {
   display: flex;
   justify-content: space-between;
   gap: 40px;
   flex-wrap: wrap;
   padding: 60px;
-}
-
-.info-thanks {
-  flex: 1;
-  min-width: 280px;
-  max-width: 50%;
 }
 
 .info-thanks h2 {
@@ -199,7 +198,8 @@ body {
   margin-bottom: 10px;
 }
 
-/* RSVP Confirmation Message */
+/* ===================== CONFIRMATION MESSAGE ===================== */
+
 .confirmation-message {
   text-align: center;
   padding: 30px;
@@ -219,14 +219,12 @@ body {
   font-size: 0.9rem;
 }
 
-/* === Buttons inside "email já usado" box === */
-/* Flex row centered, wraps on small screens */
+/* "email já usado" buttons */
 .confirmation-message > div {
   justify-content: center;
   flex-wrap: wrap;
 }
 
-/* Base style for both buttons */
 .confirmation-message > div button {
   padding: 0.6rem 1.5rem;
   font-size: 0.95rem;
@@ -240,25 +238,23 @@ body {
   min-width: 160px;
 }
 
-/* Primary action: Alterar Confirmação */
 .confirmation-message > div button:first-child {
   background-color: #b5993b3a;
 }
 
-/* Secondary action: Voltar à página inicial */
 .confirmation-message > div button:last-child {
   background-color: #7979792c;
 }
 
-/* Hover states */
 .confirmation-message > div button:hover {
   filter: brightness(0.95);
 }
 
-/* Scroll Button */
+/* ===================== SCROLL ARROWS ===================== */
+
 .scroll-arrow,
 .scroll-down {
-  position: relative; /* Change to relative for flexbox positioning */
+  position: relative;
   color: #fff;
   border-radius: 50%;
   width: 42px;
@@ -268,7 +264,7 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 18px;
-  z-index: 1000; /* Ensure arrows are on top */
+  z-index: 1000;
   transition: background-color 0.3s ease;
 }
 
@@ -276,33 +272,38 @@ body {
   background-color: rgba(31, 46, 22, 1);
 }
 
-/* Links & Menu */
+/* ===================== NAVBAR / MENU / BURGER / CART ===================== */
+
 .navbar {
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 999;
-  background-color: transparent;
-  /* subtle background */
+  background-color: transparent;           /* back to original look */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
+  padding: 8px 0;
   backdrop-filter: blur(4px);
+}
+
+.navbar-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;                 /* centered menu on desktop */
+  padding: 0 16px;
 }
 
 .menu {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   gap: 145px;
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-ul {
-  justify-content: space-between;
 }
 
 .menu li a {
@@ -314,16 +315,42 @@ ul {
   color: #383838;
   text-decoration: none;
   transition: color 0.3s ease;
-  z-index: 1;
-  outline: none;
   cursor: pointer;
 }
 
-.menu li a:hover {
+.menu li a:hover,
+.menu li a.active {
   color: #000000;
-  transition: color 0.3s ease;
-  cursor: pointer;
 }
+
+/* Hidden by default – only mobile shows these */
+.burger-btn,
+.cart-indicator,
+.mobile-menu {
+  display: none;
+}
+
+/* ===================== MUSIC TOGGLE BUTTON ===================== */
+
+.music-toggle-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(56, 56, 56, 1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* ===================== TEXT STYLES ===================== */
 
 h1 {
   font-family: "playfair-display", serif;
@@ -341,6 +368,8 @@ h1 {
   font-family: "playfair-display", serif;
   font-size: 22px;
 }
+
+/* RSVP toggle buttons */
 
 .toggle-group {
   display: flex;
@@ -378,24 +407,46 @@ h1 {
   border-color: transparent;
 }
 
+/* Fade-in animation used in informações section */
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Responsive Adjustments */
+/* ===================== RESPONSIVE BREAKPOINTS ===================== */
+
+/* Slightly smaller desktops / tablets */
+@media (max-width: 1024px) {
+  .menu {
+    gap: 60px;
+  }
+}
+
+/* Phones & small tablets up to 768px */
 @media (max-width: 768px) {
   .home-content {
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    width: 100%;
   }
 
-  .text-left,
-  .image-right,
-  .info-thanks .left,
-  .info-thanks .right {
+  /* Title on top, image below */
+  .text-left {
+    order: 1;
     max-width: 100%;
-    text-align: center;
+    margin: 0;
+  }
+
+  .image-right {
+    order: 2;
+    max-width: 100%;
   }
 
   #sidephoto {
@@ -403,14 +454,125 @@ h1 {
     margin-top: 20px;
   }
 
-  .info-thanks {
-    flex-direction: column;
-    align-items: center;
+  h1 {
+    font-size: 2rem;
   }
 
-  /* Extra safety: stack buttons nicely on very small screens */
   .confirmation-message > div button {
     width: 100%;
     max-width: 260px;
+  }
+
+  .menu {
+    gap: 24px;
+  }
+
+  .menu li a {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+}
+
+/* VERY SMALL phones: < 425px → burger + cart, no desktop menu */
+@media (max-width: 424px) {
+  .navbar-inner {
+    justify-content: space-between;
+  }
+
+  /* hide desktop menu */
+  .menu {
+    display: none;
+  }
+
+  /* Show burger + cart */
+  .burger-btn,
+  .cart-indicator {
+    display: flex;
+  }
+
+  /* Burger button (left) */
+  .burger-btn {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(56, 56, 56, 0.98);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .burger-btn span {
+    width: 18px;
+    height: 2px;
+    background: #ffffff;
+    margin: 2px 0;
+    border-radius: 2px;
+  }
+
+  /* Cart button (right) */
+  .cart-indicator {
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgba(56, 56, 56, 0.98);
+    color: #ffffff;
+    font-size: 18px;
+    position: relative;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #f6f4ec;
+    color: #333;
+    border-radius: 999px;
+    padding: 1px 4px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* Mobile dropdown menu just under the navbar */
+  .mobile-menu {
+    position: fixed;
+    top: 58px; /* under navbar */
+    left: 0;
+    width: 100%;
+    background: rgba(246, 244, 236, 0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: 12px 20px 16px;
+    display: none;
+    z-index: 998;
+  }
+
+  .mobile-menu.open {
+    display: block;
+  }
+
+  .mobile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-menu li {
+    margin-bottom: 8px;
+  }
+
+  .mobile-menu a {
+    display: block;
+    padding: 8px 0;
+    font-size: 0.98rem;
+    color: #383838;
+    text-decoration: none;
+  }
+
+  .mobile-menu a:hover {
+    color: #000;
   }
 }

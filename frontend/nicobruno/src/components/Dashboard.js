@@ -138,35 +138,243 @@ const Dashboard = () => {
     {
       id: "garanta_novos_filhos",
       title: "Garanta novos filhos para os pais de planta",
-      price: 50.00,
+      price: 300.45, // 289,20 + taxas
+      image: "https://cdn-assets-legacy.casar.com/thumb/208x208x1/img/presentes/cotas_divertidas/plantas.jpg",
     },
     {
       id: "taxa_buque",
       title: "1 Taxa pra noiva não jogar o buquê pra sua namorada",
-      price: 355.82,
+      price: 369.66,
     },
     {
       id: "controles_video_game",
-      title: "2 controles de video game para não ter briga",
-      price: 638.0,
+      title: "Set de 2 controles de video game para não ter briga",
+      price: 726.36,
     },
     {
       id: "adote_boleto",
       title: "Adote um boleto",
-      price: 1530.0,
+      price: 1853.9,
     },
     {
       id: "ajuda_financeira_futuro",
       title: "Ajuda financeira para o futuro do casal",
-      price: 489.0,
+      price: 508.02,
     },
     {
       id: "ajuda_pets",
       title: "Ajuda para custear os MUITOS pets do casal",
-      price: 928.0,
+      price: 1056.53,
     },
-    // you can keep adding the rest of the list here with the same pattern…
+    {
+      id: "ajuda_mobiliar_casa_1300",
+      title: "Ajuda para mobiliar a casa",
+      price: 1575.21,
+    },
+    {
+      id: "ajuda_mobiliar_casa_500",
+      title: "Ajuda para mobiliar a casa",
+      price: 519.45,
+    },
+    {
+      id: "ajuda_comprar_dolar",
+      title: "Ajuda para o casal comprar dólar para a viagem",
+      price: 753.27,
+    },
+    {
+      id: "ajuda_motor_home",
+      title: "Ajuda para o casal sonhar com o motor home",
+      price: 1708.56,
+    },
+    {
+      id: "ajuda_comprar_euro_noivos",
+      title: "Ajuda. para os noivos comprarem euro pra viagem",
+      price: 611.15,
+    },
+    {
+      id: "alexa",
+      title: "ALEXA (para ter mais alguém para mandar)",
+      price: 396.86,
+    },
+    {
+      id: "aulas_meditacao",
+      title: "Aulas de meditação",
+      price: 451.13,
+    },
+    {
+      id: "belas_obras_arte",
+      title: "Belas obras de arte para decorar a casa",
+      price: 486.21,
+    },
+    {
+      id: "cafeteira_eletrica",
+      title:
+        "Cafeteira elétrica p/ acordar c/ cheiro de café (ajude a sustentar o vício)",
+      price: 774.87,
+    },
+    {
+      id: "churrasqueira_vegetarianos",
+      title: "Churrasqueira para legumes dos vegetarianos",
+      price: 992.89,
+    },
+    {
+      id: "compra_euro_viagem",
+      title: "Compra de euro para a viagem",
+      price: 827.27,
+    },
+    {
+      id: "contribuicao_reforma_casa",
+      title: "Contribuição para a reforma da casa",
+      price: 853.88,
+    },
+    {
+      id: "contribuicao_hotel_5_estrelas",
+      title: "Contribuição para um hotel 5 estrelas na lua de mel",
+      price: 1107.35,
+    },
+    {
+      id: "coral_aleluia",
+      title: "Coral pra cantar \"Aleluia\" na entrada do noivo",
+      price: 688.79,
+    },
+    {
+      id: "cota_restaurantes_luxo",
+      title: "Cota para garantir restaurantes de luxo na viagem",
+      price: 655.76,
+    },
+    {
+      id: "upgrades_fiji",
+      title: "Dois upgrades nas passagens aéreas para ilhas Fiji",
+      price: 3281.59,
+    },
+    {
+      id: "jantar_primeiro_mes",
+      title: "Garanta o jantar durante o 1° mês de casados",
+      price: 796.95,
+    },
+    {
+      id: "hospedagem_chale_montanhas",
+      title: "Hospedagem em um chalé nas montanhas",
+      price: 4395.47,
+    },
+    {
+      id: "hospedagem_3_noites",
+      title: "Hospedagem para 3 noites",
+      price: 1332.87,
+    },
+    {
+      id: "hospedagem_5_noites",
+      title: "Hospedagem para 5 noites",
+      price: 4018.61,
+    },
+    {
+      id: "incentivo_balada",
+      title: "Incentivo para noivos voltarem a frequentar balada",
+      price: 951.73,
+    },
+    {
+      id: "lava_loucas_inox",
+      title: "Lava Louças em Inox (PARA AJUDAR O NOIVO)",
+      price: 4712.3,
+    },
+    {
+      id: "passagem_aerea_1848",
+      title: "Passagem aérea",
+      price: 2239.22,
+    },
+    {
+      id: "passagem_aerea_2200",
+      title: "Passagem aérea",
+      price: 2665.74,
+    },
+    {
+      id: "passagem_trem",
+      title: "Passagem de trem entre paises",
+      price: 874.37,
+    },
+    {
+      id: "passeio_balao",
+      title: "Passeio de balão para o casal",
+      price: 1999.31,
+    },
+    {
+      id: "passeio_aves_exoticas",
+      title: "Passeio para observação de aves exóticas",
+      price: 269.49,
+    },
+    {
+      id: "patrocine_lua_de_mel",
+      title: "Patrocine a lua de mel dos noivos",
+      price: 6551.32,
+    },
+    {
+      id: "patrocinio_lua_de_mel_casal",
+      title: "Patrocinio da lua de mel do casal",
+      price: 2930.31,
+    },
+    {
+      id: "piscina_mor_splash_fun",
+      title: "Piscina Mor Splash Fun",
+      price: 3129.11,
+    },
+    {
+      id: "poder_ir_junto_lua_de_mel",
+      title: "Poder ir junto com os noivos para a lua de mel",
+      price: 8103.66,
+    },
+    {
+      id: "prioridade_quarto_visita",
+      title: "Prioridade no quarto de visita na casa dos noivos",
+      price: 778.73,
+    },
+    {
+      id: "prioridade_quarto_visitas",
+      title:
+        "Prioridade p/ dormir no quarto de visitas do casal (aproveita que só tem 1)",
+      price: 331.41,
+    },
+    {
+      id: "pao_de_queijo_aeroporto",
+      title: "Pão de queijo no aeroporto (kkk)",
+      price: 197.18,
+    },
+    {
+      id: "quadro_picasso",
+      title: "Quadro basico de Picasso",
+      price: 344.08,
+    },
+    {
+      id: "sessao_relaxante_compras",
+      title: "Sessão relaxante de compras para o casal",
+      price: 792.4,
+    },
+    {
+      id: "trilha_com_guia",
+      title: "Trilha com um guia",
+      price: 631.64,
+    },
+    {
+      id: "um_ano_barba_feita",
+      title: "Um ano de barba feita para o noivo",
+      price: 423.87,
+    },
+    {
+      id: "um_dia_spa_casal",
+      title: "Um dia no spa para o casal",
+      price: 2132.59,
+    },
+    {
+      id: "upgrade_primeira_classe",
+      title: "UPGRADE primeira classe",
+      price: 5355.71,
+    },
+    {
+      id: "visita_ilha_casal",
+      title: "Visita a uma ilha para o casal",
+      price: 1466.16,
+    },
   ];
+  
 
   // ---- CART HELPERS ----
   const addToCart = (gift) => {

@@ -295,14 +295,6 @@ const Dashboard = () => {
 
   const clearCart = () => setCart({});
 
-  const handleCartIconClick = useCallback(() => {
-    const presentsIndex = sections.indexOf("presentes");
-    if (presentsIndex !== -1) {
-      scrollToSection(presentsIndex);
-    }
-  }, [sections, scrollToSection]);
-
-
   const cartItems = Object.values(cart);
 
   const cartTotal = cartItems.reduce(
@@ -389,7 +381,15 @@ const Dashboard = () => {
 
   return (
     <div>
-      <NavBar cartCount={cartItemCount} onCartClick={handleCartIconClick} />
+      <NavBar
+        cartCount={cartItemCount}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
+        onCartAdd={addToCart}
+        onCartRemove={removeFromCart}
+        onCartClear={clearCart}
+        onCartCheckout={handleMercadoPagoCheckout}
+      />
 
       {/* Background music – put your mp3 in /public/audio/ */}
       <audio

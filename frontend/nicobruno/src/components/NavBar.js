@@ -2,8 +2,17 @@
 import React, { useState } from "react";
 import { Link } from "react-scroll";
 
-const NavBar = ({ cartCount = 0, onCartClick }) => {
+const NavBar = ({
+  cartCount = 0,
+  cartItems = [],
+  cartTotal = 0,
+  onCartAdd,
+  onCartRemove,
+  onCartClear,
+  onCartCheckout,
+}) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const menuItems = [
     { to: "home", label: "Início" },
@@ -14,17 +23,24 @@ const NavBar = ({ cartCount = 0, onCartClick }) => {
 
   const closeMenu = () => setIsMobileOpen(false);
 
-  const handleCartClick = () => {
-    if (onCartClick) {
-      onCartClick(); // we’ll define this in Dashboard
-    }
+  const toggleMobileMenu = () => {
+    setIsMobileOpen((prev) => !prev);
+    setIsCartOpen(false); // never show both at once
+  };
+
+  const toggleCart = () => {
+    setIsCartOpen((prev) => !prev);
     setIsMobileOpen(false);
   };
 
+  const handleCartClick = () => {
+    toggleCart();
+  };
+
   const handleCartKeyDown = (e) => {
-    if ((e.key === "Enter" || e.key === " ") && onCartClick) {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      handleCartClick();
+      toggleCart();
     }
   };
 
@@ -36,7 +52,7 @@ const NavBar = ({ cartCount = 0, onCartClick }) => {
           <button
             type="button"
             className="burger-btn"
-            onClick={() => setIsMobileOpen((prev) => !prev)}
+            onClick={toggleMobileMenu}
             aria-label={isMobileOpen ? "Fechar menu" : "Abrir menu"}
           >
             <span />
@@ -55,6 +71,7 @@ const NavBar = ({ cartCount = 0, onCartClick }) => {
                   offset={-70}
                   spy={true}
                   activeClass="active"
+                  onClick={closeMenu}
                 >
                   {item.label}
                 </Link>
@@ -62,7 +79,7 @@ const NavBar = ({ cartCount = 0, onCartClick }) => {
             ))}
           </ul>
 
-          {/* Cart indicator – CLICKABLE */}
+          {/* Cart indicator – CLICKABLE, opens dropdown cart */}
           <div
             className="cart-indicator"
             role="button"
@@ -98,6 +115,69 @@ const NavBar = ({ cartCount = 0, onCartClick }) => {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* CART DROPDOWN – like the example you pasted */}
+      <div className={`cart-dropdown ${isCartOpen ? "open" : ""}`} style= {{ paddingTop: "10px" }}>
+        <div className="cart-dropdown-inner">
+          {(!cartItems || cartItems.length === 0) ? (
+            <p style={{ fontSize: "0.95rem", margin: 0 }}>
+              Seu carrinho ainda está vazio. Escolha um presente para continuar.
+            </p>
+          ) : (
+            <>
+              <ul className="cart-dropdown-list">
+                {cartItems.map((item) => (
+                  <li key={item.id} className="cart-dropdown-item">
+                    <div>
+                      <span className="cart-dropdown-item-title">
+                        {item.title}
+                      </span>
+                      <div className="cart-dropdown-item-qty">
+                        x{item.quantity}
+                      </div>
+                    </div>
+                    <div className="cart-dropdown-qty-controls">
+                      <button
+                        type="button"
+                        className="cart-dropdown-qty-btn"
+                        onClick={() => onCartRemove && onCartRemove(item.id)}
+                      >
+                        -
+                      </button>
+                      <button
+                        type="button"
+                        className="cart-dropdown-qty-btn"
+                        onClick={() => onCartAdd && onCartAdd(item)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <hr />
+              <p className="cart-dropdown-total">
+                Total: R${" "}
+                {cartTotal.toFixed(2).replace(".", ",")}
+              </p>
+              <button
+                type="button"
+                className="cart-dropdown-primary-btn"
+                onClick={() => onCartCheckout && onCartCheckout()}
+              >
+                Prosseguir com o pagamento
+              </button>
+              <button
+                type="button"
+                className="cart-dropdown-secondary-btn"
+                onClick={() => onCartClear && onCartClear()}
+              >
+                Limpar carrinho
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

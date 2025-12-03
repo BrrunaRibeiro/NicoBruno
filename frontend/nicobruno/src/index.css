@@ -351,7 +351,7 @@ body {
   display: flex;
 }
 
-/* Cart indicator (always shown, but styled mostly for mobile) */
+/* Cart indicator */
 .cart-indicator {
   display: flex;
   align-items: center;
@@ -359,12 +359,14 @@ body {
   margin-left: 16px;
   position: relative;
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
+/* Base badge placement (desktop/tablet) */
 .cart-badge {
   position: absolute;
   top: -6px;
-  right: -10px;
+  right: -6px; /* slightly outside the icon on wide screens */
   background-color: #c03a2b;
   color: #fff;
   font-size: 0.65rem;
@@ -436,6 +438,100 @@ body {
 
 .mobile-menu a:last-child {
   border-bottom: none;
+}
+
+/* ===================== CART DROPDOWN UNDER NAVBAR ===================== */
+
+.cart-dropdown {
+  display: none;
+}
+
+.cart-dropdown.open {
+  display: block;
+  position: fixed;
+  top: 52px;              /* just under navbar */
+  right: 0;
+  width: 100%;
+  max-width: 420px;
+  padding: 0 10px 16px;   /* horizontal padding to keep a small margin */
+  box-sizing: border-box;
+  z-index: 998;
+}
+
+.cart-dropdown-inner {
+  background-color: white;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  min-height: 150px;
+}
+
+.cart-dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.8rem 0;
+}
+
+.cart-dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cart-dropdown-item-title {
+  font-size: 0.93rem;
+}
+
+.cart-dropdown-item-qty {
+  font-size: 0.8rem;
+  color: #777777;
+}
+
+.cart-dropdown-qty-controls {
+  display: flex;
+  align-items: center;
+}
+
+.cart-dropdown-qty-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  margin-right: 0.3rem;
+  cursor: pointer;
+}
+
+.cart-dropdown-qty-btn:last-child {
+  margin-right: 0;
+}
+
+.cart-dropdown-total {
+  font-weight: bold;
+  margin-top: 0.6rem;
+}
+
+.cart-dropdown-primary-btn {
+  margin-top: 0.6rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #222222;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cart-dropdown-secondary-btn {
+  margin-top: 0.4rem;
+  width: 100%;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #cccccc;
+  background-color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
 /* ===================== MUSIC TOGGLE BUTTON ===================== */
@@ -586,16 +682,16 @@ h1 {
   }
 }
 
-/* VERY SMALL phones: ≤ 425px → burger + mobile menu, no horizontal menu */
+/* Small phones: ≤ 425px → burger + mobile menu, no horizontal menu */
 @media (max-width: 426px) {
   .navbar {
-    padding: 8px 10px; 
+    padding: 8px 6px;
     max-width: 100dvw;
   }
 
   .navbar-inner {
     justify-content: space-between;
-    max-width: 400px;
+    max-width: 100%;
   }
 
   /* hide desktop menu, show burger */
@@ -607,20 +703,68 @@ h1 {
     display: flex;
   }
 
+  /* cart + badge stay inside the screen */
   .cart-indicator {
-    margin-left: 0;
-    padding-right: 10px;
-  }
-
-  /* mobile-menu visibility controlled only via .open */
-  .mobile-menu {
-    /* no extra changes needed here */
-  }
-}
-
-@media (max-width: 376px) {
-  .cart-indicator {
+    margin-left: auto;
     padding-right: 20px;
   }
 
+  .cart-badge {
+    top: -4px;
+    right: 0;
+    transform: translateX(-50%);
+  }
+
+  /* cart dropdown full-width on very small screens */
+  .cart-dropdown.open {
+    left: 0;
+    right: 0;
+    max-width: 100dvw;
+  }
+}
+
+/* Extra-narrow phones: ≤ 376px */
+@media (max-width: 376px) {
+  .navbar {
+    padding: 8px 4px;
+  }
+
+  .navbar-inner {
+    max-width: 100%;
+  }
+
+  .cart-indicator {
+    padding-right: 18px;
+  }
+
+  .cart-badge {
+    top: -3px;
+    right: 0;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    padding: 2px 4px;
+  }
+}
+
+/* Ultra-narrow phones: ≤ 321px */
+@media (max-width: 321px) {
+  .navbar {
+    padding: 8px 2px;
+  }
+
+  .navbar-inner {
+    max-width: 100%;
+  }
+
+  .cart-indicator {
+    padding-right: 14px;
+  }
+
+  .cart-badge {
+    top: -2px;
+    right: 0;
+    transform: translateX(-25%);
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
 }

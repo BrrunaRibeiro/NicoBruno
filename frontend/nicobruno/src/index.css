@@ -29,14 +29,14 @@ body {
 /* ===================== SECTIONS / LAYOUT ===================== */
 
 .section {
-  min-height: 100vh;
+  min-height: 100vh; /* keep full-page feeling, but allow taller content */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   /* navbar ≈ 58px → give 70px to have breathing room */
-  padding: 70px 20px 20px;
+  padding: 70px 20px 20px; /* top, right/left, bottom */
   box-sizing: border-box;
 
   scroll-snap-align: start;
@@ -198,6 +198,32 @@ body {
   margin-bottom: 10px;
 }
 
+/* Right column (Cerimônia & Recepção): bigger, centered text */
+.info-details {
+  text-align: center;
+}
+
+.info-details h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-details h3 {
+  font-size: 1.2rem;
+  margin: 0.4rem 0;
+  font-style: italic;
+}
+
+.info-details h4 {
+  font-size: 1.3rem;
+  margin: 2.3rem 0;
+}
+
+.info-details h5 {
+  font-size: 1.06rem; /* ~17px, like typed text */
+  line-height: 1.5;
+}
+
 /* ===================== CONFIRMATION MESSAGE ===================== */
 
 .confirmation-message {
@@ -219,7 +245,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* "email já usado" buttons */
+/* Buttons inside the "email já usado" box */
 .confirmation-message > div {
   justify-content: center;
   flex-wrap: wrap;
@@ -272,7 +298,7 @@ body {
   background-color: rgba(31, 46, 22, 1);
 }
 
-/* ===================== NAVBAR / MENU / BURGER / CART ===================== */
+/* ===================== NAVBAR / MENU / CART ===================== */
 
 .navbar {
   width: 100%;
@@ -280,20 +306,18 @@ body {
   top: 0;
   left: 0;
   z-index: 999;
-  background-color: transparent;           /* back to original look */
+  background-color: transparent; /* keep original look */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  backdrop-filter: blur(4px);
+  padding: 8px 16px;
+  backdrop-filter: blur(6px);
 }
 
 .navbar-inner {
-  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;                 /* centered menu on desktop */
-  padding: 0 16px;
+  justify-content: center; /* desktop default */
 }
 
 .menu {
@@ -318,16 +342,100 @@ body {
   cursor: pointer;
 }
 
-.menu li a:hover,
-.menu li a.active {
+.menu li a:hover {
   color: #000000;
 }
 
-/* Hidden by default – only mobile shows these */
-.burger-btn,
-.cart-indicator,
+/* Desktop menu always visible on ≥ 425px */
+.desktop-menu {
+  display: flex;
+}
+
+/* Cart indicator (always shown, but styled mostly for mobile) */
+.cart-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16px;
+  position: relative;
+  font-size: 1.2rem;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background-color: #c03a2b;
+  color: #fff;
+  font-size: 0.65rem;
+  border-radius: 999px;
+  padding: 2px 5px;
+}
+
+/* Burger button (hidden by default, shown only ≤ 425px) */
+.burger-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(56, 56, 56, 0.545);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  padding: 0;
+  flex-direction: column;
+  margin-right: 16px;
+}
+
+.burger-btn span {
+  width: 18px;
+  height: 2px;
+  background-color: #fff;
+  margin: 2px 0;
+  border-radius: 999px;
+}
+
+/* Mobile dropdown (hidden by default) */
 .mobile-menu {
   display: none;
+}
+
+.mobile-menu.open {
+  display: block;
+  position: fixed;
+  top: 52px; /* slightly under navbar */
+  left: 0;
+  width: 100%;
+  background-color: rgba(246, 244, 236, 0.97);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 998;
+}
+
+.mobile-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px 16px 16px;
+}
+
+.mobile-menu li {
+  margin-bottom: 8px;
+}
+
+.mobile-menu a {
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: #383838;
+  padding: 8px 0;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-menu a:last-child {
+  border-bottom: none;
 }
 
 /* ===================== MUSIC TOGGLE BUTTON ===================== */
@@ -420,14 +528,14 @@ h1 {
 
 /* ===================== RESPONSIVE BREAKPOINTS ===================== */
 
-/* Slightly smaller desktops / tablets */
+/* Tablet / laptop tweaks */
 @media (max-width: 1024px) {
   .menu {
     gap: 60px;
   }
 }
 
-/* Phones & small tablets up to 768px */
+/* Phones up to 768px: stack hero, adjust text, hide arrows */
 @media (max-width: 768px) {
   .home-content {
     flex-direction: column;
@@ -437,7 +545,6 @@ h1 {
     width: 100%;
   }
 
-  /* Title on top, image below */
   .text-left {
     order: 1;
     max-width: 100%;
@@ -471,108 +578,49 @@ h1 {
     font-size: 0.9rem;
     padding: 6px 10px;
   }
+
+  /* HIDE ARROWS on 768px and smaller */
+  .scroll-arrow,
+  .scroll-down {
+    display: none !important;
+  }
 }
 
-/* VERY SMALL phones: < 425px → burger + cart, no desktop menu */
-@media (max-width: 424px) {
-  .navbar-inner {
-    justify-content: space-between;
+/* VERY SMALL phones: ≤ 425px → burger + mobile menu, no horizontal menu */
+@media (max-width: 426px) {
+  .navbar {
+    padding: 8px 10px; 
+    max-width: 100dvw;
   }
 
-  /* hide desktop menu */
-  .menu {
+  .navbar-inner {
+    justify-content: space-between;
+    max-width: 400px;
+  }
+
+  /* hide desktop menu, show burger */
+  .desktop-menu {
     display: none;
   }
 
-  /* Show burger + cart */
-  .burger-btn,
-  .cart-indicator {
+  .burger-btn {
     display: flex;
   }
 
-  /* Burger button (left) */
-  .burger-btn {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    border: none;
-    background: rgba(56, 56, 56, 0.98);
-    cursor: pointer;
-    padding: 0;
-  }
-
-  .burger-btn span {
-    width: 18px;
-    height: 2px;
-    background: #ffffff;
-    margin: 2px 0;
-    border-radius: 2px;
-  }
-
-  /* Cart button (right) */
   .cart-indicator {
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    background: rgba(56, 56, 56, 0.98);
-    color: #ffffff;
-    font-size: 18px;
-    position: relative;
+    margin-left: 0;
+    padding-right: 10px;
   }
 
-  .cart-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: #f6f4ec;
-    color: #333;
-    border-radius: 999px;
-    padding: 1px 4px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-
-  /* Mobile dropdown menu just under the navbar */
+  /* mobile-menu visibility controlled only via .open */
   .mobile-menu {
-    position: fixed;
-    top: 58px; /* under navbar */
-    left: 0;
-    width: 100%;
-    background: rgba(246, 244, 236, 0.97);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    padding: 12px 20px 16px;
-    display: none;
-    z-index: 998;
+    /* no extra changes needed here */
+  }
+}
+
+@media (max-width: 376px) {
+  .cart-indicator {
+    padding-right: 20px;
   }
 
-  .mobile-menu.open {
-    display: block;
-  }
-
-  .mobile-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .mobile-menu li {
-    margin-bottom: 8px;
-  }
-
-  .mobile-menu a {
-    display: block;
-    padding: 8px 0;
-    font-size: 0.98rem;
-    color: #383838;
-    text-decoration: none;
-  }
-
-  .mobile-menu a:hover {
-    color: #000;
-  }
 }

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link } from "react-scroll";
 
-const NavBar = ({ cartCount = 0 }) => {
+const NavBar = ({ cartCount = 0, onCartClick }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuItems = [
@@ -14,11 +14,25 @@ const NavBar = ({ cartCount = 0 }) => {
 
   const closeMenu = () => setIsMobileOpen(false);
 
+  const handleCartClick = () => {
+    if (onCartClick) {
+      onCartClick(); // we’ll define this in Dashboard
+    }
+    setIsMobileOpen(false);
+  };
+
+  const handleCartKeyDown = (e) => {
+    if ((e.key === "Enter" || e.key === " ") && onCartClick) {
+      e.preventDefault();
+      handleCartClick();
+    }
+  };
+
   return (
     <>
       <nav className="navbar">
         <div className="navbar-inner">
-          {/* Burger (only visible < 426px via CSS) */}
+          {/* Burger (only visible ≤ 425px via CSS) */}
           <button
             type="button"
             className="burger-btn"
@@ -48,9 +62,16 @@ const NavBar = ({ cartCount = 0 }) => {
             ))}
           </ul>
 
-          {/* Cart indicator (shown only on small screens via CSS) */}
-          <div className="cart-indicator">
-            <span role="img" aria-label="Carrinho">
+          {/* Cart indicator – CLICKABLE */}
+          <div
+            className="cart-indicator"
+            role="button"
+            tabIndex={0}
+            aria-label="Abrir carrinho de presentes"
+            onClick={handleCartClick}
+            onKeyDown={handleCartKeyDown}
+          >
+            <span role="img" aria-hidden="true">
               🛒
             </span>
             {cartCount > 0 && (

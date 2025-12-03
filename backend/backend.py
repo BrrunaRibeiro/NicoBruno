@@ -43,6 +43,35 @@ GROOMS_EMAILS = [
 CSV_FILE = "backend/rsvp_list.csv"
 
 
+# ========== HELPERS PARA LER EMAIL DO CSV ==========
+
+def get_row_email(row):
+    """
+    Tenta encontrar o campo de e-mail em uma linha do CSV,
+    independentemente de variações como 'email', 'E-mail', 'E mail', etc.
+
+    Retorna o e-mail em minúsculas e sem espaços ao redor, ou None se não encontrar.
+    """
+    email_key = next(
+        (
+            k
+            for k in row.keys()
+            if isinstance(k, str)
+            and k.strip().lower() in ("email", "e-mail", "e_mail", "e mail")
+        ),
+        None,
+    )
+
+    if not email_key:
+        return None
+
+    cell = row.get(email_key)
+    if cell is None:
+        return None
+
+    return str(cell).strip().lower()
+
+
 # ========== FUNÇÃO DE ENVIO (AGORA COM SENDGRID) ==========
 
 def enviar_email(destinatarios, assunto, corpo):
@@ -87,7 +116,9 @@ def get_rsvp():
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            row_email = row["Email"].strip().lower()
+            row_email = get_row_email(row)
+            if not row_email:
+                continue
             latest[row_email] = row
 
     if email not in latest:
@@ -95,14 +126,16 @@ def get_rsvp():
 
     row = latest[email]
 
+    # Para o campo "email" devolvemos o próprio e-mail normalizado (email da query),
+    # assim não dependemos do nome exato da coluna no CSV.
     return jsonify({
         "existe": True,
-        "nome": row["Nome"],
-        "email": row["Email"],
-        "acompanhantes": row["Acompanhantes"],
-        "criancas": row["Criancas"],
-        "mensagem": row["Mensagem"],
-        "vai_vir": row["Vai Vir"].lower() == "sim"
+        "nome": row.get("Nome", ""),
+        "email": email,
+        "acompanhantes": row.get("Acompanhantes", ""),
+        "criancas": row.get("Criancas", ""),
+        "mensagem": row.get("Mensagem", ""),
+        "vai_vir": str(row.get("Vai Vir", "")).lower() == "sim"
     }), 200
 
 
@@ -134,7 +167,9 @@ def confirmar_presenca():
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            row_email = row["Email"].strip().lower()
+            row_email = get_row_email(row)
+            if not row_email:
+                continue
             latest[row_email] = row
 
     # ========== CHECAR SE EMAIL EXISTE NO POST ==========
@@ -151,7 +186,9 @@ def confirmar_presenca():
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            row_email = row["Email"].strip().lower()
+            row_email = get_row_email(row)
+            if not row_email:
+                continue
             latest_confirmations[row_email] = row
 
     # ========== LISTA FINAL FORMATADA ==========
@@ -159,9 +196,9 @@ def confirmar_presenca():
     total_pessoas = 0
 
     for row in latest_confirmations.values():
-        if row["Vai Vir"].strip().lower() == "sim":
-            nome_c = row["Nome"]
-            adultos = int(row["Acompanhantes"] or 0)
+        if str(row.get("Vai Vir", "")).strip().lower() == "sim":
+            nome_c = row.get("Nome", "")
+            adultos = int(row.get("Acompanhantes", 0) or 0)
             cri = int(row.get("Criancas", 0) or 0)
 
             partes = []
@@ -243,7 +280,9 @@ def rsvp_export():
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            row_email = row["Email"].strip().lower()
+            row_email = get_row_email(row)
+            if not row_email:
+                continue
             latest[row_email] = row
 
     # Gera um CSV em memória
@@ -255,6 +294,7 @@ def rsvp_export():
     for row in latest.values():
         writer.writerow({
             "Nome": row.get("Nome", ""),
+            # aqui usamos row.get("Email", "") pois o CSV de saída SEMPRE terá coluna "Email"
             "Email": row.get("Email", ""),
             "Acompanhantes": row.get("Acompanhantes", ""),
             "Criancas": row.get("Criancas", ""),
@@ -378,6 +418,6 @@ def criar_preferencia_checkout():
 # ========== RODAR SERVIDOR ==========
 
 if __name__ == "__main__":
-    print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
-    print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
-    app.run(debug=True)
+  print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
+  print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
+  app.run(debug=True)

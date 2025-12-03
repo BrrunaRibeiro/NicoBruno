@@ -295,11 +295,26 @@ const Dashboard = () => {
 
   const clearCart = () => setCart({});
 
+  const handleCartIconClick = useCallback(() => {
+    const presentsIndex = sections.indexOf("presentes");
+    if (presentsIndex !== -1) {
+      scrollToSection(presentsIndex);
+    }
+  }, [sections, scrollToSection]);
+
+
   const cartItems = Object.values(cart);
+
   const cartTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const cartItemCount = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
 
   // ---- MUSIC TOGGLE ----
   const toggleMusic = () => {
@@ -374,7 +389,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <NavBar cartCount={cartItems.length} />
+      <NavBar cartCount={cartItemCount} onCartClick={handleCartIconClick} />
 
       {/* Background music – put your mp3 in /public/audio/ */}
       <audio
@@ -475,7 +490,7 @@ const Dashboard = () => {
             />
           </div>
           {/* Right Column: Map, address, dress code */}
-          <div
+          <div className="info-details"
             style={{
               flex: "1 1 400px",
               opacity: 0,
@@ -768,7 +783,7 @@ const Dashboard = () => {
             boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
           }}
         >
-          <h3>Pix direto (opcional)</h3>
+          <h3>Pix direto</h3>
           <p style={{ marginBottom: "0.4rem" }}>
             Se você preferir, também pode nos presentear diretamente pelo Pix:
           </p>
@@ -891,7 +906,7 @@ const Dashboard = () => {
             >
               {cartItems.length === 0 ? (
                 <p style={{ fontSize: "0.95rem" }}>
-                  Seu carrinho ainda está vazio. Escolha um presente ao lado. 💚
+                  Seu carrinho ainda está vazio. Escolha um presente para continuar..
                 </p>
               ) : (
                 <>
@@ -984,7 +999,7 @@ const Dashboard = () => {
                   >
                     {checkoutLoading
                       ? "Redirecionando para pagamento..."
-                      : "Pagar com cartão / Pix / boleto"}
+                      : "Prosseguir com o pagamento"}
                   </button>
                   <button
                     type="button"

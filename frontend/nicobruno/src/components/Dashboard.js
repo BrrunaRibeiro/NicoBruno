@@ -1,3 +1,4 @@
+// Dashboard.js
 import React, {
   useState,
   useEffect,
@@ -33,9 +34,16 @@ const Dashboard = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState("");
 
+  // ---- PIX COPY FEEDBACK ----
+  const [pixCopied, setPixCopied] = useState(false);
+
   // ---- MUSIC STATE ----
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
+
+  // ---- PAGE LOADER (images preloading) ----
+  const [pageReady, setPageReady] = useState(false);
+  const [loadProgress, setLoadProgress] = useState({ done: 0, total: 0 });
 
   // order of sections
   const sections = useMemo(
@@ -100,6 +108,30 @@ const Dashboard = () => {
     }
   };
 
+  // ---- COPY PIX KEY + 1.5s FEEDBACK ----
+  const copyPixKey = async () => {
+    const pixKey = "41999754987";
+
+    try {
+      await navigator.clipboard.writeText(pixKey);
+    } catch (err) {
+      // Fallback (older browsers / permission issues)
+      const textarea = document.createElement("textarea");
+      textarea.value = pixKey;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+
+    // UI feedback (1.5s)
+    setCheckoutMessage(""); // avoid mixing messages
+    setPixCopied(true);
+    setTimeout(() => setPixCopied(false), 1500);
+  };
+
   useEffect(() => {
     if (submitted && redirectCountdown > 0) {
       const timer = setTimeout(() => {
@@ -141,67 +173,339 @@ const Dashboard = () => {
     );
   };
 
-  // -------- GIFTS CATALOG --------
-  // -------- GIFTS CATALOG --------
-  const giftCatalog = [
-    { id: "pao_de_queijo_aeroporto", title: "Pão de queijo no aeroporto (kkk)", price: 189.8, imageUrl: `${process.env.PUBLIC_URL}/1.jpg` },
-    { id: "garanta_novos_filhos", title: "Garanta novos filhos para os pais de planta", price: 289.2, imageUrl: `${process.env.PUBLIC_URL}/2.jpg` },
-    {
-      id: "prioridade_quarto_visitas",
-      title: "Prioridade p/ dormir no quarto de visitas do casal (aproveita que só tem 1)",
-      price: 319.0,
-      imageUrl: `${process.env.PUBLIC_URL}/3.jpg`,
-    },
-    { id: "taxa_buque", title: "Taxa pra noiva não jogar o buquê pra sua namorada", price: 355.82, imageUrl: `${process.env.PUBLIC_URL}/4.jpg` },
-    { id: "alexa", title: "ALEXA (para ter mais alguém para mandar)", price: 382.0, imageUrl: `${process.env.PUBLIC_URL}/5.jpg` },
-    { id: "um_ano_barba", title: "Um ano de barba feita para o noivo", price: 408.0, imageUrl: `${process.env.PUBLIC_URL}/6.jpg` },
-    { id: "ajuda_dolar_viagem", title: "Ajuda para o casal comprar dólar para a viagem", price: 661.63, imageUrl: `${process.env.PUBLIC_URL}/7.jpg` },
-    { id: "passagem_trem", title: "Passagem de trem entre países", price: 768.0, imageUrl: `${process.env.PUBLIC_URL}/8.jpg` },
-    { id: "ajuda_pets", title: "Ajuda para custear os MUITOS pets do casal", price: 928.0, imageUrl: `${process.env.PUBLIC_URL}/9.jpg` },
-    { id: "hotel_5_estrelas_lua_de_mel", title: "Contribuição para um hotel 5 estrelas na lua de mel", price: 972.64, imageUrl: `${process.env.PUBLIC_URL}/10.jpg` },
-    { id: "ajuda_mobiliar_casa", title: "Ajuda para mobiliar a casa", price: 1300.0, imageUrl: `${process.env.PUBLIC_URL}/11.jpg` },
-    { id: "ajuda_motorhome", title: "Ajuda para o casal sonhar com o motor home", price: 1410.05, imageUrl: `${process.env.PUBLIC_URL}/12.avif` },
-    { id: "adote_um_boleto", title: "Adote um boleto", price: 1530.0, imageUrl: `${process.env.PUBLIC_URL}/13.jpg` },
-    { id: "passeio_balao", title: "Passeio de balão para o casal", price: 1650.0, imageUrl: `${process.env.PUBLIC_URL}/14.jpg` },
-    { id: "um_dia_spa", title: "Um dia no spa para o casal", price: 1760.0, imageUrl: `${process.env.PUBLIC_URL}/15.jpg` },
-    { id: "upgrades_fiji", title: "Dois upgrades nas passagens aéreas para ilhas Fiji", price: 2700.0, imageUrl: `${process.env.PUBLIC_URL}/16.jpg` },
-    { id: "chale_montanhas", title: "Hospedagem em um chalé nas montanhas", price: 3630.0, imageUrl: `${process.env.PUBLIC_URL}/17.jpeg` },
-    { id: "upgrade_primeira_classe", title: "UPGRADE primeira classe", price: 4420.0, imageUrl: `${process.env.PUBLIC_URL}/18.jpeg` },
-    { id: "patrocine_lua_de_mel", title: "Patrocine a lua de mel dos noivos", price: 5406.72, imageUrl: `${process.env.PUBLIC_URL}/19.jpg` },
-    { id: "ir_junto_lua_de_mel", title: "Poder ir junto com os noivos para a lua de mel", price: 6687.84, imageUrl: `${process.env.PUBLIC_URL}/20.jpg` },
-    { id: "controles_video_game", title: "2 controles de video game para não ter briga", price: 726.94, imageUrl: `${process.env.PUBLIC_URL}/21.jpg` },
-    { id: "ajuda_financeira_futuro", title: "Ajuda financeira para o futuro do casal", price: 508.46, imageUrl: `${process.env.PUBLIC_URL}/22.jpg` },
+  // -------- GIFTS CATALOG (memoized) --------
+  const giftCatalog = useMemo(
+    () => [
+      {
+        id: "pao_de_queijo_aeroporto",
+        title: "Pão de queijo no aeroporto (kkk)",
+        price: 189.8,
+        imageUrl: `${process.env.PUBLIC_URL}/1.jpg`,
+      },
+      {
+        id: "garanta_novos_filhos",
+        title: "Garanta novos filhos para os pais de planta",
+        price: 289.2,
+        imageUrl: `${process.env.PUBLIC_URL}/2.jpg`,
+      },
+      {
+        id: "prioridade_quarto_visitas",
+        title:
+          "Prioridade p/ dormir no quarto de visitas do casal (aproveita que só tem 1)",
+        price: 319.0,
+        imageUrl: `${process.env.PUBLIC_URL}/3.jpg`,
+      },
+      {
+        id: "taxa_buque",
+        title: "Taxa pra noiva não jogar o buquê pra sua namorada",
+        price: 355.82,
+        imageUrl: `${process.env.PUBLIC_URL}/4.jpg`,
+      },
+      {
+        id: "alexa",
+        title: "ALEXA (para ter mais alguém para mandar)",
+        price: 382.0,
+        imageUrl: `${process.env.PUBLIC_URL}/5.jpg`,
+      },
+      {
+        id: "um_ano_barba",
+        title: "Um ano de barba feita para o noivo",
+        price: 408.0,
+        imageUrl: `${process.env.PUBLIC_URL}/6.jpg`,
+      },
+      {
+        id: "ajuda_dolar_viagem",
+        title: "Ajuda para o casal comprar dólar para a viagem",
+        price: 661.63,
+        imageUrl: `${process.env.PUBLIC_URL}/7.jpg`,
+      },
+      {
+        id: "passagem_trem",
+        title: "Passagem de trem entre países",
+        price: 768.0,
+        imageUrl: `${process.env.PUBLIC_URL}/8.jpg`,
+      },
+      {
+        id: "ajuda_pets",
+        title: "Ajuda para custear os MUITOS pets do casal",
+        price: 928.0,
+        imageUrl: `${process.env.PUBLIC_URL}/9.jpg`,
+      },
+      {
+        id: "hotel_5_estrelas_lua_de_mel",
+        title: "Contribuição para um hotel 5 estrelas na lua de mel",
+        price: 972.64,
+        imageUrl: `${process.env.PUBLIC_URL}/10.jpg`,
+      },
+      {
+        id: "ajuda_mobiliar_casa",
+        title: "Ajuda para mobiliar a casa",
+        price: 1300.0,
+        imageUrl: `${process.env.PUBLIC_URL}/11.jpg`,
+      },
+      {
+        id: "ajuda_motorhome",
+        title: "Ajuda para o casal sonhar com o motor home",
+        price: 1410.05,
+        imageUrl: `${process.env.PUBLIC_URL}/12.avif`,
+      },
+      {
+        id: "adote_um_boleto",
+        title: "Adote um boleto",
+        price: 1530.0,
+        imageUrl: `${process.env.PUBLIC_URL}/13.jpg`,
+      },
+      {
+        id: "passeio_balao",
+        title: "Passeio de balão para o casal",
+        price: 1650.0,
+        imageUrl: `${process.env.PUBLIC_URL}/14.jpg`,
+      },
+      {
+        id: "um_dia_spa",
+        title: "Um dia no spa para o casal",
+        price: 1760.0,
+        imageUrl: `${process.env.PUBLIC_URL}/15.jpg`,
+      },
+      {
+        id: "upgrades_fiji",
+        title: "Dois upgrades nas passagens aéreas para ilhas Fiji",
+        price: 2700.0,
+        imageUrl: `${process.env.PUBLIC_URL}/16.jpg`,
+      },
+      {
+        id: "chale_montanhas",
+        title: "Hospedagem em um chalé nas montanhas",
+        price: 3630.0,
+        imageUrl: `${process.env.PUBLIC_URL}/17.jpeg`,
+      },
+      {
+        id: "upgrade_primeira_classe",
+        title: "UPGRADE primeira classe",
+        price: 4420.0,
+        imageUrl: `${process.env.PUBLIC_URL}/18.jpeg`,
+      },
+      {
+        id: "patrocine_lua_de_mel",
+        title: "Patrocine a lua de mel dos noivos",
+        price: 5406.72,
+        imageUrl: `${process.env.PUBLIC_URL}/19.jpg`,
+      },
+      {
+        id: "ir_junto_lua_de_mel",
+        title: "Poder ir junto com os noivos para a lua de mel",
+        price: 6687.84,
+        imageUrl: `${process.env.PUBLIC_URL}/20.jpg`,
+      },
+      {
+        id: "controles_video_game",
+        title: "2 controles de video game para não ter briga",
+        price: 726.94,
+        imageUrl: `${process.env.PUBLIC_URL}/21.jpg`,
+      },
+      {
+        id: "ajuda_financeira_futuro",
+        title: "Ajuda financeira para o futuro do casal",
+        price: 508.46,
+        imageUrl: `${process.env.PUBLIC_URL}/22.jpg`,
+      },
 
-    // ✅ this one reuses photo 11 (as you said)
-    { id: "ajuda_mobiliar_casa_500", title: "Ajuda para mobiliar a casa", price: 569.70, imageUrl: `${process.env.PUBLIC_URL}/11.jpg` },
+      // ✅ this one reuses photo 11 (as you said)
+      {
+        id: "ajuda_mobiliar_casa_500",
+        title: "Ajuda para mobiliar a casa",
+        price: 569.7,
+        imageUrl: `${process.env.PUBLIC_URL}/11.jpg`,
+      },
 
-    // (no 23.jpg in your folder, so we continue at 24.jpg)
-    { id: "ajuda_euro_viagem", title: "Ajuda. para os noivos comprarem euro pra viagem", price: 611.63, imageUrl: `${process.env.PUBLIC_URL}/24.jpg` },
-    { id: "aulas_meditacao", title: "Aulas de meditação", price: 451.52, imageUrl: `${process.env.PUBLIC_URL}/25.jpg` },
-    { id: "belas_obras_arte", title: "Belas obras de arte para decorar a casa", price: 486.63, imageUrl: `${process.env.PUBLIC_URL}/26.jpg` },
-    { id: "cafeteira_eletrica", title: "Cafeteira elétrica p/ acordar c/ cheiro de café(ajude a sustentar o vicio)", price: 775.51, imageUrl: `${process.env.PUBLIC_URL}/27.jpg` },
-    { id: "churrasqueira_legumes", title: "Churrasqueira para legumes dos vegetarianos", price: 993.70, imageUrl: `${process.env.PUBLIC_URL}/28.jpg` },
-    { id: "compra_euro_viagem", title: "Compra de euro para a viagem", price: 827.93, imageUrl: `${process.env.PUBLIC_URL}/29.jpg` },
-    { id: "contribuicao_reforma_casa", title: "Contribuição para a reforma da casa", price: 854.55, imageUrl: `${process.env.PUBLIC_URL}/30.jpg` },
-    { id: "coral_aleluia", title: "Coral pra cantar \"Aleluia\" na entrada do noivo", price: 689.34, imageUrl: `${process.env.PUBLIC_URL}/31.jpg` },
-    { id: "cota_restaurantes_luxo", title: "Cota para garantir restaurantes de luxo na viagem", price: 656.29, imageUrl: `${process.env.PUBLIC_URL}/32.jpg` },
-    { id: "jantar_primeiro_mes", title: "Garanta o jantar durante o 1° mês de casados", price: 797.58, imageUrl: `${process.env.PUBLIC_URL}/33.jpg` },
-    { id: "hospedagem_3_noites", title: "Hospedagem para 3 noites", price: 1333.86, imageUrl: `${process.env.PUBLIC_URL}/34.jpg` },
-    { id: "hospedagem_5_noites", title: "Hospedagem para 5 noites", price: 4001.58, imageUrl: `${process.env.PUBLIC_URL}/35.jpg` },
-    { id: "incentivo_balada", title: "incentivo para noivos voltarem a frequentar balada", price: 953.20, imageUrl: `${process.env.PUBLIC_URL}/36.jpg` },
-    { id: "lava_loucas_inox", title: "Lava Louças em Inox (PARA AJUDAR O NOIVO)", price: 4715.80, imageUrl: `${process.env.PUBLIC_URL}/37.jpg` },
-    { id: "passagem_aerea_1848", title: "Passagem aérea", price: 2240.85, imageUrl: `${process.env.PUBLIC_URL}/38.jpg` },
-    { id: "passagem_aerea_2200", title: "Passagem aérea", price: 2670.72, imageUrl: `${process.env.PUBLIC_URL}/39.jpg` },
-    { id: "observacao_aves_exoticas", title: "Passeio para observação de aves exóticas", price: 269.72, imageUrl: `${process.env.PUBLIC_URL}/40.jpg` },
-    { id: "patrocinio_lua_de_mel_2420", title: "Patrocinio da lua de mel do casal", price: 2934.49, imageUrl: `${process.env.PUBLIC_URL}/41.jpg` },
-    { id: "piscina_mor_splash_fun", title: "Piscina Mor Splash Fun", price: 3131.31, imageUrl: `${process.env.PUBLIC_URL}/42.jpg` },
-    { id: "prioridade_quarto_visita_684", title: "Prioridade no quarto de visita na casa dos noivos", price: 779.35, imageUrl: `${process.env.PUBLIC_URL}/43.jpg` },
-    { id: "quadro_picasso", title: "Quadro basico de Picasso", price: 344.38, imageUrl: `${process.env.PUBLIC_URL}/44.jpg` },
-    { id: "sessao_compras_relaxante", title: "Sessão relaxante de compras para o casal", price: 793.02, imageUrl: `${process.env.PUBLIC_URL}/45.jpg` },
-    { id: "trilha_com_guia", title: "Trilha com um guia", price: 632.15, imageUrl: `${process.env.PUBLIC_URL}/46.jpg` },
-    { id: "visita_ilha_casal", title: "Visita a uma ilha para o casal", price: 1467.25, imageUrl: `${process.env.PUBLIC_URL}/47.jpg` }
-  ];
+      // (no 23.jpg in your folder, so we continue at 24.jpg)
+      {
+        id: "ajuda_euro_viagem",
+        title: "Ajuda. para os noivos comprarem euro pra viagem",
+        price: 611.63,
+        imageUrl: `${process.env.PUBLIC_URL}/24.jpg`,
+      },
+      {
+        id: "aulas_meditacao",
+        title: "Aulas de meditação",
+        price: 451.52,
+        imageUrl: `${process.env.PUBLIC_URL}/25.jpg`,
+      },
+      {
+        id: "belas_obras_arte",
+        title: "Belas obras de arte para decorar a casa",
+        price: 486.63,
+        imageUrl: `${process.env.PUBLIC_URL}/26.jpg`,
+      },
+      {
+        id: "cafeteira_eletrica",
+        title:
+          "Cafeteira elétrica p/ acordar c/ cheiro de café(ajude a sustentar o vicio)",
+        price: 775.51,
+        imageUrl: `${process.env.PUBLIC_URL}/27.jpg`,
+      },
+      {
+        id: "churrasqueira_legumes",
+        title: "Churrasqueira para legumes dos vegetarianos",
+        price: 993.7,
+        imageUrl: `${process.env.PUBLIC_URL}/28.jpg`,
+      },
+      {
+        id: "compra_euro_viagem",
+        title: "Compra de euro para a viagem",
+        price: 827.93,
+        imageUrl: `${process.env.PUBLIC_URL}/29.jpg`,
+      },
+      {
+        id: "contribuicao_reforma_casa",
+        title: "Contribuição para a reforma da casa",
+        price: 854.55,
+        imageUrl: `${process.env.PUBLIC_URL}/30.jpg`,
+      },
+      {
+        id: "coral_aleluia",
+        title: 'Coral pra cantar "Aleluia" na entrada do noivo',
+        price: 689.34,
+        imageUrl: `${process.env.PUBLIC_URL}/31.jpg`,
+      },
+      {
+        id: "cota_restaurantes_luxo",
+        title: "Cota para garantir restaurantes de luxo na viagem",
+        price: 656.29,
+        imageUrl: `${process.env.PUBLIC_URL}/32.jpg`,
+      },
+      {
+        id: "jantar_primeiro_mes",
+        title: "Garanta o jantar durante o 1° mês de casados",
+        price: 797.58,
+        imageUrl: `${process.env.PUBLIC_URL}/33.jpg`,
+      },
+      {
+        id: "hospedagem_3_noites",
+        title: "Hospedagem para 3 noites",
+        price: 1333.86,
+        imageUrl: `${process.env.PUBLIC_URL}/34.jpg`,
+      },
+      {
+        id: "hospedagem_5_noites",
+        title: "Hospedagem para 5 noites",
+        price: 4001.58,
+        imageUrl: `${process.env.PUBLIC_URL}/35.jpg`,
+      },
+      {
+        id: "incentivo_balada",
+        title: "incentivo para noivos voltarem a frequentar balada",
+        price: 953.2,
+        imageUrl: `${process.env.PUBLIC_URL}/36.jpg`,
+      },
+      {
+        id: "lava_loucas_inox",
+        title: "Lava Louças em Inox (PARA AJUDAR O NOIVO)",
+        price: 4715.8,
+        imageUrl: `${process.env.PUBLIC_URL}/37.jpg`,
+      },
+      {
+        id: "passagem_aerea_1848",
+        title: "Passagem aérea",
+        price: 2240.85,
+        imageUrl: `${process.env.PUBLIC_URL}/38.jpg`,
+      },
+      {
+        id: "passagem_aerea_2200",
+        title: "Passagem aérea",
+        price: 2670.72,
+        imageUrl: `${process.env.PUBLIC_URL}/39.jpg`,
+      },
+      {
+        id: "observacao_aves_exoticas",
+        title: "Passeio para observação de aves exóticas",
+        price: 269.72,
+        imageUrl: `${process.env.PUBLIC_URL}/40.jpg`,
+      },
+      {
+        id: "patrocinio_lua_de_mel_2420",
+        title: "Patrocinio da lua de mel do casal",
+        price: 2934.49,
+        imageUrl: `${process.env.PUBLIC_URL}/41.jpg`,
+      },
+      {
+        id: "piscina_mor_splash_fun",
+        title: "Piscina Mor Splash Fun",
+        price: 3131.31,
+        imageUrl: `${process.env.PUBLIC_URL}/42.jpg`,
+      },
+      {
+        id: "prioridade_quarto_visita_684",
+        title: "Prioridade no quarto de visita na casa dos noivos",
+        price: 779.35,
+        imageUrl: `${process.env.PUBLIC_URL}/43.jpg`,
+      },
+      {
+        id: "quadro_picasso",
+        title: "Quadro basico de Picasso",
+        price: 344.38,
+        imageUrl: `${process.env.PUBLIC_URL}/44.jpg`,
+      },
+      {
+        id: "sessao_compras_relaxante",
+        title: "Sessão relaxante de compras para o casal",
+        price: 793.02,
+        imageUrl: `${process.env.PUBLIC_URL}/45.jpg`,
+      },
+      {
+        id: "trilha_com_guia",
+        title: "Trilha com um guia",
+        price: 632.15,
+        imageUrl: `${process.env.PUBLIC_URL}/46.jpg`,
+      },
+      {
+        id: "visita_ilha_casal",
+        title: "Visita a uma ilha para o casal",
+        price: 1467.25,
+        imageUrl: `${process.env.PUBLIC_URL}/47.jpg`,
+      },
+    ],
+    []
+  );
 
+  // ---- PRELOAD IMAGES THEN SHOW PAGE ----
+  useEffect(() => {
+    let cancelled = false;
+
+    const urls = [
+      `${process.env.PUBLIC_URL}/sunset-nicobruno.webp`,
+      ...giftCatalog.map((g) => g.imageUrl).filter(Boolean),
+    ];
+
+    setLoadProgress({ done: 0, total: urls.length });
+    setPageReady(false);
+
+    const preloadImage = (src) =>
+      new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          if (!cancelled) {
+            setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
+          }
+          resolve(true);
+        };
+        img.onerror = () => {
+          if (!cancelled) {
+            setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
+          }
+          resolve(false);
+        };
+        img.src = src;
+      });
+
+    Promise.all(urls.map(preloadImage)).then(() => {
+      if (!cancelled) setPageReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [giftCatalog]);
 
   // ---- CART HELPERS ----
   const addToCart = (gift) => {
@@ -243,7 +547,6 @@ const Dashboard = () => {
     (sum, item) => sum + item.quantity,
     0
   );
-
 
   // ---- MUSIC TOGGLE ----
   const toggleMusic = () => {
@@ -316,6 +619,18 @@ const Dashboard = () => {
     }
   };
 
+  // ---- LOADER OVERLAY (before rendering page) ----
+  if (!pageReady) {
+    return (
+      <div className="page-loader">
+        <div className="page-loader-card">
+          <div className="spinner" />
+          <h3>Carregando...</h3>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <NavBar
@@ -331,11 +646,10 @@ const Dashboard = () => {
       {/* Background music – put your mp3 in /public/audio/ */}
       <audio
         ref={audioRef}
-        src="/audio/wedding-nicobrunosong.mp3"   // ⬅ only this!
+        src="/audio/wedding-nicobrunosong.mp3" // ⬅ only this!
         preload="auto"
         loop
       />
-
 
       {/* Floating music toggle button */}
       <button
@@ -364,6 +678,8 @@ const Dashboard = () => {
               src="/sunset-nicobruno.webp"
               alt="Nicole & Bruno"
               id="sidephoto"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
@@ -409,16 +725,16 @@ const Dashboard = () => {
             <ReactTyped
               strings={[
                 "<h3>Família e amigos queridos,</h3>" +
-                "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-                "<br><br>" +
-                "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-                "<br>" +
-                "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-                "<br><br>" +
-                "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-                "<br><br>" +
-                "Com carinho," +
-                "<p id='signature'> ^400 Nicole e Bruno.</p",
+                  "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+                  "<br><br>" +
+                  "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+                  "<br>" +
+                  "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+                  "<br><br>" +
+                  "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+                  "<br><br>" +
+                  "Com carinho," +
+                  "<p id='signature'> ^400 Nicole e Bruno.</p",
               ]}
               typeSpeed={20}
               backSpeed={0}
@@ -427,12 +743,13 @@ const Dashboard = () => {
             />
           </div>
           {/* Right Column: Map, address, dress code */}
-          <div className="info-details"
+          <div
+            className="info-details"
             style={{
               flex: "1 1 400px",
               opacity: 0,
               animation: "fadeIn 1s ease-in forwards",
-              animationDelay: "24.5s",
+              animationDelay: "20.0s",
             }}
           >
             <h2>Cerimônia &amp; Recepção</h2>
@@ -547,8 +864,7 @@ const Dashboard = () => {
             </p>
             <small>
               Você será redirecionado para a página de{" "}
-              <a href="/Presentes">Presentes</a> em {redirectCountdown}{" "}
-              segundos...
+              <a href="/Presentes">Presentes</a> em {redirectCountdown} segundos...
             </small>
           </div>
         ) : (
@@ -562,16 +878,18 @@ const Dashboard = () => {
               <div className="toggle-group">
                 <button
                   type="button"
-                  className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
-                    }`}
+                  className={`toggle-option sim ${
+                    vaiVir === "yes" ? "selected" : ""
+                  }`}
                   onClick={() => setVaiVir("yes")}
                 >
                   Sim
                 </button>
                 <button
                   type="button"
-                  className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
-                    }`}
+                  className={`toggle-option nao ${
+                    vaiVir === "no" ? "selected" : ""
+                  }`}
                   onClick={() => setVaiVir("no")}
                 >
                   Não
@@ -597,7 +915,7 @@ const Dashboard = () => {
                 <>
                   <input
                     type="number"
-                    placeholder="Número de acompanhantes (incluindo você)"
+                    placeholder="Número de adultos (incluindo você)"
                     required
                     value={acompanhantes}
                     onChange={(e) => setAcompanhantes(e.target.value)}
@@ -620,9 +938,7 @@ const Dashboard = () => {
               />
 
               <button type="submit" disabled={vaiVir === null || submitting}>
-                {isUpdating
-                  ? "Atualizar Confirmação"
-                  : "Enviar Confirmação"}
+                {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
               </button>
 
               {!isUpdating && (
@@ -704,9 +1020,9 @@ const Dashboard = () => {
         <h2>Lista de Presentes</h2>
         <p style={{ maxWidth: "720px", margin: "0 auto 1rem" }}>
           Se quiser nos presentear, fique à vontade para escolher um presente
-          abaixo. Você pode pagar diretamente aqui no site usando cartão,
-          boleto ou Pix via Mercado Pago. Se preferir, também deixamos nossa
-          chave Pix direta.
+          abaixo. Você pode pagar diretamente aqui no site usando cartão, boleto
+          ou Pix via Mercado Pago. Se preferir, também deixamos nossa chave Pix
+          direta.
         </p>
 
         {/* Pix direto */}
@@ -724,7 +1040,79 @@ const Dashboard = () => {
           <p style={{ marginBottom: "0.4rem" }}>
             Se você preferir, também pode nos presentear diretamente pelo Pix:
           </p>
-          <p style={{ fontWeight: "bold" }}>Chave Pix: 41999754987</p>
+
+          {/* Click-to-copy Pix */}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={copyPixKey}
+            onKeyDown={(e) =>
+              (e.key === "Enter" || e.key === " ") && copyPixKey()
+            }
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              userSelect: "none",
+              padding: "10px 12px",
+              borderRadius: "12px",
+              border: "1px solid rgba(0,0,0,0.12)",
+              background: "rgba(255,255,255,0.75)",
+            }}
+            aria-label="Clique para copiar a chave Pix"
+            title="Clique para copiar"
+          >
+            <span>Chave Pix: 41999754987</span>
+
+            {/* two-squares copy icon */}
+            <span
+              aria-hidden="true"
+              style={{ width: 18, height: 18, display: "inline-block" }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ display: "block" }}
+              >
+                <path
+                  d="M8 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2V7Z"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M6 17H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+
+            {/* 1.5s “✓ Copiado” feedback */}
+            {pixCopied && (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  color: "#2e7d32",
+                }}
+              >
+                <span>Copiado</span>
+                <span aria-hidden="true" style={{ fontSize: "1rem", lineHeight: 1 }}>
+                  ✓
+                </span>
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Gifts + Cart layout */}
@@ -772,11 +1160,12 @@ const Dashboard = () => {
                   }}
                 >
                   <div>
-                    {/* placeholder for future image */}
                     {gift.imageUrl && (
                       <img
                         src={gift.imageUrl}
                         alt={gift.title}
+                        loading="lazy"
+                        decoding="async"
                         style={{
                           width: "100%",
                           height: "140px",
@@ -802,10 +1191,7 @@ const Dashboard = () => {
                         fontSize: "0.95rem",
                       }}
                     >
-                      R${" "}
-                      {gift.price
-                        .toFixed(2)
-                        .replace(".", ",")}
+                      R$ {gift.price.toFixed(2).replace(".", ",")}
                     </p>
                   </div>
                   <button
@@ -843,7 +1229,8 @@ const Dashboard = () => {
             >
               {cartItems.length === 0 ? (
                 <p style={{ fontSize: "0.95rem" }}>
-                  Seu carrinho ainda está vazio. Escolha um presente para continuar..
+                  Seu carrinho ainda está vazio. Escolha um presente para
+                  continuar..
                 </p>
               ) : (
                 <>
@@ -869,12 +1256,7 @@ const Dashboard = () => {
                           <span style={{ fontSize: "0.93rem" }}>
                             {item.title}
                           </span>
-                          <div
-                            style={{
-                              fontSize: "0.8rem",
-                              color: "#777",
-                            }}
-                          >
+                          <div style={{ fontSize: "0.8rem", color: "#777" }}>
                             x{item.quantity}
                           </div>
                         </div>
@@ -912,10 +1294,7 @@ const Dashboard = () => {
                   </ul>
                   <hr />
                   <p style={{ fontWeight: "bold", marginTop: "0.6rem" }}>
-                    Total: R${" "}
-                    {cartTotal
-                      .toFixed(2)
-                      .replace(".", ",")}
+                    Total: R$ {cartTotal.toFixed(2).replace(".", ",")}
                   </p>
 
                   <button

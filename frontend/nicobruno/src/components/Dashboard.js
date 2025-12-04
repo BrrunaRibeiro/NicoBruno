@@ -830,7 +830,7 @@ const Dashboard = () => {
           </div>
 
           {/* Cart */}
-          <div style={{ flex: "1 1 280px" }}>
+          <div className="gift-cart-column" style={{ flex: "1 1 280px" }}>
             <h3 style={{ marginTop: 0 }}>Carrinho</h3>
             <div
               style={{

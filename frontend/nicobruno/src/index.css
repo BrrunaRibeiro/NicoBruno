@@ -624,6 +624,28 @@ h1 {
 
 /* ===================== RESPONSIVE BREAKPOINTS ===================== */
 
+/* Sticky cart only on screens > 769px */
+@media (min-width: 770px) {
+  .gift-cart-column {
+    position: sticky;
+    top: 110px; /* adjust if needed (navbar height) */
+    align-self: flex-start;
+    max-height: calc(100vh - 130px);
+    overflow: auto;
+    padding-bottom: 8px;
+  }
+}
+
+/* On smaller screens keep it normal */
+/* @media (max-width: 769px) {
+  .gift-cart-column {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+} */
+
+
 /* Tablet / laptop tweaks */
 @media (max-width: 1024px) {
   .menu {

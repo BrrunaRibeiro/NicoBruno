@@ -242,7 +242,6 @@ def confirmar_presenca():
         f"Olá {nome},\n\n"
         f"{'Estamos muito felizes com sua resposta!' if vai_vir else 'Obrigada por nos informar...'}\n\n"
         f"{'Obrigado por confirmar sua presença' if vai_vir else 'Sentiremos sua falta'} no nosso casamento! 💍\n\n"
-        f"Caso queira deixar-nos um presente, acesse:\n{SITE_URL}#presentes\n\n"
         "Com carinho,\nNicole & Bruno ✨"
     )
 

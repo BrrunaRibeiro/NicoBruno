@@ -495,7 +495,7 @@ const Dashboard = () => {
               flex: "1 1 400px",
               opacity: 0,
               animation: "fadeIn 1s ease-in forwards",
-              animationDelay: "34.5s",
+              animationDelay: "24.5s",
             }}
           >
             <h2>Cerimônia &amp; Recepção</h2>

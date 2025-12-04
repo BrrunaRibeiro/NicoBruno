@@ -1,7 +1,7 @@
 import os
 import csv
-from io import StringIO   # NEW
-from flask import Flask, request, jsonify, Response  # Response added
+from io import StringIO   # still imported (used earlier if needed)
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -43,7 +43,7 @@ GROOMS_EMAILS = [
 CSV_FILE = "backend/rsvp_list.csv"
 
 
-# ========== HELPERS PARA LER EMAIL DO CSV ==========
+# ========== HELPER: DESCOBRIR COLUNA DE EMAIL ==========
 
 def get_row_email(row):
     """
@@ -72,7 +72,7 @@ def get_row_email(row):
     return str(cell).strip().lower()
 
 
-# ========== FUNÇÃO DE ENVIO (AGORA COM SENDGRID) ==========
+# ========== FUNÇÃO DE ENVIO (SENDGRID) ==========
 
 def enviar_email(destinatarios, assunto, corpo):
     """Envia e-mail usando SendGrid. Se a API key não estiver configurada,
@@ -126,12 +126,10 @@ def get_rsvp():
 
     row = latest[email]
 
-    # Para o campo "email" devolvemos o próprio e-mail normalizado (email da query),
-    # assim não dependemos do nome exato da coluna no CSV.
     return jsonify({
         "existe": True,
         "nome": row.get("Nome", ""),
-        "email": email,
+        "email": email,  # normalizado
         "acompanhantes": row.get("Acompanhantes", ""),
         "criancas": row.get("Criancas", ""),
         "mensagem": row.get("Mensagem", ""),
@@ -257,15 +255,15 @@ def confirmar_presenca():
     return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"}), 200
 
 
-# ========== NOVO: EXPORTAR RSVPs (APENAS ADMIN) ==========
+# ========== EXPORTAR RSVPs (APENAS ADMIN) – STREAM DO ARQUIVO REAL ==========
 
 @app.route("/api/admin/rsvp-export", methods=["GET"])
 def rsvp_export():
     """
-    Exporta a lista de RSVPs como CSV.
+    Exporta a lista de RSVPs exatamente como está no arquivo CSV do servidor.
 
     Protegido por token simples: ?token=Admin7849
-    (na produção usaremos o valor de ADMIN_TOKEN).
+    (na produção usamos o valor de ADMIN_TOKEN).
     """
     token = request.args.get("token", "")
 
@@ -275,34 +273,10 @@ def rsvp_export():
     if not os.path.exists(CSV_FILE):
         return jsonify({"erro": "Ainda não há RSVPs salvos."}), 404
 
-    # Lê o CSV e mantém apenas a última linha por email (igual ao resto do código)
-    latest = {}
     with open(CSV_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            row_email = get_row_email(row)
-            if not row_email:
-                continue
-            latest[row_email] = row
+        csv_data = f.read()
 
-    # Gera um CSV em memória
-    output = StringIO()
-    fieldnames = ["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"]
-    writer = csv.DictWriter(output, fieldnames=fieldnames)
-    writer.writeheader()
-
-    for row in latest.values():
-        writer.writerow({
-            "Nome": row.get("Nome", ""),
-            # aqui usamos row.get("Email", "") pois o CSV de saída SEMPRE terá coluna "Email"
-            "Email": row.get("Email", ""),
-            "Acompanhantes": row.get("Acompanhantes", ""),
-            "Criancas": row.get("Criancas", ""),
-            "Mensagem": row.get("Mensagem", ""),
-            "Vai Vir": row.get("Vai Vir", ""),
-        })
-
-    csv_data = output.getvalue()
+    print(f"[RSVP_EXPORT] Enviando {len(csv_data)} bytes de {CSV_FILE}")
 
     return Response(
         csv_data,
@@ -386,11 +360,10 @@ def criar_preferencia_checkout():
         print("Erro ao criar preferência no Mercado Pago (exception):", e)
         return jsonify({"erro": "Erro ao criar preferência de pagamento."}), 500
 
-    # result geralmente tem: {"status": 201, "response": {...}}
     status_code = result.get("status")
     response = result.get("response", {}) or {}
 
-    print("[MP preference.create result]", result)  # log completo no console
+    print("[MP preference.create result]", result)
 
     init_point = response.get("init_point") or response.get("sandbox_init_point")
     preference_id = response.get("id")
@@ -418,6 +391,6 @@ def criar_preferencia_checkout():
 # ========== RODAR SERVIDOR ==========
 
 if __name__ == "__main__":
-  print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
-  print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
-  app.run(debug=True)
+    print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
+    print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
+    app.run(debug=True)

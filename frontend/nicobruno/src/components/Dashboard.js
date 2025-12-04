@@ -483,7 +483,7 @@ const Dashboard = () => {
                 "Com carinho," +
                 "<p id='signature'> ^400 Nicole e Bruno.</p",
               ]}
-              typeSpeed={35}
+              typeSpeed={20}
               backSpeed={0}
               showCursor={false}
               loop={false}

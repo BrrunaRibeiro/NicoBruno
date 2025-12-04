@@ -1,6 +1,6 @@
 import os
 import csv
-from io import StringIO   # still imported (used earlier if needed)
+from io import StringIO  # still imported (used earlier if needed)
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -41,6 +41,97 @@ GROOMS_EMAILS = [
 ]
 
 CSV_FILE = "backend/rsvp_list.csv"
+CSV_HEADERS = ["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"]
+
+
+# ========== CSV HELPERS (FIX HEADERLESS CSV + SAFE READ) ==========
+
+def _normalize_header(row):
+    return [str(x).strip().lower() for x in (row or [])]
+
+
+def ensure_csv_file():
+    """
+    Ensures:
+    - backend/ folder exists
+    - CSV exists
+    - CSV has the correct header row
+    If the file exists but is missing header, it will be repaired by prepending the header.
+    """
+    os.makedirs("backend", exist_ok=True)
+
+    if not os.path.exists(CSV_FILE):
+        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(CSV_HEADERS)
+        return
+
+    # If file exists but is empty -> write header
+    try:
+        if os.path.getsize(CSV_FILE) == 0:
+            with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(CSV_HEADERS)
+            return
+    except OSError:
+        # If we can't stat for some reason, just continue
+        pass
+
+    # Check first row to see if it's a header
+    with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
+        reader = csv.reader(f)
+        first_row = next(reader, None)
+
+    if not first_row:
+        # no rows -> write header
+        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(CSV_HEADERS)
+        return
+
+    # If the first row doesn't look like our headers, we repair it
+    if _normalize_header(first_row) != _normalize_header(CSV_HEADERS):
+        # Read all existing rows as raw (including the current first row)
+        with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
+            all_rows = list(csv.reader(f))
+
+        # Rewrite with header + existing rows
+        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(CSV_HEADERS)
+            for r in all_rows:
+                if r:  # skip empty lines
+                    writer.writerow(r)
+
+
+def read_rows_as_dicts():
+    """
+    Returns rows as list[dict] even if the CSV is missing a header.
+    This uses ensure_csv_file() which also repairs the file if needed.
+    """
+    ensure_csv_file()
+
+    with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
+        reader = csv.reader(f)
+        rows = [r for r in reader if r]  # remove empty rows
+
+    if not rows:
+        return []
+
+    first = rows[0]
+    data_rows = rows[1:]
+
+    # If header matches, use DictReader properly
+    if _normalize_header(first) == _normalize_header(CSV_HEADERS):
+        with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
+            return list(csv.DictReader(f))
+
+    # Otherwise treat as headerless (should not happen after ensure_csv_file, but safe)
+    out = []
+    for r in rows:
+        padded = (r + [""] * len(CSV_HEADERS))[: len(CSV_HEADERS)]
+        out.append(dict(zip(CSV_HEADERS, padded)))
+    return out
 
 
 # ========== HELPER: DESCOBRIR COLUNA DE EMAIL ==========
@@ -113,13 +204,11 @@ def get_rsvp():
         return jsonify({"existe": False}), 200
 
     latest = {}
-    with open(CSV_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            row_email = get_row_email(row)
-            if not row_email:
-                continue
-            latest[row_email] = row
+    for row in read_rows_as_dicts():
+        row_email = get_row_email(row)
+        if not row_email:
+            continue
+        latest[row_email] = row
 
     if email not in latest:
         return jsonify({"existe": False}), 200
@@ -133,7 +222,7 @@ def get_rsvp():
         "acompanhantes": row.get("Acompanhantes", ""),
         "criancas": row.get("Criancas", ""),
         "mensagem": row.get("Mensagem", ""),
-        "vai_vir": str(row.get("Vai Vir", "")).lower() == "sim"
+        "vai_vir": str(row.get("Vai Vir", "")).strip().lower() == "sim"
     }), 200
 
 
@@ -153,26 +242,23 @@ def confirmar_presenca():
     if not nome or not email:
         return jsonify({"erro": "Nome e e-mail são obrigatórios"}), 400
 
-    # ========== CRIAR ARQUIVO SE NÃO EXISTE ==========
-    os.makedirs("backend", exist_ok=True)
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"])
+    # Ensure CSV exists + has header (repairs old/broken files)
+    ensure_csv_file()
 
     # ========== LER CONFIRMAÇÕES EXISTENTES ==========
     latest = {}
-    with open(CSV_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            row_email = get_row_email(row)
-            if not row_email:
-                continue
-            latest[row_email] = row
+    for row in read_rows_as_dicts():
+        row_email = get_row_email(row)
+        if not row_email:
+            continue
+        latest[row_email] = row
 
     # ========== CHECAR SE EMAIL EXISTE NO POST ==========
     if metodo == "POST" and email in latest:
         return jsonify({"erro": "Email já cadastrado", "code": 409}), 409
+
+    # Safety: if user sets 0 adults, they still count as 1 (themselves)
+    acompanhantes_display = acompanhantes if acompanhantes > 0 else 1
 
     # ========== ADICIONAR NOVA LINHA NO CSV ==========
     with open(CSV_FILE, "a", encoding="utf-8", newline="") as f:
@@ -181,13 +267,11 @@ def confirmar_presenca():
 
     # ========== RECRIAR LISTA FINAL ==========
     latest_confirmations = {}
-    with open(CSV_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            row_email = get_row_email(row)
-            if not row_email:
-                continue
-            latest_confirmations[row_email] = row
+    for row in read_rows_as_dicts():
+        row_email = get_row_email(row)
+        if not row_email:
+            continue
+        latest_confirmations[row_email] = row
 
     # ========== LISTA FINAL FORMATADA ==========
     lista_confirmados = []
@@ -196,12 +280,24 @@ def confirmar_presenca():
     for row in latest_confirmations.values():
         if str(row.get("Vai Vir", "")).strip().lower() == "sim":
             nome_c = row.get("Nome", "")
-            adultos = int(row.get("Acompanhantes", 0) or 0)
-            cri = int(row.get("Criancas", 0) or 0)
+
+            try:
+                adultos_raw = int(row.get("Acompanhantes", 0) or 0)
+            except (TypeError, ValueError):
+                adultos_raw = 0
+
+            try:
+                cri = int(row.get("Criancas", 0) or 0)
+            except (TypeError, ValueError):
+                cri = 0
+
+            # Always count at least the guest (1 adult)
+            adultos_total = adultos_raw if adultos_raw > 0 else 1
+            adicionais = max(adultos_total - 1, 0)
 
             partes = []
-            if adultos > 1:
-                partes.append(f"{adultos - 1} acompanhante(s) adulto")
+            if adicionais > 0:
+                partes.append(f"{adicionais} acompanhante(s) adulto")
             if cri > 0:
                 partes.append(f"{cri} acompanhante(s) infantil")
 
@@ -211,16 +307,16 @@ def confirmar_presenca():
                 descricao = f"💌 {nome_c}"
 
             lista_confirmados.append(descricao)
-            total_pessoas += adultos + cri
+            total_pessoas += adultos_total + cri
 
     # ========== EMAIL PARA OS NOIVOS ==========
     if vai_vir:
         if metodo == "PUT":
             assunto = "Alteração na confirmação 💡"
-            corpo = f"🔄 {nome} alterou sua confirmação e agora VAI comparecer com {acompanhantes} adulto(s) e {criancas} criança(s)."
+            corpo = f"🔄 {nome} alterou sua confirmação e agora VAI comparecer com {acompanhantes_display} adulto(s) e {criancas} criança(s)."
         else:
             assunto = "Nova Confirmação de Presença ✨"
-            corpo = f"🎉 YEYYY! {nome} confirmou presença com {acompanhantes} adulto(s) e {criancas} criança(s)!"
+            corpo = f"🎉 YEYYY! {nome} confirmou presença com {acompanhantes_display} adulto(s) e {criancas} criança(s)!"
     else:
         if metodo == "PUT":
             assunto = "Alteração de RSVP ❌"
@@ -272,14 +368,20 @@ def rsvp_export():
     if not os.path.exists(CSV_FILE):
         return jsonify({"erro": "Ainda não há RSVPs salvos."}), 404
 
+    # Ensure header exists before export (repairs broken file)
+    ensure_csv_file()
+
     with open(CSV_FILE, "r", encoding="utf-8") as f:
         csv_data = f.read()
+
+    # Excel-friendly: add BOM so "Não" doesn't become "NÃ£o"
+    csv_with_bom = "\ufeff" + csv_data
 
     print(f"[RSVP_EXPORT] Enviando {len(csv_data)} bytes de {CSV_FILE}")
 
     return Response(
-        csv_data,
-        mimetype="text/csv",
+        csv_with_bom,
+        mimetype="text/csv; charset=utf-8",
         headers={
             "Content-Disposition": "attachment; filename=rsvp_export.csv"
         },

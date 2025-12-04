@@ -142,129 +142,35 @@ const Dashboard = () => {
   };
 
   // -------- GIFTS CATALOG --------
+  // -------- GIFTS CATALOG --------
   const giftCatalog = [
-    {
-      id: "pao_de_queijo_aeroporto",
-      title: "Pão de queijo no aeroporto (kkk)",
-      price: 189.8,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "garanta_novos_filhos",
-      title: "Garanta novos filhos para os pais de planta",
-      price: 289.2,
-      imageUrl: "", // placeholder
-    },
+    { id: "pao_de_queijo_aeroporto", title: "Pão de queijo no aeroporto (kkk)", price: 189.8, imageUrl: `${process.env.PUBLIC_URL}/1.jpg` },
+    { id: "garanta_novos_filhos", title: "Garanta novos filhos para os pais de planta", price: 289.2, imageUrl: `${process.env.PUBLIC_URL}/2.jpg` },
     {
       id: "prioridade_quarto_visitas",
-      title:
-        "Prioridade p/ dormir no quarto de visitas do casal (aproveita que só tem 1)",
+      title: "Prioridade p/ dormir no quarto de visitas do casal (aproveita que só tem 1)",
       price: 319.0,
-      imageUrl: "", // placeholder
+      imageUrl: `${process.env.PUBLIC_URL}/3.jpg`,
     },
-    {
-      id: "taxa_buque",
-      title: "Taxa pra noiva não jogar o buquê pra sua namorada",
-      price: 355.82,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "alexa",
-      title: "ALEXA (para ter mais alguém para mandar)",
-      price: 382.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "um_ano_barba",
-      title: "Um ano de barba feita para o noivo",
-      price: 408.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "ajuda_dolar_viagem",
-      title: "Ajuda para o casal comprar dólar para a viagem",
-      price: 661.63,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "passagem_trem",
-      title: "Passagem de trem entre países",
-      price: 768.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "ajuda_pets",
-      title: "Ajuda para custear os MUITOS pets do casal",
-      price: 928.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "hotel_5_estrelas_lua_de_mel",
-      title: "Contribuição para um hotel 5 estrelas na lua de mel",
-      price: 972.64,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "ajuda_mobiliar_casa",
-      title: "Ajuda para mobiliar a casa",
-      price: 1300.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "ajuda_motorhome",
-      title: "Ajuda para o casal sonhar com o motor home",
-      price: 1410.05,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "adote_um_boleto",
-      title: "Adote um boleto",
-      price: 1530.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "passeio_balao",
-      title: "Passeio de balão para o casal",
-      price: 1650.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "um_dia_spa",
-      title: "Um dia no spa para o casal",
-      price: 1760.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "upgrades_fiji",
-      title: "Dois upgrades nas passagens aéreas para ilhas Fiji",
-      price: 2700.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "chale_montanhas",
-      title: "Hospedagem em um chalé nas montanhas",
-      price: 3630.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "upgrade_primeira_classe",
-      title: "UPGRADE primeira classe",
-      price: 4420.0,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "patrocine_lua_de_mel",
-      title: "Patrocine a lua de mel dos noivos",
-      price: 5406.72,
-      imageUrl: "", // placeholder
-    },
-    {
-      id: "ir_junto_lua_de_mel",
-      title: "Poder ir junto com os noivos para a lua de mel",
-      price: 6687.84,
-      imageUrl: "", // placeholder
-    },
+    { id: "taxa_buque", title: "Taxa pra noiva não jogar o buquê pra sua namorada", price: 355.82, imageUrl: `${process.env.PUBLIC_URL}/4.jpg` },
+    { id: "alexa", title: "ALEXA (para ter mais alguém para mandar)", price: 382.0, imageUrl: `${process.env.PUBLIC_URL}/5.jpg` },
+    { id: "um_ano_barba", title: "Um ano de barba feita para o noivo", price: 408.0, imageUrl: `${process.env.PUBLIC_URL}/6.jpg` },
+    { id: "ajuda_dolar_viagem", title: "Ajuda para o casal comprar dólar para a viagem", price: 661.63, imageUrl: `${process.env.PUBLIC_URL}/7.jpg` },
+    { id: "passagem_trem", title: "Passagem de trem entre países", price: 768.0, imageUrl: `${process.env.PUBLIC_URL}/8.jpg` },
+    { id: "ajuda_pets", title: "Ajuda para custear os MUITOS pets do casal", price: 928.0, imageUrl: `${process.env.PUBLIC_URL}/9.jpg` },
+    { id: "hotel_5_estrelas_lua_de_mel", title: "Contribuição para um hotel 5 estrelas na lua de mel", price: 972.64, imageUrl: `${process.env.PUBLIC_URL}/10.jpg` },
+    { id: "ajuda_mobiliar_casa", title: "Ajuda para mobiliar a casa", price: 1300.0, imageUrl: `${process.env.PUBLIC_URL}/11.jpg` },
+    { id: "ajuda_motorhome", title: "Ajuda para o casal sonhar com o motor home", price: 1410.05, imageUrl: `${process.env.PUBLIC_URL}/12.avif` },
+    { id: "adote_um_boleto", title: "Adote um boleto", price: 1530.0, imageUrl: `${process.env.PUBLIC_URL}/13.jpg` },
+    { id: "passeio_balao", title: "Passeio de balão para o casal", price: 1650.0, imageUrl: `${process.env.PUBLIC_URL}/14.jpg` },
+    { id: "um_dia_spa", title: "Um dia no spa para o casal", price: 1760.0, imageUrl: `${process.env.PUBLIC_URL}/15.jpg` },
+    { id: "upgrades_fiji", title: "Dois upgrades nas passagens aéreas para ilhas Fiji", price: 2700.0, imageUrl: `${process.env.PUBLIC_URL}/16.jpg` },
+    { id: "chale_montanhas", title: "Hospedagem em um chalé nas montanhas", price: 3630.0, imageUrl: `${process.env.PUBLIC_URL}/17.jpeg` },
+    { id: "upgrade_primeira_classe", title: "UPGRADE primeira classe", price: 4420.0, imageUrl: `${process.env.PUBLIC_URL}/18.jpeg` },
+    { id: "patrocine_lua_de_mel", title: "Patrocine a lua de mel dos noivos", price: 5406.72, imageUrl: `${process.env.PUBLIC_URL}/19.jpg` },
+    { id: "ir_junto_lua_de_mel", title: "Poder ir junto com os noivos para a lua de mel", price: 6687.84, imageUrl: `${process.env.PUBLIC_URL}/20.jpg` },
   ];
+
 
   // ---- CART HELPERS ----
   const addToCart = (gift) => {

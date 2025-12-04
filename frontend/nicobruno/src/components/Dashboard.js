@@ -169,6 +169,37 @@ const Dashboard = () => {
     { id: "upgrade_primeira_classe", title: "UPGRADE primeira classe", price: 4420.0, imageUrl: `${process.env.PUBLIC_URL}/18.jpeg` },
     { id: "patrocine_lua_de_mel", title: "Patrocine a lua de mel dos noivos", price: 5406.72, imageUrl: `${process.env.PUBLIC_URL}/19.jpg` },
     { id: "ir_junto_lua_de_mel", title: "Poder ir junto com os noivos para a lua de mel", price: 6687.84, imageUrl: `${process.env.PUBLIC_URL}/20.jpg` },
+    { id: "controles_video_game", title: "2 controles de video game para não ter briga", price: 726.94, imageUrl: `${process.env.PUBLIC_URL}/21.jpg` },
+    { id: "ajuda_financeira_futuro", title: "Ajuda financeira para o futuro do casal", price: 508.46, imageUrl: `${process.env.PUBLIC_URL}/22.jpg` },
+
+    // ✅ this one reuses photo 11 (as you said)
+    { id: "ajuda_mobiliar_casa_500", title: "Ajuda para mobiliar a casa", price: 569.70, imageUrl: `${process.env.PUBLIC_URL}/11.jpg` },
+
+    // (no 23.jpg in your folder, so we continue at 24.jpg)
+    { id: "ajuda_euro_viagem", title: "Ajuda. para os noivos comprarem euro pra viagem", price: 611.63, imageUrl: `${process.env.PUBLIC_URL}/24.jpg` },
+    { id: "aulas_meditacao", title: "Aulas de meditação", price: 451.52, imageUrl: `${process.env.PUBLIC_URL}/25.jpg` },
+    { id: "belas_obras_arte", title: "Belas obras de arte para decorar a casa", price: 486.63, imageUrl: `${process.env.PUBLIC_URL}/26.jpg` },
+    { id: "cafeteira_eletrica", title: "Cafeteira elétrica p/ acordar c/ cheiro de café(ajude a sustentar o vicio)", price: 775.51, imageUrl: `${process.env.PUBLIC_URL}/27.jpg` },
+    { id: "churrasqueira_legumes", title: "Churrasqueira para legumes dos vegetarianos", price: 993.70, imageUrl: `${process.env.PUBLIC_URL}/28.jpg` },
+    { id: "compra_euro_viagem", title: "Compra de euro para a viagem", price: 827.93, imageUrl: `${process.env.PUBLIC_URL}/29.jpg` },
+    { id: "contribuicao_reforma_casa", title: "Contribuição para a reforma da casa", price: 854.55, imageUrl: `${process.env.PUBLIC_URL}/30.jpg` },
+    { id: "coral_aleluia", title: "Coral pra cantar \"Aleluia\" na entrada do noivo", price: 689.34, imageUrl: `${process.env.PUBLIC_URL}/31.jpg` },
+    { id: "cota_restaurantes_luxo", title: "Cota para garantir restaurantes de luxo na viagem", price: 656.29, imageUrl: `${process.env.PUBLIC_URL}/32.jpg` },
+    { id: "jantar_primeiro_mes", title: "Garanta o jantar durante o 1° mês de casados", price: 797.58, imageUrl: `${process.env.PUBLIC_URL}/33.jpg` },
+    { id: "hospedagem_3_noites", title: "Hospedagem para 3 noites", price: 1333.86, imageUrl: `${process.env.PUBLIC_URL}/34.jpg` },
+    { id: "hospedagem_5_noites", title: "Hospedagem para 5 noites", price: 4001.58, imageUrl: `${process.env.PUBLIC_URL}/35.jpg` },
+    { id: "incentivo_balada", title: "incentivo para noivos voltarem a frequentar balada", price: 953.20, imageUrl: `${process.env.PUBLIC_URL}/36.jpg` },
+    { id: "lava_loucas_inox", title: "Lava Louças em Inox (PARA AJUDAR O NOIVO)", price: 4715.80, imageUrl: `${process.env.PUBLIC_URL}/37.jpg` },
+    { id: "passagem_aerea_1848", title: "Passagem aérea", price: 2240.85, imageUrl: `${process.env.PUBLIC_URL}/38.jpg` },
+    { id: "passagem_aerea_2200", title: "Passagem aérea", price: 2670.72, imageUrl: `${process.env.PUBLIC_URL}/39.jpg` },
+    { id: "observacao_aves_exoticas", title: "Passeio para observação de aves exóticas", price: 269.72, imageUrl: `${process.env.PUBLIC_URL}/40.jpg` },
+    { id: "patrocinio_lua_de_mel_2420", title: "Patrocinio da lua de mel do casal", price: 2934.49, imageUrl: `${process.env.PUBLIC_URL}/41.jpg` },
+    { id: "piscina_mor_splash_fun", title: "Piscina Mor Splash Fun", price: 3131.31, imageUrl: `${process.env.PUBLIC_URL}/42.jpg` },
+    { id: "prioridade_quarto_visita_684", title: "Prioridade no quarto de visita na casa dos noivos", price: 779.35, imageUrl: `${process.env.PUBLIC_URL}/43.jpg` },
+    { id: "quadro_picasso", title: "Quadro basico de Picasso", price: 344.38, imageUrl: `${process.env.PUBLIC_URL}/44.jpg` },
+    { id: "sessao_compras_relaxante", title: "Sessão relaxante de compras para o casal", price: 793.02, imageUrl: `${process.env.PUBLIC_URL}/45.jpg` },
+    { id: "trilha_com_guia", title: "Trilha com um guia", price: 632.15, imageUrl: `${process.env.PUBLIC_URL}/46.jpg` },
+    { id: "visita_ilha_casal", title: "Visita a uma ilha para o casal", price: 1467.25, imageUrl: `${process.env.PUBLIC_URL}/47.jpg` }
   ];
 
 

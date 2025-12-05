@@ -1,7 +1,8 @@
 :root {
   --dark-green: #1f2e16ff;
   --floral-white: #f6f4ecff;
-  --drab-dark-brown: #40442eff;
+  /* --drab-dark-brown: #40442eff; */
+  --drab-dark-brown: #86895eff;
 }
 
 html {
@@ -938,7 +939,7 @@ h1 {
   border-radius: calc(18px * var(--invite-scale));
 
   /* slightly darker card */
-  background: rgba(214, 208, 190, 0.92);
+  background: rgba(216, 216, 216, 0.92);
   border: 1px solid rgba(31, 46, 22, 0.24);
 
   box-shadow:
@@ -956,7 +957,7 @@ h1 {
   border-radius: calc(14px * var(--invite-scale));
 
   /* slightly darker inner paper */
-  background: rgba(226, 220, 204, 0.78);
+  background: rgba(218, 218, 218, 0.78);
   border: 1px solid rgba(31, 46, 22, 0.16);
 
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);

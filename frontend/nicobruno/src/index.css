@@ -29,20 +29,32 @@ body {
 /* ===================== SECTIONS / LAYOUT ===================== */
 
 .section {
-  min-height: 100vh; /* keep full-page feeling, but allow taller content */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* center on Y axis */
   align-items: center;
-
-  /* navbar ≈ 58px → give 70px to have breathing room */
-  padding: 70px 20px 20px; /* top, right/left, bottom */
+  padding: 70px 20px 20px;
   box-sizing: border-box;
-
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  position: relative;
 }
 
+/* shared arrow container (replaces repeated inline styles) */
+.nav-arrows {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  width: 120px;
+  gap: 2px;
+  z-index: 2000;
+}
+
+/* Home */
 .home-section {
   display: flex;
   justify-content: space-between;
@@ -84,6 +96,90 @@ body {
   border-radius: 12px;
 }
 
+/* ===================== INFORMAÇÕES (TYPED + DETAILS) ===================== */
+
+.info-section {
+  justify-content: center;
+  padding-bottom: 110px;
+}
+
+.info-columns {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.typed-wrapper {
+  flex: 1 1 420px;
+  max-width: 620px;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#typed-text {
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+#typed-text h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+#typed-text p {
+  margin: 0 0 12px 0;
+}
+
+#signature {
+  font-family: "playfair-display", serif;
+  font-size: 22px;
+  margin: 14px 0 0 0;
+}
+
+.info-details {
+  flex: 1 1 420px;
+  max-width: 520px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center on its own Y axis */
+}
+
+.info-details h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-details h3 {
+  font-size: 1.2rem;
+  margin: 0.4rem 0;
+  font-style: italic;
+}
+
+.info-details h4 {
+  font-size: 1.3rem;
+  margin: 2.3rem 0;
+}
+
+.info-details h5 {
+  font-size: 1.06rem;
+  line-height: 1.5;
+}
+
+.playfair, .countdown-title {
+  font-family: "playfair-display", serif;
+  align-self: center;
+  font-size: 1.5rem;
+
+}
 /* ===================== FORM (RSVP) ===================== */
 
 .rsvp-form {
@@ -125,7 +221,7 @@ body {
   white-space: pre-wrap;
 }
 
-/* ===================== COUNTDOWN ===================== */
+/* ===================== COUNTDOWN (timer component styles) ===================== */
 
 .countdown-container {
   text-align: center;
@@ -175,53 +271,67 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* ===================== INFORMAÇÕES SECTION ===================== */
+/* ===================== COUNTDOWN SECTION LAYOUT (NO CARDS + COMPACT) ===================== */
 
-.info-thanks {
+.countdown-section {
+  padding: 0 20px 40px; /* slightly less */
+}
+
+.countdown-top {
+  width: 100%;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 5.6rem;
+  align-items: stretch; /* equal height */
+}
+
+.countdown-card {
+  background: transparent; /* ✅ no card */
+  border-radius: 0;
+  padding: 0; /* ✅ compact */
+  box-shadow: none;
+  backdrop-filter: none;
+  height: 100%; /* ✅ equal height, even without "card" visuals */
   display: flex;
-  justify-content: space-between;
-  gap: 40px;
-  flex-wrap: wrap;
-  padding: 60px;
+  flex-direction: column;
+  align-self: center;
 }
 
-.info-thanks h2 {
-  margin-bottom: 20px;
+.countdown-body {
+  margin: 0.25rem 0 0.6rem 0;
+  font-weight: 400;
+  line-height: 1.45;
+  font-size: 0.98rem;
 }
 
-.info-thanks ul {
-  padding: 0;
-  list-style: none;
+#dresscodephoto {
+  width: 100%;
+  max-width: 420px; /* smaller */
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  margin: 0.5rem auto 0;
 }
 
-.info-thanks ul li {
-  margin-bottom: 10px;
+.map-wrap {
+  margin-top: 0.6rem;
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+  animation-delay: 0.6s;
 }
 
-/* Right column (Cerimônia & Recepção): bigger, centered text */
-.info-details {
-  text-align: center;
+.map-wrap iframe {
+  height: 220px !important; /* shorter map */
 }
 
-.info-details h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.info-details h3 {
-  font-size: 1.2rem;
-  margin: 0.4rem 0;
-  font-style: italic;
-}
-
-.info-details h4 {
-  font-size: 1.3rem;
-  margin: 2.3rem 0;
-}
-
-.info-details h5 {
-  font-size: 1.06rem; /* ~17px, like typed text */
-  line-height: 1.5;
+.countdown-bottom {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1.1rem; /* bring countdown closer */
 }
 
 /* ===================== CONFIRMATION MESSAGE ===================== */
@@ -245,7 +355,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Buttons inside the "email já usado" box */
 .confirmation-message > div {
   justify-content: center;
   flex-wrap: wrap;
@@ -290,7 +399,7 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 18px;
-  z-index: 1000;
+  z-index: 2000;
   transition: background-color 0.3s ease;
 }
 
@@ -306,7 +415,7 @@ body {
   top: 0;
   left: 0;
   z-index: 999;
-  background-color: transparent; /* keep original look */
+  background-color: transparent;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 8px 16px;
   backdrop-filter: blur(6px);
@@ -317,7 +426,7 @@ body {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center; /* desktop default */
+  justify-content: center;
 }
 
 .menu {
@@ -346,12 +455,10 @@ body {
   color: #000000;
 }
 
-/* Desktop menu always visible on ≥ 425px */
 .desktop-menu {
   display: flex;
 }
 
-/* Cart indicator */
 .cart-indicator {
   display: flex;
   align-items: center;
@@ -362,11 +469,10 @@ body {
   cursor: pointer;
 }
 
-/* Base badge placement (desktop/tablet) */
 .cart-badge {
   position: absolute;
   top: -6px;
-  right: -6px; /* slightly outside the icon on wide screens */
+  right: -6px;
   background-color: #c03a2b;
   color: #fff;
   font-size: 0.65rem;
@@ -374,7 +480,6 @@ body {
   padding: 2px 5px;
 }
 
-/* Burger button (hidden by default, shown only ≤ 425px) */
 .burger-btn {
   display: none;
   width: 40px;
@@ -400,7 +505,6 @@ body {
   border-radius: 999px;
 }
 
-/* Mobile dropdown (hidden by default) */
 .mobile-menu {
   display: none;
 }
@@ -408,7 +512,7 @@ body {
 .mobile-menu.open {
   display: block;
   position: fixed;
-  top: 52px; /* slightly under navbar */
+  top: 52px;
   left: 0;
   width: 100%;
   background-color: rgba(246, 244, 236, 0.97);
@@ -449,11 +553,11 @@ body {
 .cart-dropdown.open {
   display: block;
   position: fixed;
-  top: 52px;              /* just under navbar */
+  top: 52px;
   right: 0;
   width: 100%;
   max-width: 420px;
-  padding: 0 10px 16px;   /* horizontal padding to keep a small margin */
+  padding: 0 10px 16px;
   box-sizing: border-box;
   z-index: 998;
 }
@@ -563,16 +667,6 @@ h1 {
   font-style: normal;
 }
 
-#typed-text {
-  font-weight: 300;
-  font-size: 17px;
-}
-
-#signature {
-  font-family: "playfair-display", serif;
-  font-size: 22px;
-}
-
 /* RSVP toggle buttons */
 
 .toggle-group {
@@ -611,60 +705,54 @@ h1 {
   border-color: transparent;
 }
 
-/* ADD THIS to your existing index.css (keep everything else the same) */
+/* ===================== LOADER ===================== */
 
-.page-loader{
+.page-loader {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
   z-index: 9999;
 }
 
-.page-loader-card{
+.page-loader-card {
   background: white;
   border-radius: 18px;
   padding: 24px 28px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   min-width: 260px;
   text-align: center;
 }
 
-.spinner{
+.spinner {
   width: 42px;
   height: 42px;
   border-radius: 999px;
-  border: 4px solid rgba(0,0,0,0.12);
-  border-top-color: rgba(0,0,0,0.55);
+  border: 4px solid rgba(0, 0, 0, 0.12);
+  border-top-color: rgba(0, 0, 0, 0.55);
   margin: 0 auto 12px;
   animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-
-/* Fade-in animation used in informações section */
-
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ===================== RESPONSIVE BREAKPOINTS ===================== */
 
-/* Sticky cart only on screens > 769px */
 @media (min-width: 770px) {
   .gift-cart-column {
     position: sticky;
-    top: 110px; /* adjust if needed (navbar height) */
+    top: 110px;
     align-self: flex-start;
     max-height: calc(100vh - 130px);
     overflow: auto;
@@ -672,24 +760,29 @@ h1 {
   }
 }
 
-/* On smaller screens keep it normal */
-/* @media (max-width: 769px) {
-  .gift-cart-column {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
-} */
-
-
-/* Tablet / laptop tweaks */
 @media (max-width: 1024px) {
   .menu {
     gap: 60px;
   }
 }
 
-/* Phones up to 768px: stack hero, adjust text, hide arrows */
+/* Stack DressCode/Local on smaller screens */
+@media (max-width: 900px) {
+  .countdown-top {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  #dresscodephoto {
+    max-width: 520px;
+  }
+
+  .map-wrap iframe {
+    height: 240px !important;
+  }
+}
+
+/* Phones up to 768px */
 @media (max-width: 768px) {
   .home-content {
     flex-direction: column;
@@ -733,14 +826,16 @@ h1 {
     padding: 6px 10px;
   }
 
-  /* HIDE ARROWS on 768px and smaller */
   .scroll-arrow,
-  .scroll-down {
+  .scroll-down,
+  .nav-arrows {
     display: none !important;
+  }
+  .countdown-bottom, .countdown-card {
+    padding: 50px 18px 55px; /* keep navbar-safe top, more comfy bottom */
   }
 }
 
-/* Small phones: ≤ 425px → burger + mobile menu, no horizontal menu */
 @media (max-width: 426px) {
   .navbar {
     padding: 8px 6px;
@@ -752,7 +847,6 @@ h1 {
     max-width: 100%;
   }
 
-  /* hide desktop menu, show burger */
   .desktop-menu {
     display: none;
   }
@@ -761,34 +855,43 @@ h1 {
     display: flex;
   }
 
-  /* cart + badge stay inside the screen */
   .cart-indicator {
     margin-left: auto;
     padding-right: 20px;
   }
 
+  h1 {
+    padding-top: 70px;
+  }
   .cart-badge {
     top: -4px;
     right: 0;
     transform: translateX(-50%);
   }
 
-  /* cart dropdown full-width on very small screens */
   .cart-dropdown.open {
     left: 0;
     right: 0;
     max-width: 100dvw;
   }
+
+  .typed-wrapper {
+    display: block !important;
+  }
+
+  .info-details {
+    flex: 1 1 100%;
+    max-width: 560px;
+  }
+
+  .section {
+    padding: 10px 18px;
+  }
 }
 
-/* Extra-narrow phones: ≤ 376px */
 @media (max-width: 376px) {
   .navbar {
     padding: 8px 4px;
-  }
-
-  .navbar-inner {
-    max-width: 100%;
   }
 
   .cart-indicator {
@@ -804,14 +907,9 @@ h1 {
   }
 }
 
-/* Ultra-narrow phones: ≤ 321px */
 @media (max-width: 321px) {
   .navbar {
     padding: 8px 2px;
-  }
-
-  .navbar-inner {
-    max-width: 100%;
   }
 
   .cart-indicator {
@@ -825,4 +923,89 @@ h1 {
     font-size: 0.6rem;
     padding: 1px 4px;
   }
+}
+
+/* Reasonable size = ~25% smaller */
+:root {
+  --invite-scale: 0.75;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: calc(520px * var(--invite-scale));
+  padding: calc(22px * var(--invite-scale));
+  border-radius: calc(18px * var(--invite-scale));
+
+  /* slightly darker card */
+  background: rgba(214, 208, 190, 0.92);
+  border: 1px solid rgba(31, 46, 22, 0.24);
+
+  box-shadow:
+    0 calc(12px * var(--invite-scale)) calc(32px * var(--invite-scale)) rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+
+  backdrop-filter: blur(calc(6px * var(--invite-scale)));
+  overflow: hidden;
+}
+
+.invite-card-inner {
+  position: relative;
+  z-index: 2;
+  padding: calc(18px * var(--invite-scale)) calc(16px * var(--invite-scale));
+  border-radius: calc(14px * var(--invite-scale));
+
+  /* slightly darker inner paper */
+  background: rgba(226, 220, 204, 0.78);
+  border: 1px solid rgba(31, 46, 22, 0.16);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.invite-card h2 {
+  margin: 0 0 calc(10px * var(--invite-scale)) 0;
+  font-size: calc(1.5rem * var(--invite-scale));
+  letter-spacing: 0.3px;
+}
+
+.invite-card h3 {
+  margin: 0;
+  font-size: calc(1.15rem * var(--invite-scale));
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* DARKER eucalyptus corners — scaled down too */
+.invite-card::before,
+.invite-card::after {
+  content: "";
+  position: absolute;
+  inset: calc(-40px * var(--invite-scale));
+  opacity: 0.9;
+
+  z-index: 1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: calc(320px * var(--invite-scale)) calc(320px * var(--invite-scale));
+
+  filter: saturate(1.25) contrast(1.1);
+}
+
+.invite-card::before {
+  background-image:
+    radial-gradient(circle at 130px 130px, rgba(64, 104, 82, 0.58) 0 12px, transparent 13px),
+    radial-gradient(circle at 165px 110px, rgba(64, 104, 82, 0.48) 0 10px, transparent 11px),
+    radial-gradient(circle at 95px 170px, rgba(64, 104, 82, 0.45) 0 9px, transparent 10px),
+    radial-gradient(circle at 150px 170px, rgba(64, 104, 82, 0.40) 0 8px, transparent 9px),
+    linear-gradient(135deg, rgba(31, 46, 22, 0.28), transparent 58%);
+}
+
+.invite-card::after {
+  transform: rotate(180deg);
+  background-image:
+    radial-gradient(circle at 130px 130px, rgba(64, 104, 82, 0.58) 0 12px, transparent 13px),
+    radial-gradient(circle at 165px 110px, rgba(64, 104, 82, 0.48) 0 10px, transparent 11px),
+    radial-gradient(circle at 95px 170px, rgba(64, 104, 82, 0.45) 0 9px, transparent 10px),
+    radial-gradient(circle at 150px 170px, rgba(64, 104, 82, 0.40) 0 8px, transparent 9px),
+    linear-gradient(135deg, rgba(31, 46, 22, 0.28), transparent 58%);
 }

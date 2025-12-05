@@ -3,6 +3,7 @@
   --floral-white: #f6f4ecff;
   /* --drab-dark-brown: #40442eff; */
   --drab-dark-brown: #86895eff;
+  --dark-gray: #383838; /* used in inline link color var(--dark-gray) */
 }
 
 html {
@@ -15,7 +16,7 @@ body {
   margin: 0;
   font-family: "inter-variable", sans-serif;
   font-variation-settings: "wght" 500, "slnt" 0;
-  color: #383838;
+  color: var(--dark-gray);
   background: radial-gradient(
     circle at bottom right,
     var(--drab-dark-brown) 25%,
@@ -23,7 +24,7 @@ body {
   );
   background-attachment: fixed;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: stretch;
   text-decoration: none;
 }
 
@@ -97,16 +98,17 @@ body {
   border-radius: 12px;
 }
 
-/* ===================== INFORMAÇÕES (TYPED + DETAILS) ===================== */
+/* ===================== INFORMAÇÕES (TYPED + COUNTDOWN) ===================== */
 
 .info-section {
   justify-content: center;
   padding-bottom: 110px;
 }
 
+/* base row wrapper */
 .info-columns {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1300px;
   display: flex;
   gap: 3rem;
   flex-wrap: wrap;
@@ -114,15 +116,44 @@ body {
   justify-content: center;
 }
 
+/* ===================== INFO-ONLY: CENTER CERIMÔNIA SUBTITLE + LOCAL ADDRESS ===================== */
+
+/* Center the ceremony title + the first subtitle line (28 de Março...) */
+#informacoes .info-only-column > h2,
+#informacoes .info-only-column > h3:first-of-type {
+  text-align: center;
+  align-self: center;
+}
+
+/* Center ONLY the RIGHT column ("Local") title + address block */
+#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-title,
+#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-body {
+  text-align: center;
+  align-self: center;
+}
+
+/* Optional: keep the Local address text from becoming too wide when centered */
+#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-body {
+  max-width: 520px;
+}
+
+
+/* typed section: force 2 columns on desktop */
+.typedsection-columns {
+  align-items: center;
+}
+
+/* LEFT column */
 .typed-wrapper {
-  flex: 1 1 420px;
-  max-width: 620px;
+  flex: 1 1 520px;
+  max-width: 680px;
   min-height: 360px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
+/* typed styles */
 #typed-text {
   font-weight: 300;
   font-size: 17px;
@@ -144,6 +175,31 @@ body {
   font-size: 22px;
   margin: 14px 0 0 0;
 }
+
+/* RIGHT column: countdown appears after typing finishes */
+.typed-countdown {
+  flex: 1 1 450px;
+  max-width: 591px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.9s ease-in, transform 0.9s ease-in;
+}
+
+.typed-countdown.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* optional: when typed is alone, reduce visual gap a bit */
+#typedsection .info-columns {
+  gap: 2rem;
+}
+
+/* ===================== DETAILS BLOCK (used elsewhere) ===================== */
 
 .info-details {
   flex: 1 1 420px;
@@ -175,12 +231,13 @@ body {
   line-height: 1.5;
 }
 
-.playfair, .countdown-title {
+.playfair,
+.countdown-title {
   font-family: "playfair-display", serif;
   align-self: center;
   font-size: 1.5rem;
-
 }
+
 /* ===================== FORM (RSVP) ===================== */
 
 .rsvp-form {
@@ -220,6 +277,44 @@ body {
   line-height: 1.4;
   box-sizing: border-box;
   white-space: pre-wrap;
+}
+
+/* RSVP toggle buttons */
+
+.toggle-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.toggle-option {
+  padding: 0.4rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #61616153;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.toggle-option.sim.selected {
+  background-color: #3bb5493a;
+  color: #444;
+  border-color: transparent;
+}
+
+.toggle-option.nao.selected {
+  background-color: #c03a2b38;
+  color: #444;
+  border-color: transparent;
 }
 
 /* ===================== COUNTDOWN (timer component styles) ===================== */
@@ -275,16 +370,16 @@ body {
 /* ===================== COUNTDOWN SECTION LAYOUT (NO CARDS + COMPACT) ===================== */
 
 .countdown-section {
-  padding: 0 20px 40px; /* slightly less */
+  padding: 70px 20px 40px; /* ✅ was 0 20px 40px (caused navbar overlap) */
 }
 
 .countdown-top {
   width: 100%;
   max-width: 1120px;
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.2fr 1fr; /* ✅ was 2fr 1fr (Local was too tight) */
   gap: 5.6rem;
-  align-items: stretch; /* equal height */
+  align-items: stretch;
 }
 
 .countdown-card {
@@ -328,6 +423,7 @@ body {
   height: 220px !important; /* shorter map */
 }
 
+/* NOTE: typedsection no longer uses .countdown-bottom, but keep for backwards compat */
 .countdown-bottom {
   width: 100%;
   display: flex;
@@ -446,7 +542,7 @@ body {
   padding: 8px 16px;
   font-weight: 500;
   font-size: 1rem;
-  color: #383838;
+  color: var(--dark-gray);
   text-decoration: none;
   transition: color 0.3s ease;
   cursor: pointer;
@@ -535,7 +631,7 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   text-decoration: none;
-  color: #383838;
+  color: var(--dark-gray);
   padding: 8px 0;
   display: block;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -668,44 +764,6 @@ h1 {
   font-style: normal;
 }
 
-/* RSVP toggle buttons */
-
-.toggle-group {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-}
-
-.toggle-option {
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background: #61616153;
-  color: #444;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 100px;
-  justify-content: center;
-}
-
-.toggle-option.sim.selected {
-  background-color: #3bb5493a;
-  color: #444;
-  border-color: transparent;
-}
-
-.toggle-option.nao.selected {
-  background-color: #c03a2b38;
-  color: #444;
-  border-color: transparent;
-}
-
 /* ===================== LOADER ===================== */
 
 .page-loader {
@@ -744,8 +802,47 @@ h1 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===================== INFO-ONLY SECTION (Cerimônia / Dress Code / Local) ===================== */
+
+.info-only-section {
+  /* same idea as countdown-section, but purely informational */
+  padding: 70px 20px 40px;
+}
+
+.info-only-grid {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* LEFT: cerimônia + dress code, RIGHT: local */
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.info-only-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.info-only-title {
+  font-size: 1.3rem;
+  margin: 0 0 0.6rem 0;
+}
+
+.info-only-body {
+  margin: 0.25rem 0 0.6rem 0;
+  font-weight: 400;
+  line-height: 1.45;
+  font-size: 0.98rem;
 }
 
 /* ===================== RESPONSIVE BREAKPOINTS ===================== */
@@ -767,7 +864,17 @@ h1 {
   }
 }
 
-/* Stack DressCode/Local on smaller screens */
+/* Stack typed + countdown on medium screens */
+@media (max-width: 900px) {
+  .typed-wrapper {
+    max-width: 760px;
+  }
+  .typed-countdown {
+    max-width: 760px;
+  }
+}
+
+/* Stack DressCode/Local + info-only on smaller screens */
 @media (max-width: 900px) {
   .countdown-top {
     grid-template-columns: 1fr;
@@ -780,6 +887,15 @@ h1 {
 
   .map-wrap iframe {
     height: 240px !important;
+  }
+
+  .info-only-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .info-only-column {
+    align-items: flex-start;
   }
 }
 
@@ -832,11 +948,17 @@ h1 {
   .nav-arrows {
     display: none !important;
   }
-  .countdown-bottom, .countdown-card {
-    padding: 50px 18px 55px; /* keep navbar-safe top, more comfy bottom */
+
+  .countdown-section .countdown-card {
+    padding: 50px 18px 55px; /* ✅ only the cards in informacoes */
+  }
+
+  .info-only-grid {
+    padding: 0 4px;
   }
 }
 
+/* Small phones: keep typed block visible and layout clean */
 @media (max-width: 426px) {
   .navbar {
     padding: 8px 6px;
@@ -864,6 +986,7 @@ h1 {
   h1 {
     padding-top: 70px;
   }
+
   .cart-badge {
     top: -4px;
     right: 0;
@@ -878,6 +1001,11 @@ h1 {
 
   .typed-wrapper {
     display: block !important;
+    min-height: auto;
+  }
+
+  .typed-countdown {
+    width: 100%;
   }
 
   .info-details {
@@ -887,6 +1015,10 @@ h1 {
 
   .section {
     padding: 10px 18px;
+  }
+
+  .info-only-grid {
+    gap: 1.2rem;
   }
 }
 
@@ -924,89 +1056,4 @@ h1 {
     font-size: 0.6rem;
     padding: 1px 4px;
   }
-}
-
-/* Reasonable size = ~25% smaller */
-:root {
-  --invite-scale: 0.75;
-}
-
-.invite-card {
-  position: relative;
-  width: 100%;
-  max-width: calc(520px * var(--invite-scale));
-  padding: calc(22px * var(--invite-scale));
-  border-radius: calc(18px * var(--invite-scale));
-
-  /* slightly darker card */
-  background: rgba(216, 216, 216, 0.92);
-  border: 1px solid rgba(31, 46, 22, 0.24);
-
-  box-shadow:
-    0 calc(12px * var(--invite-scale)) calc(32px * var(--invite-scale)) rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.32);
-
-  backdrop-filter: blur(calc(6px * var(--invite-scale)));
-  overflow: hidden;
-}
-
-.invite-card-inner {
-  position: relative;
-  z-index: 2;
-  padding: calc(18px * var(--invite-scale)) calc(16px * var(--invite-scale));
-  border-radius: calc(14px * var(--invite-scale));
-
-  /* slightly darker inner paper */
-  background: rgba(218, 218, 218, 0.78);
-  border: 1px solid rgba(31, 46, 22, 0.16);
-
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
-}
-
-.invite-card h2 {
-  margin: 0 0 calc(10px * var(--invite-scale)) 0;
-  font-size: calc(1.5rem * var(--invite-scale));
-  letter-spacing: 0.3px;
-}
-
-.invite-card h3 {
-  margin: 0;
-  font-size: calc(1.15rem * var(--invite-scale));
-  font-style: italic;
-  font-weight: 500;
-}
-
-/* DARKER eucalyptus corners — scaled down too */
-.invite-card::before,
-.invite-card::after {
-  content: "";
-  position: absolute;
-  inset: calc(-40px * var(--invite-scale));
-  opacity: 0.9;
-
-  z-index: 1;
-  pointer-events: none;
-  background-repeat: no-repeat;
-  background-size: calc(320px * var(--invite-scale)) calc(320px * var(--invite-scale));
-
-  filter: saturate(1.25) contrast(1.1);
-}
-
-.invite-card::before {
-  background-image:
-    radial-gradient(circle at 130px 130px, rgba(64, 104, 82, 0.58) 0 12px, transparent 13px),
-    radial-gradient(circle at 165px 110px, rgba(64, 104, 82, 0.48) 0 10px, transparent 11px),
-    radial-gradient(circle at 95px 170px, rgba(64, 104, 82, 0.45) 0 9px, transparent 10px),
-    radial-gradient(circle at 150px 170px, rgba(64, 104, 82, 0.40) 0 8px, transparent 9px),
-    linear-gradient(135deg, rgba(31, 46, 22, 0.28), transparent 58%);
-}
-
-.invite-card::after {
-  transform: rotate(180deg);
-  background-image:
-    radial-gradient(circle at 130px 130px, rgba(64, 104, 82, 0.58) 0 12px, transparent 13px),
-    radial-gradient(circle at 165px 110px, rgba(64, 104, 82, 0.48) 0 10px, transparent 11px),
-    radial-gradient(circle at 95px 170px, rgba(64, 104, 82, 0.45) 0 9px, transparent 10px),
-    radial-gradient(circle at 150px 170px, rgba(64, 104, 82, 0.40) 0 8px, transparent 9px),
-    linear-gradient(135deg, rgba(31, 46, 22, 0.28), transparent 58%);
 }

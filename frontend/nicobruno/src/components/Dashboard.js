@@ -34,6 +34,7 @@ const Dashboard = () => {
   // ---- MUSIC STATE ----
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const audioRef = useRef(null);
+  const DEFAULT_VOLUME = 0.05; // 5% volume
 
   // ---- PAGE LOADER (images preloading) ----
   const [pageReady, setPageReady] = useState(false);
@@ -219,17 +220,17 @@ const Dashboard = () => {
   const typedStrings = useMemo(
     () => [
       "<h3>Família e amigos queridos,</h3>" +
-      "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-      "<br><br>" +
-      "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-      "<br>" +
-      "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-      "<br><br>" +
-      "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-      "<br><br>" +
-      "Com carinho," +
-      "<br><br>" +
-      "<p id='signature'>Nicole e Bruno.</p>",
+        "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+        "<br><br>" +
+        "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+        "<br>" +
+        "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+        "<br><br>" +
+        "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+        "<br><br>" +
+        "Com carinho," +
+        "<br><br>" +
+        "<p id='signature'>Nicole e Bruno.</p>",
     ],
     []
   );
@@ -607,14 +608,19 @@ const Dashboard = () => {
   const toggleMusic = () => {
     if (!audioRef.current) return;
 
+    const audio = audioRef.current;
+    audio.volume = DEFAULT_VOLUME;
+
     if (isMusicPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setIsMusicPlaying(false);
     } else {
-      audioRef.current
+      audio
         .play()
         .then(() => setIsMusicPlaying(true))
-        .catch((err) => console.warn("Não foi possível iniciar a música:", err));
+        .catch((err) =>
+          console.warn("Não foi possível iniciar a música:", err)
+        );
     }
   };
 
@@ -706,6 +712,12 @@ const Dashboard = () => {
         src="/audio/wedding-nicobrunosong.mp3"
         preload="auto"
         loop
+        autoPlay
+        onLoadedMetadata={() => {
+          if (audioRef.current) {
+            audioRef.current.volume = DEFAULT_VOLUME;
+          }
+        }}
       />
 
       <button
@@ -737,7 +749,9 @@ const Dashboard = () => {
             {/* <h1>Nicole</h1>
             <h1>&amp; </h1>
             <h1>Bruno</h1> */}
-            <h5 class="savethedate" id ="savedatetext">SAVE THE DATE</h5>
+            <h5 class="savethedate" id="savedatetext">
+              SAVE THE DATE
+            </h5>
             <h2 class="savethedate">28|03|2026</h2>
           </div>
           <div className="image-right">
@@ -812,7 +826,7 @@ const Dashboard = () => {
         </div>
       </Element>
 
-      {/* 3) informacoes = Cerimônia card on top of Dress Code, Local on right (photo + link + text + map) */}
+      {/* 3) informacoes = Cerimônia + Local + Dress Code */}
       <Element
         name="informacoes"
         id="informacoes"
@@ -825,7 +839,13 @@ const Dashboard = () => {
             <h2 className="playfair" style={{ margin: "0 0 0.35rem 0" }}>
               Cerimônia &amp; Recepção
             </h2>
-            <h3 style={{ margin: "0 0 2 .2rem 0", fontStyle: "italic", fontWeight: 500 }}>
+            <h3
+              style={{
+                margin: "0 0 2 .2rem 0",
+                fontStyle: "italic",
+                fontWeight: 500,
+              }}
+            >
               28 de Março de 2026, às 11:00h.
             </h3>
             <img
@@ -859,7 +879,8 @@ const Dashboard = () => {
                 </a>
                 <br />
               </strong>{" "}
-              Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR, 83507-254
+              Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR,
+              83507-254
             </p>
             <div className="map-wrap">
               <iframe
@@ -879,9 +900,9 @@ const Dashboard = () => {
           <div className="info-only-column" style={{ alignSelf: "center" }}>
             <h3 className="info-only-title playfair">Dress Code</h3>
             <p className="info-only-body">
-              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima
-              leve e descontraído, e pede apenas um traje esporte fino, com aquele
-              toque de conforto que combina perfeitamente com a festa.
+              Pode deixar o paletó e a gravata em casa! Nosso casamento será em
+              clima leve e descontraído, e pede apenas um traje esporte fino, com
+              aquele toque de conforto que combina perfeitamente com a festa.
             </p>
 
             <img
@@ -892,7 +913,6 @@ const Dashboard = () => {
               decoding="async"
             />
           </div>
-
         </div>
 
         <div className="nav-arrows">
@@ -963,16 +983,18 @@ const Dashboard = () => {
               <div className="toggle-group">
                 <button
                   type="button"
-                  className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
-                    }`}
+                  className={`toggle-option sim ${
+                    vaiVir === "yes" ? "selected" : ""
+                  }`}
                   onClick={() => setVaiVir("yes")}
                 >
                   Sim
                 </button>
                 <button
                   type="button"
-                  className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
-                    }`}
+                  className={`toggle-option nao ${
+                    vaiVir === "no" ? "selected" : ""
+                  }`}
                   onClick={() => setVaiVir("no")}
                 >
                   Não
@@ -1372,7 +1394,7 @@ const Dashboard = () => {
                       width: "100%",
                       padding: "0.45rem 1rem",
                       borderRadius: "999px",
-                      border: "1px solid #ccc",
+                      border: "1px solid "#ccc",
                       backgroundColor: "white",
                       fontSize: "0.85rem",
                       cursor: "pointer",

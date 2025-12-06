@@ -726,9 +726,19 @@ const Dashboard = () => {
       >
         <div className="home-content">
           <div className="text-left">
-            <h1>Nicole &amp; Bruno</h1>
-            <h5>SAVE THE DATE</h5>
-            <h2>28|03|2026</h2>
+            <img
+              src="/logonicobruno.webp"
+              alt="Logo(Nicole e Bruno)"
+              width="90%"
+              id="logo"
+              loading="lazy"
+              decoding="async"
+            />
+            {/* <h1>Nicole</h1>
+            <h1>&amp; </h1>
+            <h1>Bruno</h1> */}
+            <h5 class="savethedate">SAVE THE DATE</h5>
+            <h2 class="savethedate">28|03|2026</h2>
           </div>
           <div className="image-right">
             <img
@@ -792,7 +802,7 @@ const Dashboard = () => {
 
           {/* RIGHT: Countdown (fade-in after typing ends) */}
           <div className={`typed-countdown ${showTypedCountdown ? "show" : ""}`}>
-            <Countdown date="2026-03-28T11:00:00" />
+            <Countdown date="2026-03-28T07:00:00" />
           </div>
         </div>
 
@@ -818,40 +828,6 @@ const Dashboard = () => {
             <h3 style={{ margin: "0 0 2 .2rem 0", fontStyle: "italic", fontWeight: 500 }}>
               28 de Março de 2026, às 11:00h.
             </h3>
-            <h3 className="info-only-title playfair">Dress Code</h3>
-            <p className="info-only-body">
-              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima
-              leve e descontraído, e pede apenas um traje esporte fino, com aquele
-              toque de conforto que combina perfeitamente com a festa.
-            </p>
-
-            <img
-              src="/dresscodephoto.webp"
-              alt="Dress Code Suggestion"
-              id="dresscodephoto"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-
-          {/* RIGHT */}
-          <div className="info-only-column" style={{ alignSelf: "center" }}>
-            <h3 className="info-only-title playfair">Local</h3>
-            <p className="info-only-body" style={{ alignSelf: "center" }}>
-              📍{" "}
-              <strong>
-                <a
-                  href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--dark-gray)" }}
-                >
-                  Chácara Refúgio do Vale
-                </a>
-                <br />
-              </strong>{" "}
-              Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR, 83507-254
-            </p>
             <img
               src="/localimage.jpeg"
               alt="Local do casamento"
@@ -869,6 +845,22 @@ const Dashboard = () => {
                 margin: "0.5rem auto 0.8rem",
               }}
             />
+            <h3 className="info-only-title">Local</h3>
+            <p className="info-only-body" style={{ alignSelf: "center" }}>
+              📍{" "}
+              <strong>
+                <a
+                  href="https://www.google.com/maps/place/Rua+Joao+Wicki+263,+Jardim+Sao+Carlos,+Almirante+Tamandare+-+PR,+83507-254"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--dark-gray)" }}
+                >
+                  Chácara Refúgio do Vale
+                </a>
+                <br />
+              </strong>{" "}
+              Rua João Wicki, 263 - Jardim São Carlos, Almirante Tamandaré - PR, 83507-254
+            </p>
             <div className="map-wrap">
               <iframe
                 title="Chácara Refúgio do Vale"
@@ -882,6 +874,25 @@ const Dashboard = () => {
               />
             </div>
           </div>
+
+          {/* RIGHT */}
+          <div className="info-only-column" style={{ alignSelf: "center" }}>
+            <h3 className="info-only-title playfair">Dress Code</h3>
+            <p className="info-only-body">
+              Pode deixar o paletó e a gravata em casa! Nosso casamento será em clima
+              leve e descontraído, e pede apenas um traje esporte fino, com aquele
+              toque de conforto que combina perfeitamente com a festa.
+            </p>
+
+            <img
+              src="/dresscodephoto.webp"
+              alt="Dress Code Suggestion"
+              id="dresscodephoto"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
         </div>
 
         <div className="nav-arrows">

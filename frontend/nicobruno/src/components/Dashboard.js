@@ -40,6 +40,11 @@ const Dashboard = () => {
   const [pageReady, setPageReady] = useState(false);
   const [loadProgress, setLoadProgress] = useState({ done: 0, total: 0 });
 
+  // ---- RECADOS CAROUSEL STATE ----
+  const [recados, setRecados] = useState([]);
+  const [recadosLoading, setRecadosLoading] = useState(true);
+  const [currentRecadoIndex, setCurrentRecadoIndex] = useState(0);
+
   // ✅ updated order: home -> typedsection -> informacoes -> confirmar -> presentes
   const sections = useMemo(
     () => ["home", "typedsection", "informacoes", "confirmar", "presentes"],
@@ -563,6 +568,27 @@ const Dashboard = () => {
     };
   }, [giftCatalog]);
 
+  // ---- FETCH RECADOS FROM BACKEND ----
+  useEffect(() => {
+    const fetchRecados = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/rsvp/messages`);
+        if (!res.ok) {
+          throw new Error("Falha ao carregar recados");
+        }
+        const data = await res.json();
+        setRecados(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Erro ao buscar recados:", err);
+        setRecados([]);
+      } finally {
+        setRecadosLoading(false);
+      }
+    };
+
+    fetchRecados();
+  }, []);
+
   // ---- CART HELPERS ----
   const addToCart = (gift) => {
     setCart((prev) => {
@@ -622,6 +648,19 @@ const Dashboard = () => {
           console.warn("Não foi possível iniciar a música:", err)
         );
     }
+  };
+
+  // ---- RECADOS CAROUSEL CONTROLS ----
+  const showNextRecado = () => {
+    setCurrentRecadoIndex((prev) =>
+      recados.length ? (prev + 1) % recados.length : 0
+    );
+  };
+
+  const showPrevRecado = () => {
+    setCurrentRecadoIndex((prev) =>
+      recados.length ? (prev - 1 + recados.length) % recados.length : 0
+    );
   };
 
   // ---- MERCADO PAGO CHECKOUT ----
@@ -819,6 +858,115 @@ const Dashboard = () => {
             <Countdown date="2026-03-28T07:00:00" />
           </div>
         </div>
+
+        {/* RECADOS CAROUSEL */}
+        {!recadosLoading && recados.length > 0 && (
+          <div
+            style={{
+              marginTop: "2rem",
+              maxWidth: "700px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              padding: "1.5rem 2rem",
+              borderRadius: "18px",
+              backgroundColor: "rgba(255,255,255,0.85)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              textAlign: "center",
+            }}
+          >
+            <h3
+              style={{
+                marginTop: 0,
+                marginBottom: "0.75rem",
+                fontFamily: "Playfair Display, serif",
+                fontWeight: 500,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                fontSize: "1rem",
+              }}
+            >
+              Recados dos convidados
+            </h3>
+
+            {recados.length > 0 && (
+              <>
+                <p
+                  style={{
+                    marginBottom: "0.3rem",
+                    fontStyle: "italic",
+                    fontSize: "0.95rem",
+                    color: "#555",
+                  }}
+                >
+                  “{recados[currentRecadoIndex].mensagem}”
+                </p>
+                <p
+                  style={{
+                    marginTop: 0,
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    color: "#333",
+                  }}
+                >
+                  — {recados[currentRecadoIndex].nome}
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    marginTop: "0.75rem",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={showPrevRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Recado anterior"
+                  >
+                    ‹
+                  </button>
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#777",
+                    }}
+                  >
+                    {currentRecadoIndex + 1} / {recados.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={showNextRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Próximo recado"
+                  >
+                    ›
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="nav-arrows">
           <Arrow direction="up" />
@@ -1394,7 +1542,7 @@ const Dashboard = () => {
                       width: "100%",
                       padding: "0.45rem 1rem",
                       borderRadius: "999px",
-                      border: "1px solid "#ccc",
+                      border: "1px solid #ccc",
                       backgroundColor: "white",
                       fontSize: "0.85rem",
                       cursor: "pointer",

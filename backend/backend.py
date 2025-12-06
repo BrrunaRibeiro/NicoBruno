@@ -489,6 +489,42 @@ def criar_preferencia_checkout():
     ), 200
 
 
+# ========== NOVO: LISTAR RECADOS PARA O CARROSSEL ==========
+
+@app.route("/api/rsvp/messages", methods=["GET"])
+def listar_recados():
+    """
+    Retorna a lista de recados (mensagem + nome) para o carrossel na home.
+
+    - Usa sempre a ÚLTIMA confirmação de cada e-mail (mesma lógica do restante do backend).
+    - Ignora linhas sem mensagem.
+    - Formato de resposta:
+      [
+        { "nome": "Convidado X", "mensagem": "Mensagem dele" },
+        ...
+      ]
+    """
+    latest = {}
+    for row in read_rows_as_dicts():
+        row_email = get_row_email(row)
+        if not row_email:
+            continue
+        latest[row_email] = row  # última ocorrência vence
+
+    recados = []
+    for row in latest.values():
+        msg = str(row.get("Mensagem", "") or "").strip()
+        if not msg:
+            continue
+        nome = str(row.get("Nome", "") or "").strip() or "Convidado"
+        recados.append({
+            "nome": nome,
+            "mensagem": msg,
+        })
+
+    return jsonify(recados), 200
+
+
 # ========== RODAR SERVIDOR ==========
 
 if __name__ == "__main__":

@@ -1033,6 +1033,10 @@ h1 {
   .info-only-grid {
     padding: 0 4px;
   }
+
+  #presentes {
+    padding-top: 1px
+  }
 }
 
 /* Small phones: keep typed block visible and layout clean */

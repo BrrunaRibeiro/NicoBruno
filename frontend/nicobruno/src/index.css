@@ -6,6 +6,13 @@
   --dark-gray: #383838; /* used in inline link color var(--dark-gray) */
 }
 
+.licorice-regular {
+  font-family: "Licorice", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 html {
   scroll-behavior: smooth;
 }
@@ -76,11 +83,23 @@ body {
   gap: 2rem;
 }
 
+#logo {
+  filter: contrast(433%);
+}
+
 .text-left {
   flex: 1;
   min-width: 280px;
   max-width: 50%;
+  /* margin-left: 15%; */
+}
+
+.savethedate {
   margin-left: 15%;
+}
+
+#savedatetext {
+  margin-block-start: 0;
 }
 
 .image-right {
@@ -171,9 +190,10 @@ body {
 }
 
 #signature {
-  font-family: "playfair-display", serif;
-  font-size: 22px;
+  font-family: "Licorice", cursive;
+  font-size: 32px;
   margin: 14px 0 0 0;
+  font-weight: 600;
 }
 
 /* RIGHT column: countdown appears after typing finishes */
@@ -234,8 +254,16 @@ body {
 .playfair,
 .countdown-title {
   font-family: "playfair-display", serif;
+  /* font-family: "Licorice", cursive; */
   align-self: center;
   font-size: 1.5rem;
+}
+
+.info-only-title {
+  font-family: "playfair-display", serif;
+  font-size: 1.5rem;
+  align-self: baseline;
+  padding-top: 7%;
 }
 
 /* ===================== FORM (RSVP) ===================== */
@@ -758,7 +786,8 @@ body {
 /* ===================== TEXT STYLES ===================== */
 
 h1 {
-  font-family: "playfair-display", serif;
+  /* font-family: "playfair-display", serif; */
+  font-family: "Licorice", cursive;
   font-weight: 700;
   font-size: 57px;
   font-style: normal;

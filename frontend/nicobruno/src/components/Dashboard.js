@@ -737,7 +737,7 @@ const Dashboard = () => {
             {/* <h1>Nicole</h1>
             <h1>&amp; </h1>
             <h1>Bruno</h1> */}
-            <h5 class="savethedate">SAVE THE DATE</h5>
+            <h5 class="savethedate" id ="savedatetext">SAVE THE DATE</h5>
             <h2 class="savethedate">28|03|2026</h2>
           </div>
           <div className="image-right">

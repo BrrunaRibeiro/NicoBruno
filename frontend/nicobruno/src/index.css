@@ -605,6 +605,33 @@ body {
   padding: 2px 5px;
 }
 
+/* ===================== PRESENTES: FIX CART WIDTH (DESKTOP) ===================== */
+
+/* Keep the cart column a stable size so it doesn't grow/shrink as items change */
+.gift-cart-column {
+  flex: 0 0 320px !important; /* fixed width */
+  width: 320px;
+  min-width: 320px;
+}
+
+/* Prevent long titles from forcing layout changes */
+.gift-cart-column li,
+.gift-cart-column span,
+.gift-cart-column p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* On smaller screens, let it be full width again */
+@media (max-width: 900px) {
+  .gift-cart-column {
+    flex: 1 1 100% !important;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+
 .burger-btn {
   display: none;
   width: 40px;
@@ -942,11 +969,32 @@ h1 {
     order: 1;
     max-width: 100%;
     margin: 0;
+    padding-top: 5px;
+  }
+
+  .savethedate {
+    margin-left: 1px;
+  }
+
+  #logo {
+    max-width: 50%;
   }
 
   .image-right {
     order: 2;
-    max-width: 100%;
+    max-width: 60%;
+  }
+
+  .info-only-column{
+    align-items: normal;
+  }
+
+  .info-only-title {
+    align-self: center;
+  }
+
+  .info-only-body {
+    align-self: center;
   }
 
   #sidephoto {
@@ -1012,7 +1060,7 @@ h1 {
     padding-right: 20px;
   }
 
-  h1 {
+  .text-left {
     padding-top: 70px;
   }
 
@@ -1040,6 +1088,9 @@ h1 {
   .info-details {
     flex: 1 1 100%;
     max-width: 560px;
+  }
+  #informacoes .info-only-column > h2 {
+    padding-top: 45px;
   }
 
   .section {

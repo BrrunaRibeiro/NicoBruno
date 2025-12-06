@@ -1013,7 +1013,7 @@ const Dashboard = () => {
 
               <input
                 type="text"
-                placeholder="Mensagem (opcional)"
+                placeholder="Recado para os noivos (opcional)"
                 value={mensagem}
                 onChange={(e) => setMensagem(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}

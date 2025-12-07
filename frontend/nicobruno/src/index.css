@@ -331,7 +331,7 @@ body {
   box-sizing: border-box;
   overflow: hidden; /* hide extra text if user hits max length */
   min-height: 260px;
-  max-height: 320px;
+  max-height: 1120px;
 }
 
 /* Title at the top of recados box */
@@ -359,12 +359,19 @@ body {
   font-style: italic;
   font-size: 0.95rem;
   color: #555;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 4; /* same idea as a max lines clamp */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.5;
+
+  /* NEW: allow full text to wrap */
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
+  text-overflow: clip;
+
+  /* REMOVE these if you still have them:
+     display: -webkit-box;
+     -webkit-line-clamp: 4;
+     -webkit-box-orient: vertical;
+  */
 }
 
 .recados-author {

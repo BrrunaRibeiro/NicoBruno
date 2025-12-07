@@ -26,6 +26,13 @@ const Dashboard = () => {
   const [vaiVir, setVaiVir] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // ---- UPDATE FLOW (2 steps: lookup -> edit) ----
+  // updateStage: "idle" | "lookup" | "edit"
+  const [updateStage, setUpdateStage] = useState("idle");
+  const [updateLookupEmail, setUpdateLookupEmail] = useState("");
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState("");
+
   // ---- GIFTS / CART STATE ----
   const [cart, setCart] = useState({});
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -48,7 +55,7 @@ const Dashboard = () => {
   const [recadosLoading, setRecadosLoading] = useState(true);
   const [currentRecadoIndex, setCurrentRecadoIndex] = useState(0);
 
-  // ✅ updated order: home -> typedsection -> informacoes -> confirmar -> presentes
+  // ✅ order: home -> typedsection -> informacoes -> confirmar -> presentes
   const sections = useMemo(
     () => ["home", "typedsection", "informacoes", "confirmar", "presentes"],
     []
@@ -77,9 +84,99 @@ const Dashboard = () => {
     }
   };
 
+  // ---------- START / RESET UPDATE FLOW ----------
+  const startUpdateFlow = (prefilledEmail = "") => {
+    setIsUpdating(true);
+    setEmailExists(false);
+    setSubmitted(false);
+    setUpdateStage("lookup");
+    setUpdateLookupEmail(prefilledEmail || "");
+    setUpdateError("");
+
+    // Clear form so we don't leak previous values
+    setNome("");
+    setEmail("");
+    setAcompanhantes("");
+    setCriancas("");
+    setMensagem("");
+    setVaiVir(null);
+  };
+
+  const resetToNewConfirmation = () => {
+    setIsUpdating(false);
+    setEmailExists(false);
+    setUpdateStage("idle");
+    setUpdateLookupEmail("");
+    setUpdateError("");
+
+    setNome("");
+    setEmail("");
+    setAcompanhantes("");
+    setCriancas("");
+    setMensagem("");
+    setVaiVir(null);
+  };
+
+  // ---------- LOOKUP EXISTING RSVP BY EMAIL ----------
+  const handleUpdateLookup = async (e) => {
+    e.preventDefault();
+    if (!updateLookupEmail || updateLoading) return;
+
+    setUpdateLoading(true);
+    setUpdateError("");
+
+    try {
+      // expects backend: GET /api/rsvp?email=...
+      const res = await fetch(
+        `${API_BASE_URL}/api/rsvp?email=${encodeURIComponent(updateLookupEmail)}`
+      );
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          setUpdateError(
+            "Não encontramos uma confirmação com esse e-mail. Confira se digitou corretamente ou faça uma nova confirmação."
+          );
+        } else {
+          setUpdateError(
+            "Ocorreu um erro ao buscar sua confirmação. Tente novamente em instantes."
+          );
+        }
+        return;
+      }
+
+      const data = await res.json();
+
+      setEmail(data.email || updateLookupEmail);
+      setNome(data.nome || "");
+      setVaiVir(data.vai_vir ? "yes" : "no");
+
+      setAcompanhantes(
+        data.acompanhantes !== undefined && data.acompanhantes !== null
+          ? String(data.acompanhantes)
+          : ""
+      );
+      setCriancas(
+        data.criancas !== undefined && data.criancas !== null
+          ? String(data.criancas)
+          : ""
+      );
+      setMensagem(data.mensagem || "");
+
+      setUpdateStage("edit");
+    } catch (err) {
+      console.error("Erro ao buscar confirmação:", err);
+      setUpdateError("Erro de rede ao buscar sua confirmação.");
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  // ---------- SUBMIT (CREATE OR UPDATE) ----------
   const handleRSVPSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+    if (vaiVir === null) return;
+
     setSubmitting(true);
 
     try {
@@ -90,14 +187,16 @@ const Dashboard = () => {
         body: JSON.stringify({
           nome,
           email,
-          acompanhantes: parseInt(acompanhantes || 0, 10),
-          criancas: parseInt(criancas || 0, 10),
+          acompanhantes:
+            vaiVir === "yes" ? parseInt(acompanhantes || 0, 10) : 0,
+          criancas: vaiVir === "yes" ? parseInt(criancas || 0, 10) : 0,
           mensagem,
           vai_vir: vaiVir === "yes",
         }),
       });
 
-      if (response.status === 409) {
+      if (!isUpdating && response.status === 409) {
+        // first-time confirmation with email already used
         setEmailExists(true);
       } else if (response.ok) {
         setSubmitted(true);
@@ -133,6 +232,7 @@ const Dashboard = () => {
     setTimeout(() => setPixCopied(false), 1500);
   };
 
+  // ---- REDIRECT AFTER SUBMIT ----
   useEffect(() => {
     if (submitted && redirectCountdown > 0) {
       const timer = setTimeout(() => {
@@ -174,7 +274,7 @@ const Dashboard = () => {
     );
   };
 
-  // ✅ IntersectionObserver uses IDs; make sure Elements have matching id props (below)
+  // ✅ IntersectionObserver uses IDs; Elements have matching id props
   useEffect(() => {
     const els = sections.map((id) => document.getElementById(id)).filter(Boolean);
     if (els.length === 0) return;
@@ -210,7 +310,7 @@ const Dashboard = () => {
 
   const disableTyping = isSmallScreen;
 
-  // ---- TYPED -> then show countdown (with delay + ease-in) ----
+  // ---- TYPED -> then show countdown ----
   const [showTypedCountdown, setShowTypedCountdown] = useState(disableTyping);
 
   const handleTypedComplete = useCallback(() => {
@@ -228,17 +328,17 @@ const Dashboard = () => {
   const typedStrings = useMemo(
     () => [
       "<h3>Família e amigos queridos,</h3>" +
-      "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-      "<br><br>" +
-      "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-      "<br>" +
-      "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-      "<br><br>" +
-      "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-      "<br><br>" +
-      "Com carinho," +
-      "<br><br>" +
-      "<p id='signature'>Nicole e Bruno.</p>",
+        "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+        "<br><br>" +
+        "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+        "<br>" +
+        "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+        "<br><br>" +
+        "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+        "<br><br>" +
+        "Com carinho," +
+        "<br><br>" +
+        "<p id='signature'>Nicole e Bruno.</p>",
     ],
     []
   );
@@ -552,11 +652,13 @@ const Dashboard = () => {
       new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-          if (!cancelled) setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
+          if (!cancelled)
+            setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
           resolve(true);
         };
         img.onerror = () => {
-          if (!cancelled) setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
+          if (!cancelled)
+            setLoadProgress((p) => ({ ...p, done: p.done + 1 }));
           resolve(false);
         };
         img.src = src;
@@ -690,21 +792,24 @@ const Dashboard = () => {
     setCheckoutMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/mercadopago/checkout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: cartItems.map((item) => ({
-            id: item.id,
-            title: item.title,
-            unit_price: item.price,
-            quantity: item.quantity,
-          })),
-          nome,
-          email,
-          mensagem,
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/mercadopago/checkout`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: cartItems.map((item) => ({
+              id: item.id,
+              title: item.title,
+              unit_price: item.price,
+              quantity: item.quantity,
+            })),
+            nome,
+            email,
+            mensagem,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -742,7 +847,9 @@ const Dashboard = () => {
           <h3>
             Carregando...{" "}
             {loadProgress.total > 0
-              ? `${Math.round((loadProgress.done / loadProgress.total) * 100)}%`
+              ? `${Math.round(
+                  (loadProgress.done / loadProgress.total) * 100
+                )}%`
               : ""}
           </h3>
         </div>
@@ -867,7 +974,9 @@ const Dashboard = () => {
           </div>
 
           {/* RIGHT: Countdown (fade-in after typing ends) */}
-          <div className={`typed-countdown ${showTypedCountdown ? "show" : ""}`}>
+          <div
+            className={`typed-countdown ${showTypedCountdown ? "show" : ""}`}
+          >
             <Countdown date="2026-03-28T07:00:00" />
           </div>
         </div>
@@ -1032,6 +1141,7 @@ const Dashboard = () => {
           {/* RIGHT: RSVP form / messages */}
           <div style={{ flex: "1 1 380px", maxWidth: "520px" }}>
             {emailExists && !isUpdating ? (
+              // Conflict card when trying to create a NEW RSVP with an existing email
               <div className="confirmation-message">
                 <h2>Esse e-mail já foi usado para confirmar presença.</h2>
                 <p>
@@ -1043,8 +1153,7 @@ const Dashboard = () => {
                 >
                   <button
                     onClick={() => {
-                      setEmailExists(false);
-                      setIsUpdating(true);
+                      startUpdateFlow(email);
                     }}
                   >
                     Alterar Confirmação
@@ -1060,6 +1169,7 @@ const Dashboard = () => {
                 </div>
               </div>
             ) : submitted ? (
+              // After successful submit
               <div className="confirmation-message">
                 <h2>
                   {vaiVir === "yes"
@@ -1077,103 +1187,157 @@ const Dashboard = () => {
                   segundos...
                 </small>
               </div>
+            ) : isUpdating && updateStage === "lookup" ? (
+              // STEP 1: lookup existing RSVP by email
+              <form className="rsvp-form" onSubmit={handleUpdateLookup}>
+                <p id="vocevira" style={{ textAlign: "center" }}>
+                  Digite o e-mail que você usou na confirmação inicial:
+                </p>
+
+                <input
+                  type="email"
+                  placeholder="E-mail que você usou na confirmação inicial"
+                  required
+                  value={updateLookupEmail}
+                  onChange={(e) => setUpdateLookupEmail(e.target.value)}
+                />
+
+                {updateError && (
+                  <p
+                    style={{
+                      color: "#b00020",
+                      fontSize: "0.9rem",
+                      marginTop: "0.2rem",
+                    }}
+                  >
+                    {updateError}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className={`btn-primary ${
+                    updateLoading || !updateLookupEmail ? "disabled" : ""
+                  }`}
+                  disabled={updateLoading || !updateLookupEmail}
+                >
+                  {updateLoading
+                    ? "Buscando sua confirmação..."
+                    : "Buscar minha confirmação"}
+                </button>
+
+                <button
+                  type="button"
+                  className="update-button"
+                  onClick={resetToNewConfirmation}
+                >
+                  Voltar para nova confirmação
+                </button>
+              </form>
             ) : (
-              <>
-                {/* smaller “question” title INSIDE the card */}
-                <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
-                  <p id="vocevira">Voce virá ao casamento?</p>
+              // STEP 2 (updateStage === "edit") OR normal new confirmation
+              <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
+                <p id="vocevira">Você virá ao casamento?</p>
 
-                  <div className="toggle-group">
-                    <button
-                      type="button"
-                      className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
-                        }`}
-                      onClick={() => setVaiVir("yes")}
-                    >
-                      Sim
-                    </button>
-                    <button
-                      type="button"
-                      className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
-                        }`}
-                      onClick={() => setVaiVir("no")}
-                    >
-                      Não
-                    </button>
-                  </div>
-
-                  <input
-                    type="text"
-                    placeholder="Seu nome completo"
-                    required
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    disabled={isUpdating}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Seu e-mail"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={isUpdating}
-                  />
-
-                  {(vaiVir === "yes" || isUpdating) && (
-                    <>
-                      <input
-                        type="number"
-                        placeholder="Número de adultos (incluindo você)"
-                        required
-                        value={acompanhantes}
-                        onChange={(e) => setAcompanhantes(e.target.value)}
-                      />
-                      <input
-                        type="number"
-                        placeholder="Número de crianças"
-                        value={criancas}
-                        onChange={(e) => setCriancas(e.target.value)}
-                      />
-                    </>
-                  )}
-
-                  <input
-                    type="text"
-                    placeholder={`Recado para os noivos (opcional, até ${MAX_RECADOS_CHARS} caracteres)`}
-                    value={mensagem}
-                    maxLength={MAX_RECADOS_CHARS}
-                    onChange={(e) => setMensagem(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                  />
-
-                  <button type="submit" disabled={vaiVir === null || submitting}>
-                    {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
+                <div className="toggle-group">
+                  <button
+                    type="button"
+                    className={`toggle-option sim ${
+                      vaiVir === "yes" ? "selected" : ""
+                    }`}
+                    onClick={() => setVaiVir("yes")}
+                  >
+                    Sim
                   </button>
+                  <button
+                    type="button"
+                    className={`toggle-option nao ${
+                      vaiVir === "no" ? "selected" : ""
+                    }`}
+                    onClick={() => setVaiVir("no")}
+                  >
+                    Não
+                  </button>
+                </div>
 
-                  {!isUpdating && (
-                    <button
-                      type="button"
-                      className="update-button"
-                      onClick={() => setIsUpdating(true)}
-                    >
-                      Ou deseja alterar sua resposta?
-                    </button>
-                  )}
+                <input
+                  type="text"
+                  placeholder="Seu nome completo"
+                  required
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  disabled={isUpdating && updateStage === "edit"}
+                />
+                <input
+                  type="email"
+                  placeholder="Seu e-mail"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isUpdating && updateStage === "edit"}
+                />
 
-                  {isUpdating && (
-                    <button
-                      type="button"
-                      className="update-button"
-                      onClick={() => {
-                        setIsUpdating(false);
-                        setEmailExists(false);
-                      }}
-                    >
-                      Voltar para nova confirmação
-                    </button>
-                  )}
-                </form>
-              </>
+                {/* ✅ ONLY show adults/kids when vaiVir === "yes"
+                    (both for new confirmations and updates) */}
+                {vaiVir === "yes" && (
+                  <>
+                    <input
+                      type="number"
+                      placeholder="Número de adultos (incluindo você)"
+                      required
+                      value={acompanhantes}
+                      onChange={(e) => setAcompanhantes(e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Número de crianças"
+                      value={criancas}
+                      onChange={(e) => setCriancas(e.target.value)}
+                    />
+                  </>
+                )}
+
+                <input
+                  type="text"
+                  placeholder={`Recado para os noivos (opcional, até ${MAX_RECADOS_CHARS} caracteres)`}
+                  value={mensagem}
+                  maxLength={MAX_RECADOS_CHARS}
+                  onChange={(e) => setMensagem(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && e.preventDefault()
+                  }
+                />
+
+                <button
+                  type="submit"
+                  className={`btn-primary ${
+                    vaiVir === null || submitting ? "disabled" : ""
+                  }`}
+                  disabled={vaiVir === null || submitting}
+                >
+                  {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
+                </button>
+
+                {!isUpdating && (
+                  <button
+                    type="button"
+                    className="update-button"
+                    onClick={() => startUpdateFlow(email)}
+                  >
+                    Ou deseja alterar sua resposta?
+                  </button>
+                )}
+
+                {isUpdating && (
+                  <button
+                    type="button"
+                    className="update-button"
+                    onClick={resetToNewConfirmation}
+                  >
+                    Voltar para nova confirmação
+                  </button>
+                )}
+              </form>
             )}
           </div>
         </div>
@@ -1183,7 +1347,6 @@ const Dashboard = () => {
           <Arrow direction="down" />
         </div>
       </Element>
-
 
       {/* 5) LISTA DE PRESENTES */}
       <Element
@@ -1433,11 +1596,15 @@ const Dashboard = () => {
                           <span style={{ fontSize: "0.93rem" }}>
                             {item.title}
                           </span>
-                          <div style={{ fontSize: "0.8rem", color: "#777" }}>
+                          <div
+                            style={{ fontSize: "0.8rem", color: "#777" }}
+                          >
                             x{item.quantity}
                           </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center" }}>
+                        <div
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.id)}

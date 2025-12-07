@@ -225,17 +225,17 @@ const Dashboard = () => {
   const typedStrings = useMemo(
     () => [
       "<h3>Família e amigos queridos,</h3>" +
-        "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-        "<br><br>" +
-        "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-        "<br>" +
-        "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-        "<br><br>" +
-        "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-        "<br><br>" +
-        "Com carinho," +
-        "<br><br>" +
-        "<p id='signature'>Nicole e Bruno.</p>",
+      "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+      "<br><br>" +
+      "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+      "<br>" +
+      "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+      "<br><br>" +
+      "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+      "<br><br>" +
+      "Com carinho," +
+      "<br><br>" +
+      "<p id='signature'>Nicole e Bruno.</p>",
     ],
     []
   );
@@ -858,116 +858,6 @@ const Dashboard = () => {
             <Countdown date="2026-03-28T07:00:00" />
           </div>
         </div>
-
-        {/* RECADOS CAROUSEL */}
-        {!recadosLoading && recados.length > 0 && (
-          <div
-            style={{
-              marginTop: "2rem",
-              maxWidth: "700px",
-              marginLeft: "auto",
-              marginRight: "auto",
-              padding: "1.5rem 2rem",
-              borderRadius: "18px",
-              backgroundColor: "rgba(255,255,255,0.85)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-              textAlign: "center",
-            }}
-          >
-            <h3
-              style={{
-                marginTop: 0,
-                marginBottom: "0.75rem",
-                fontFamily: "Playfair Display, serif",
-                fontWeight: 500,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                fontSize: "1rem",
-              }}
-            >
-              Recados dos convidados
-            </h3>
-
-            {recados.length > 0 && (
-              <>
-                <p
-                  style={{
-                    marginBottom: "0.3rem",
-                    fontStyle: "italic",
-                    fontSize: "0.95rem",
-                    color: "#555",
-                  }}
-                >
-                  “{recados[currentRecadoIndex].mensagem}”
-                </p>
-                <p
-                  style={{
-                    marginTop: 0,
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    color: "#333",
-                  }}
-                >
-                  — {recados[currentRecadoIndex].nome}
-                </p>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    marginTop: "0.75rem",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={showPrevRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
-                    }}
-                    aria-label="Recado anterior"
-                  >
-                    ‹
-                  </button>
-                  <span
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "#777",
-                    }}
-                  >
-                    {currentRecadoIndex + 1} / {recados.length}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={showNextRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
-                    }}
-                    aria-label="Próximo recado"
-                  >
-                    ›
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
         <div className="nav-arrows">
           <Arrow direction="up" />
           <Arrow direction="down" />
@@ -1076,6 +966,114 @@ const Dashboard = () => {
         className="section"
         style={{ minHeight: "100vh", position: "relative" }}
       >
+        {/* RECADOS CAROUSEL */}
+        {!recadosLoading && recados.length > 0 && (
+          <div
+            style={{
+              marginTop: "2rem",
+              maxWidth: "700px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              padding: "1.5rem 2rem",
+              borderRadius: "18px",
+              backgroundColor: "rgba(255,255,255,0.85)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+              textAlign: "center",
+            }}
+          >
+            <h3
+              style={{
+                marginTop: 0,
+                marginBottom: "0.75rem",
+                fontFamily: "Playfair Display, serif",
+                fontWeight: 500,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                fontSize: "1rem",
+              }}
+            >
+              Recados dos convidados
+            </h3>
+
+            {recados.length > 0 && (
+              <>
+                <p
+                  style={{
+                    marginBottom: "0.3rem",
+                    fontStyle: "italic",
+                    fontSize: "0.95rem",
+                    color: "#555",
+                  }}
+                >
+                  “{recados[currentRecadoIndex].mensagem}”
+                </p>
+                <p
+                  style={{
+                    marginTop: 0,
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    color: "#333",
+                  }}
+                >
+                  — {recados[currentRecadoIndex].nome}
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    marginTop: "0.75rem",
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={showPrevRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Recado anterior"
+                  >
+                    ‹
+                  </button>
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#777",
+                    }}
+                  >
+                    {currentRecadoIndex + 1} / {recados.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={showNextRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Próximo recado"
+                  >
+                    ›
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
         {emailExists && !isUpdating ? (
           <div className="confirmation-message">
             <h2>Esse e-mail já foi usado para confirmar presença.</h2>
@@ -1131,18 +1129,16 @@ const Dashboard = () => {
               <div className="toggle-group">
                 <button
                   type="button"
-                  className={`toggle-option sim ${
-                    vaiVir === "yes" ? "selected" : ""
-                  }`}
+                  className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
+                    }`}
                   onClick={() => setVaiVir("yes")}
                 >
                   Sim
                 </button>
                 <button
                   type="button"
-                  className={`toggle-option nao ${
-                    vaiVir === "no" ? "selected" : ""
-                  }`}
+                  className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
+                    }`}
                   onClick={() => setVaiVir("no")}
                 >
                   Não

@@ -6,6 +6,8 @@ primary_region = "gru"      # "gru" = São Paulo; you can use "ams" if you prefe
 
 [env]
   PORT = "8080"
+  DATABASE_URL = "sqlite:////data/nicobruno.db"
+
 
 [http_service]
   internal_port = 8080
@@ -14,3 +16,7 @@ primary_region = "gru"      # "gru" = São Paulo; you can use "ams" if you prefe
   auto_stop_machines = "off"
   min_machines_running = 1
   processes = ["app"]
+
+[mounts]
+  source = "nicobruno_data"
+  destination = "/data"

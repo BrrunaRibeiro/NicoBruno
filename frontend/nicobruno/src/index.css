@@ -12,7 +12,6 @@
   font-style: normal;
 }
 
-
 html {
   scroll-behavior: smooth;
 }
@@ -145,17 +144,25 @@ body {
 }
 
 /* Center ONLY the RIGHT column ("Local") title + address block */
-#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-title,
-#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-body {
+#informacoes
+  .info-only-grid
+  > .info-only-column:nth-child(2)
+  .info-only-title,
+#informacoes
+  .info-only-grid
+  > .info-only-column:nth-child(2)
+  .info-only-body {
   text-align: center;
   align-self: center;
 }
 
 /* Optional: keep the Local address text from becoming too wide when centered */
-#informacoes .info-only-grid > .info-only-column:nth-child(2) .info-only-body {
+#informacoes
+  .info-only-grid
+  > .info-only-column:nth-child(2)
+  .info-only-body {
   max-width: 520px;
 }
-
 
 /* typed section: force 2 columns on desktop */
 .typedsection-columns {
@@ -266,13 +273,120 @@ body {
   padding-top: 7%;
 }
 
+/* ===================== CONFIRMAR SECTION: RECADOS + FORM SIDE BY SIDE ===================== */
+
+.confirmar-layout {
+  width: 100%;
+  max-width: 1120px;
+  margin: 2.5rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Left column: recados box */
+.recados-wrapper {
+  flex: 1 1 420px;
+  display: flex;
+  justify-content: center;
+}
+
+.recados-card {
+  width: 100%;
+  max-width: 460px;
+  min-height: 460px; /* same vertical space as the form */
+  max-height: 460px;
+  padding: 1.6rem 2rem;
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden; /* hide extra text if user hits max length */
+}
+
+/* Title at the top of recados box */
+.recados-title {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+/* Container for message + author so they stay centered */
+.recados-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* The message text itself – keep it to a few lines */
+.recados-text {
+  margin-bottom: 0.3rem;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* same idea as a max lines clamp */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recados-author {
+  margin-top: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Bottom controls (‹ 1/10 ›) stay at the bottom but inside the card */
+.recados-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.recados-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e0e0e0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.recados-index {
+  font-size: 0.8rem;
+  color: #777;
+}
+
 /* ===================== FORM (RSVP) ===================== */
 
 .rsvp-form {
-  max-width: 500px;
+  max-width: 460px; /* match recados width */
   margin: 0 auto;
   min-height: 460px;
+  padding: 1.6rem 2rem; /* give it a "card" feel */
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .rsvp-form > * {
@@ -398,25 +512,25 @@ body {
 /* ===================== COUNTDOWN SECTION LAYOUT (NO CARDS + COMPACT) ===================== */
 
 .countdown-section {
-  padding: 70px 20px 40px; /* ✅ was 0 20px 40px (caused navbar overlap) */
+  padding: 70px 20px 40px; /* was 0 20px 40px (caused navbar overlap) */
 }
 
 .countdown-top {
   width: 100%;
   max-width: 1120px;
   display: grid;
-  grid-template-columns: 1.2fr 1fr; /* ✅ was 2fr 1fr (Local was too tight) */
+  grid-template-columns: 1.2fr 1fr; /* was 2fr 1fr (Local was too tight) */
   gap: 5.6rem;
   align-items: stretch;
 }
 
 .countdown-card {
-  background: transparent; /* ✅ no card */
+  background: transparent; /* no card */
   border-radius: 0;
-  padding: 0; /* ✅ compact */
+  padding: 0; /* compact */
   box-shadow: none;
   backdrop-filter: none;
-  height: 100%; /* ✅ equal height, even without "card" visuals */
+  height: 100%; /* equal height, even without "card" visuals */
   display: flex;
   flex-direction: column;
   align-self: center;
@@ -630,7 +744,6 @@ body {
     min-width: 0;
   }
 }
-
 
 .burger-btn {
   display: none;
@@ -930,6 +1043,25 @@ h1 {
   }
 }
 
+/* On smaller screens, stack recados + form */
+@media (max-width: 900px) {
+  .confirmar-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .recados-wrapper,
+  .rsvp-form {
+    max-width: 100%;
+  }
+
+  .recados-card {
+    max-width: 100%;
+    min-height: 320px;
+    max-height: none; /* allow more vertical space when stacked */
+  }
+}
+
 /* Stack DressCode/Local + info-only on smaller screens */
 @media (max-width: 900px) {
   .countdown-top {
@@ -985,7 +1117,7 @@ h1 {
     max-width: 60%;
   }
 
-  .info-only-column{
+  .info-only-column {
     align-items: normal;
   }
 
@@ -1027,7 +1159,7 @@ h1 {
   }
 
   .countdown-section .countdown-card {
-    padding: 50px 18px 55px; /* ✅ only the cards in informacoes */
+    padding: 50px 18px 55px; /* only the cards in informacoes */
   }
 
   .info-only-grid {
@@ -1035,7 +1167,12 @@ h1 {
   }
 
   #presentes {
-    padding-top: 1px
+    padding-top: 1px;
+  }
+
+  .rsvp-form {
+    padding: 1.2rem 1.4rem;
+    min-height: auto;
   }
 }
 

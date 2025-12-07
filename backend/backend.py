@@ -1,20 +1,30 @@
 import os
 import csv
-from io import StringIO  # still imported (used earlier if needed)
-from flask import Flask, request, jsonify, Response
+from io import StringIO
+from flask import Flask, request, jsonify, Response, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 # New: SendGrid + Mercado Pago
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 import mercadopago
 
-# Carrega variáveis do .env em desenvolvimento
+# ================== APP + ENV + DB SETUP ==================
+
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# Use DATABASE_URL from environment or fall back to local file for dev
+db_url = os.environ.get("DATABASE_URL", "sqlite:///rsvp_dev.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
 
 # ========== CONFIGURAÇÕES GERAIS ==========
 
@@ -40,130 +50,49 @@ GROOMS_EMAILS = [
     # "nicolerealeochove@hotmail.com"  # Uncomment when ready
 ]
 
-CSV_FILE = "backend/rsvp_list.csv"
+# Cabeçalho padrão para exportar CSV
 CSV_HEADERS = ["Nome", "Email", "Acompanhantes", "Criancas", "Mensagem", "Vai Vir"]
 
 
-# ========== CSV HELPERS (FIX HEADERLESS CSV + SAFE READ) ==========
+# ================== MODEL ==================
 
-def _normalize_header(row):
-    return [str(x).strip().lower() for x in (row or [])]
+class Rsvp(db.Model):
+    __tablename__ = "rsvps"
 
-
-def ensure_csv_file():
-    """
-    Ensures:
-    - backend/ folder exists
-    - CSV exists
-    - CSV has the correct header row
-    If the file exists but is missing header, it will be repaired by prepending the header.
-    """
-    os.makedirs("backend", exist_ok=True)
-
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(CSV_HEADERS)
-        return
-
-    # If file exists but is empty -> write header
-    try:
-        if os.path.getsize(CSV_FILE) == 0:
-            with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(CSV_HEADERS)
-            return
-    except OSError:
-        # If we can't stat for some reason, just continue
-        pass
-
-    # Check first row to see if it's a header
-    with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
-        reader = csv.reader(f)
-        first_row = next(reader, None)
-
-    if not first_row:
-        # no rows -> write header
-        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(CSV_HEADERS)
-        return
-
-    # If the first row doesn't look like our headers, we repair it
-    if _normalize_header(first_row) != _normalize_header(CSV_HEADERS):
-        # Read all existing rows as raw (including the current first row)
-        with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
-            all_rows = list(csv.reader(f))
-
-        # Rewrite with header + existing rows
-        with open(CSV_FILE, "w", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(CSV_HEADERS)
-            for r in all_rows:
-                if r:  # skip empty lines
-                    writer.writerow(r)
-
-
-def read_rows_as_dicts():
-    """
-    Returns rows as list[dict] even if the CSV is missing a header.
-    This uses ensure_csv_file() which also repairs the file if needed.
-    """
-    ensure_csv_file()
-
-    with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
-        reader = csv.reader(f)
-        rows = [r for r in reader if r]  # remove empty rows
-
-    if not rows:
-        return []
-
-    first = rows[0]
-    data_rows = rows[1:]
-
-    # If header matches, use DictReader properly
-    if _normalize_header(first) == _normalize_header(CSV_HEADERS):
-        with open(CSV_FILE, "r", encoding="utf-8", newline="") as f:
-            return list(csv.DictReader(f))
-
-    # Otherwise treat as headerless (should not happen after ensure_csv_file, but safe)
-    out = []
-    for r in rows:
-        padded = (r + [""] * len(CSV_HEADERS))[: len(CSV_HEADERS)]
-        out.append(dict(zip(CSV_HEADERS, padded)))
-    return out
-
-
-# ========== HELPER: DESCOBRIR COLUNA DE EMAIL ==========
-
-def get_row_email(row):
-    """
-    Tenta encontrar o campo de e-mail em uma linha do CSV,
-    independentemente de variações como 'email', 'E-mail', 'E mail', etc.
-
-    Retorna o e-mail em minúsculas e sem espaços ao redor, ou None se não encontrar.
-    """
-    email_key = next(
-        (
-            k
-            for k in row.keys()
-            if isinstance(k, str)
-            and k.strip().lower() in ("email", "e-mail", "e_mail", "e mail")
-        ),
-        None,
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    acompanhantes = db.Column(db.Integer, default=0)
+    criancas = db.Column(db.Integer, default=0)
+    mensagem = db.Column(db.Text, nullable=True)
+    vai_vir = db.Column(db.Boolean, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
 
-    if not email_key:
-        return None
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "email": self.email,
+            "acompanhantes": self.acompanhantes,
+            "criancas": self.criancas,
+            "mensagem": self.mensagem,
+            "vai_vir": self.vai_vir,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
 
-    cell = row.get(email_key)
-    if cell is None:
-        return None
 
-    return str(cell).strip().lower()
+# Cria a tabela uma vez (tanto local quanto no Fly)
+with app.app_context():
+    db.create_all()
 
 
-# ========== FUNÇÃO DE ENVIO (SENDGRID) ==========
+# ================== HELPERS ==================
 
 def enviar_email(destinatarios, assunto, corpo):
     """Envia e-mail usando SendGrid. Se a API key não estiver configurada,
@@ -192,138 +121,189 @@ def enviar_email(destinatarios, assunto, corpo):
         print(f"Erro ao enviar e-mail via SendGrid: {e}")
 
 
-# ========== ENDPOINT PARA BUSCAR RSVP EXISTENTE ==========
+def compute_confirmed_list_and_total():
+    """
+    Lê TODOS os RSVPs do banco e monta:
+    - lista_confirmados: ["💌 Nome, com X acompanhantes...", ...]
+    - total_pessoas: soma de adultos + crianças
+    (regra igual ao código antigo baseado em CSV)
+    """
+    confirmados = Rsvp.query.filter_by(vai_vir=True).all()
+
+    lista_confirmados = []
+    total_pessoas = 0
+
+    for r in confirmados:
+        nome_c = r.nome
+
+        adultos_raw = r.acompanhantes or 0
+        cri = r.criancas or 0
+
+        # Always count at least the guest (1 adult)
+        adultos_total = adultos_raw if adultos_raw > 0 else 1
+        adicionais = max(adultos_total - 1, 0)
+
+        partes = []
+        if adicionais > 0:
+            partes.append(f"{adicionais} acompanhante(s) adulto")
+        if cri > 0:
+            partes.append(f"{cri} acompanhante(s) infantil")
+
+        if partes:
+            descricao = f"💌 {nome_c}, com " + " e ".join(partes)
+        else:
+            descricao = f"💌 {nome_c}"
+
+        lista_confirmados.append(descricao)
+        total_pessoas += adultos_total + cri
+
+    return lista_confirmados, total_pessoas
+
+
+# ================== ENDPOINT: GET /api/rsvp (buscar existente por e-mail) ==================
 
 @app.route("/api/rsvp", methods=["GET"])
 def get_rsvp():
+    """
+    Verifica se já existe RSVP para um e-mail.
+    Agora consulta o BANCO em vez do CSV.
+    """
     email = request.args.get("email", "").strip().lower()
     if not email:
         return jsonify({"erro": "E-mail não fornecido"}), 400
 
-    if not os.path.exists(CSV_FILE):
+    existing = Rsvp.query.filter_by(email=email).first()
+    if not existing:
         return jsonify({"existe": False}), 200
-
-    latest = {}
-    for row in read_rows_as_dicts():
-        row_email = get_row_email(row)
-        if not row_email:
-            continue
-        latest[row_email] = row
-
-    if email not in latest:
-        return jsonify({"existe": False}), 200
-
-    row = latest[email]
 
     return jsonify({
         "existe": True,
-        "nome": row.get("Nome", ""),
-        "email": email,  # normalizado
-        "acompanhantes": row.get("Acompanhantes", ""),
-        "criancas": row.get("Criancas", ""),
-        "mensagem": row.get("Mensagem", ""),
-        "vai_vir": str(row.get("Vai Vir", "")).strip().lower() == "sim"
+        "nome": existing.nome,
+        "email": existing.email,
+        "acompanhantes": existing.acompanhantes or 0,
+        "criancas": existing.criancas or 0,
+        "mensagem": existing.mensagem or "",
+        "vai_vir": bool(existing.vai_vir),
     }), 200
 
 
-# ========== ENDPOINT DE RSVP (CRIAR / ATUALIZAR) ==========
+# ================== ENDPOINT: POST/PUT /api/rsvp (criar / atualizar) ==================
 
 @app.route("/api/rsvp", methods=["POST", "PUT"])
-def confirmar_presenca():
-    data = request.json
-    nome = data.get("nome")
-    email = data.get("email", "").strip().lower()
-    acompanhantes = int(data.get("acompanhantes", 0) or 0)
-    criancas = int(data.get("criancas", 0) or 0)
-    mensagem = data.get("mensagem", "")
-    vai_vir = data.get("vai_vir", True)
-    metodo = request.method
+def handle_rsvp():
+    """
+    - POST: cria um novo RSVP (email único).
+    - PUT: atualiza RSVP existente, usando apenas o e-mail como chave.
+      Nome e e-mail NÃO são alterados em updates.
+    """
 
-    if not nome or not email:
-        return jsonify({"erro": "Nome e e-mail são obrigatórios"}), 400
+    data = request.get_json() or {}
 
-    # Ensure CSV exists + has header (repairs old/broken files)
-    ensure_csv_file()
+    nome = (data.get("nome") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    acompanhantes = int(data.get("acompanhantes") or 0)
+    criancas = int(data.get("criancas") or 0)
+    mensagem = (data.get("mensagem") or "").strip()
+    vai_vir = bool(data.get("vai_vir"))
 
-    # ========== LER CONFIRMAÇÕES EXISTENTES ==========
-    latest = {}
-    for row in read_rows_as_dicts():
-        row_email = get_row_email(row)
-        if not row_email:
-            continue
-        latest[row_email] = row
+    if not email:
+        return jsonify({"erro": "E-mail é obrigatório."}), 400
 
-    # ========== CHECAR SE EMAIL EXISTE NO POST ==========
-    if metodo == "POST" and email in latest:
-        return jsonify({"erro": "Email já cadastrado", "code": 409}), 409
+    existing = Rsvp.query.filter_by(email=email).first()
 
-    # Safety: if user sets 0 adults, they still count as 1 (themselves)
-    acompanhantes_display = acompanhantes if acompanhantes > 0 else 1
+    # ---------- POST = new RSVP ----------
+    if request.method == "POST":
+        if not nome:
+            return jsonify({"erro": "Nome é obrigatório."}), 400
 
-    # ========== ADICIONAR NOVA LINHA NO CSV ==========
-    with open(CSV_FILE, "a", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([nome, email, acompanhantes, criancas, mensagem, "Sim" if vai_vir else "Não"])
+        if existing:
+            # email already used -> frontend shows 'Esse e-mail já foi usado...'
+            return jsonify({"erro": "RSVP já existente para este e-mail."}), 409
 
-    # ========== RECRIAR LISTA FINAL ==========
-    latest_confirmations = {}
-    for row in read_rows_as_dicts():
-        row_email = get_row_email(row)
-        if not row_email:
-            continue
-        latest_confirmations[row_email] = row
+        r = Rsvp(
+            nome=nome,
+            email=email,
+            acompanhantes=acompanhantes,
+            criancas=criancas,
+            mensagem=mensagem,
+            vai_vir=vai_vir,
+        )
+        db.session.add(r)
+        db.session.commit()
 
-    # ========== LISTA FINAL FORMATADA ==========
-    lista_confirmados = []
-    total_pessoas = 0
+        # Monta lista + total de pessoas (a partir do banco)
+        lista_confirmados, total_pessoas = compute_confirmed_list_and_total()
 
-    for row in latest_confirmations.values():
-        if str(row.get("Vai Vir", "")).strip().lower() == "sim":
-            nome_c = row.get("Nome", "")
+        # Safety: se o usuário preenche 0 adultos, conta pelo menos 1 (ele mesmo)
+        acompanhantes_display = acompanhantes if acompanhantes > 0 else 1
 
-            try:
-                adultos_raw = int(row.get("Acompanhantes", 0) or 0)
-            except (TypeError, ValueError):
-                adultos_raw = 0
-
-            try:
-                cri = int(row.get("Criancas", 0) or 0)
-            except (TypeError, ValueError):
-                cri = 0
-
-            # Always count at least the guest (1 adult)
-            adultos_total = adultos_raw if adultos_raw > 0 else 1
-            adicionais = max(adultos_total - 1, 0)
-
-            partes = []
-            if adicionais > 0:
-                partes.append(f"{adicionais} acompanhante(s) adulto")
-            if cri > 0:
-                partes.append(f"{cri} acompanhante(s) infantil")
-
-            if partes:
-                descricao = f"💌 {nome_c}, com " + " e ".join(partes)
-            else:
-                descricao = f"💌 {nome_c}"
-
-            lista_confirmados.append(descricao)
-            total_pessoas += adultos_total + cri
-
-    # ========== EMAIL PARA OS NOIVOS ==========
-    if vai_vir:
-        if metodo == "PUT":
-            assunto = "Alteração na confirmação 💡"
-            corpo = f"🔄 {nome} alterou sua confirmação e agora VAI comparecer com {acompanhantes_display} adulto(s) e {criancas} criança(s)."
-        else:
+        # E-mail para os noivos (mantém mesma lógica do código antigo)
+        if vai_vir:
             assunto = "Nova Confirmação de Presença ✨"
-            corpo = f"🎉 YEYYY! {nome} confirmou presença com {acompanhantes_display} adulto(s) e {criancas} criança(s)!"
-    else:
-        if metodo == "PUT":
-            assunto = "Alteração de RSVP ❌"
-            corpo = f"🔄 {nome} alterou sua confirmação e agora NÃO poderá comparecer."
+            corpo = (
+                f"🎉 YEYYY! {nome} confirmou presença com "
+                f"{acompanhantes_display} adulto(s) e {criancas} criança(s)!"
+            )
         else:
             assunto = "Confirmação negativa recebida ❌"
             corpo = f"Que pena, {nome} não poderá comparecer."
+
+        corpo += (
+            "\n\n📋 Lista atualizada de confirmados:\n"
+            + "\n".join(lista_confirmados)
+            + f"\n\n👥 Total de pessoas esperadas: {total_pessoas}"
+        )
+
+        enviar_email(GROOMS_EMAILS, assunto, corpo)
+
+        # E-mail para o convidado
+        corpo_convidado = (
+            f"Olá {nome},\n\n"
+            f"{'Estamos muito felizes com sua resposta!' if vai_vir else 'Obrigada por nos informar...'}\n\n"
+            f"{'Obrigado por confirmar sua presença' if vai_vir else 'Sentiremos sua falta'} no nosso casamento! 💍\n\n"
+            "Com carinho,\nNicole & Bruno ✨"
+        )
+
+        enviar_email(
+            email,
+            "Obrigado por confirmar sua presença!" if vai_vir else "Sentiremos sua falta!",
+            corpo_convidado
+        )
+
+        return jsonify({"status": "ok", "rsvp": r.to_dict()}), 201
+
+    # ---------- PUT = update existing RSVP ----------
+    if not existing:
+        # Em teoria o frontend só entra no modo update depois de receber 409 do POST,
+        # então aqui quase nunca acontece. Mas retornamos 404 pra ser claro.
+        return jsonify({"erro": "Nenhum RSVP encontrado para este e-mail."}), 404
+
+    # NÃO tocamos em existing.nome nem existing.email
+    existing.acompanhantes = acompanhantes
+    existing.criancas = criancas
+    existing.mensagem = mensagem
+    existing.vai_vir = vai_vir
+
+    db.session.commit()
+
+    # Recalcula lista + total de pessoas
+    lista_confirmados, total_pessoas = compute_confirmed_list_and_total()
+
+    # Safety para texto do e-mail
+    acompanhantes_display = acompanhantes if acompanhantes > 0 else 1
+
+    # E-mail para os noivos, versão "alteração"
+    if vai_vir:
+        assunto = "Alteração na confirmação 💡"
+        corpo = (
+            f"🔄 {existing.nome} alterou sua confirmação e agora VAI comparecer "
+            f"com {acompanhantes_display} adulto(s) e {criancas} criança(s)."
+        )
+    else:
+        assunto = "Alteração de RSVP ❌"
+        corpo = (
+            f"🔄 {existing.nome} alterou sua confirmação e agora NÃO poderá comparecer."
+        )
 
     corpo += (
         "\n\n📋 Lista atualizada de confirmados:\n"
@@ -333,29 +313,29 @@ def confirmar_presenca():
 
     enviar_email(GROOMS_EMAILS, assunto, corpo)
 
-    # ========== EMAIL PARA O CONVIDADO ==========
+    # E-mail para o convidado
     corpo_convidado = (
-        f"Olá {nome},\n\n"
-        f"{'Estamos muito felizes com sua resposta!' if vai_vir else 'Obrigada por nos informar...'}\n\n"
-        f"{'Obrigado por confirmar sua presença' if vai_vir else 'Sentiremos sua falta'} no nosso casamento! 💍\n\n"
+        f"Olá {existing.nome},\n\n"
+        "Sua confirmação foi atualizada com sucesso.\n\n"
+        f"{'Estamos muito felizes que você poderá estar conosco! 💍' if vai_vir else 'Que pena que você não poderá comparecer, mas agradecemos por nos avisar.'}\n\n"
         "Com carinho,\nNicole & Bruno ✨"
     )
 
     enviar_email(
-        email,
-        "Obrigado por confirmar sua presença!" if vai_vir else "Sentiremos sua falta!",
+        existing.email,
+        "Sua confirmação foi atualizada",
         corpo_convidado
     )
 
-    return jsonify({"status": "ok", "mensagem": "Confirmação registrada com sucesso"}), 200
+    return jsonify({"status": "ok", "rsvp": existing.to_dict()}), 200
 
 
-# ========== EXPORTAR RSVPs (APENAS ADMIN) – STREAM DO ARQUIVO REAL ==========
+# ================== EXPORTAR RSVPs (APENAS ADMIN) – VIA BANCO ==================
 
 @app.route("/api/admin/rsvp-export", methods=["GET"])
 def rsvp_export():
     """
-    Exporta a lista de RSVPs exatamente como está no arquivo CSV do servidor.
+    Exporta a lista de RSVPs diretamente do BANCO DE DADOS em formato CSV.
 
     Protegido por token simples: ?token=Admin7849
     (na produção usamos o valor de ADMIN_TOKEN).
@@ -365,19 +345,27 @@ def rsvp_export():
     if token != ADMIN_TOKEN:
         return jsonify({"erro": "Não autorizado"}), 401
 
-    if not os.path.exists(CSV_FILE):
+    rsvps = Rsvp.query.order_by(Rsvp.created_at.asc()).all()
+    if not rsvps:
         return jsonify({"erro": "Ainda não há RSVPs salvos."}), 404
 
-    # Ensure header exists before export (repairs broken file)
-    ensure_csv_file()
+    output = StringIO()
+    writer = csv.writer(output)
 
-    with open(CSV_FILE, "r", encoding="utf-8") as f:
-        csv_data = f.read()
+    writer.writerow(CSV_HEADERS)
+    for r in rsvps:
+        writer.writerow([
+            r.nome,
+            r.email,
+            r.acompanhantes or 0,
+            r.criancas or 0,
+            (r.mensagem or "").replace("\n", " ").replace("\r", " "),
+            "Sim" if r.vai_vir else "Não",
+        ])
 
+    csv_data = output.getvalue()
     # Excel-friendly: add BOM so "Não" doesn't become "NÃ£o"
     csv_with_bom = "\ufeff" + csv_data
-
-    print(f"[RSVP_EXPORT] Enviando {len(csv_data)} bytes de {CSV_FILE}")
 
     return Response(
         csv_with_bom,
@@ -388,7 +376,7 @@ def rsvp_export():
     )
 
 
-# ========== MERCADO PAGO CHECKOUT PRO (REDIRECT) ==========
+# ================== MERCADO PAGO CHECKOUT PRO (REDIRECT) ==================
 
 @app.route("/api/mercadopago/checkout", methods=["POST"])
 def criar_preferencia_checkout():
@@ -489,45 +477,41 @@ def criar_preferencia_checkout():
     ), 200
 
 
-# ========== NOVO: LISTAR RECADOS PARA O CARROSSEL ==========
+# ================== NOVO: LISTAR RECADOS VIA BANCO ==================
 
 @app.route("/api/rsvp/messages", methods=["GET"])
-def listar_recados():
+def get_rsvp_messages():
     """
-    Retorna a lista de recados (mensagem + nome) para o carrossel na home.
-
-    - Usa sempre a ÚLTIMA confirmação de cada e-mail (mesma lógica do restante do backend).
-    - Ignora linhas sem mensagem.
-    - Formato de resposta:
-      [
-        { "nome": "Convidado X", "mensagem": "Mensagem dele" },
-        ...
-      ]
+    Retorna a lista de recados (mensagem + nome) para o carrossel na página,
+    usando APENAS convidados que:
+      - vai_vir == True
+      - mensagem não vazia
     """
-    latest = {}
-    for row in read_rows_as_dicts():
-        row_email = get_row_email(row)
-        if not row_email:
-            continue
-        latest[row_email] = row  # última ocorrência vence
+    recs = (
+        Rsvp.query
+        .filter(Rsvp.vai_vir == True)  # somente quem VAI vir
+        .filter(Rsvp.mensagem.isnot(None), Rsvp.mensagem != "")
+        .order_by(Rsvp.created_at.desc())
+        .limit(100)
+        .all()
+    )
 
-    recados = []
-    for row in latest.values():
-        msg = str(row.get("Mensagem", "") or "").strip()
-        if not msg:
-            continue
-        nome = str(row.get("Nome", "") or "").strip() or "Convidado"
-        recados.append({
-            "nome": nome,
-            "mensagem": msg,
-        })
+    result = [
+        {
+            "nome": r.nome,
+            "mensagem": r.mensagem,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in recs
+    ]
 
-    return jsonify(recados), 200
+    return jsonify(result), 200
 
 
-# ========== RODAR SERVIDOR ==========
+# ================== RODAR SERVIDOR ==================
 
 if __name__ == "__main__":
     print("MP_ACCESS_TOKEN presente?", bool(MP_ACCESS_TOKEN))
     print("ADMIN_TOKEN configurado?", bool(ADMIN_TOKEN))
+    print("DATABASE_URL:", db_url)
     app.run(debug=True)

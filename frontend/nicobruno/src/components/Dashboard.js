@@ -1201,6 +1201,7 @@ const Dashboard = () => {
                     required
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
+                    disabled={isUpdating}
                   />
                   <input
                     type="email"
@@ -1208,6 +1209,7 @@ const Dashboard = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isUpdating}
                   />
 
                   {(vaiVir === "yes" || isUpdating) && (

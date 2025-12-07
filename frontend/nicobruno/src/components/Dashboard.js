@@ -62,7 +62,6 @@ const Dashboard = () => {
   );
 
   const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-  console.log("Maps key test from React:", googleMapsApiKey);
 
   const scrollToSection = useCallback(
     (sectionIndex) => {

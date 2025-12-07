@@ -1011,7 +1011,7 @@ const Dashboard = () => {
                   minHeight: "210px", // fixed-ish height so it doesn't jump
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                 }}
               >
                 <div>
@@ -1037,7 +1037,7 @@ const Dashboard = () => {
                           fontStyle: "italic",
                           fontSize: "0.95rem",
                           color: "#555",
-                          // keep height stable with multi-line text
+                          justifyContent: "center",
                           minHeight: "3.6em",
                         }}
                       >
@@ -1049,6 +1049,8 @@ const Dashboard = () => {
                           fontWeight: 600,
                           fontSize: "0.9rem",
                           color: "#333",
+                          alignItems: "flex-end",
+                          textAlign: "end",
                         }}
                       >
                         — {recados[currentRecadoIndex].nome}
@@ -1168,7 +1170,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <>
-                <h2>
+                <h2 id="confirmtittle">
                   {isUpdating
                     ? "Alterar Confirmação de Presença"
                     : "Confirme sua Presença"}

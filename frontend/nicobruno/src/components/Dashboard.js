@@ -1173,8 +1173,8 @@ const Dashboard = () => {
                     ? "Alterar Confirmação de Presença"
                     : "Confirme sua Presença"}
                 </h2>
-                <p>Voce virá ao casamento?</p>
                 <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
+                  <p>Voce virá ao casamento?</p>
                   <div className="toggle-group">
                     <button
                       type="button"

@@ -8,6 +8,9 @@ import { ReactTyped } from "react-typed";
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
+// Max characters for recado / mensagem
+const MAX_RECADOS_CHARS = 220;
+
 const Dashboard = () => {
   const [submitted, setSubmitted] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(15);
@@ -589,6 +592,19 @@ const Dashboard = () => {
     fetchRecados();
   }, []);
 
+  // ---- AUTO ROTATE RECADOS EVERY 3.5s ----
+  useEffect(() => {
+    if (recadosLoading || recados.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentRecadoIndex((prev) =>
+        recados.length ? (prev + 1) % recados.length : 0
+      );
+    }, 3500); // 3.5s
+
+    return () => clearInterval(interval);
+  }, [recadosLoading, recados]);
+
   // ---- CART HELPERS ----
   const addToCart = (gift) => {
     setCart((prev) => {
@@ -971,15 +987,18 @@ const Dashboard = () => {
             gap: "2rem",
             alignItems: "flex-start",
             justifyContent: "center",
-            marginTop: "2rem",
+            marginTop: "3rem",
+            maxWidth: "1100px",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         >
           {/* LEFT: Recados */}
           {!recadosLoading && recados.length > 0 && (
             <div
               style={{
-                flex: "1 1 320px",
-                maxWidth: "480px",
+                flex: "0 1 380px",
+                maxWidth: "420px",
               }}
             >
               <div
@@ -989,99 +1008,107 @@ const Dashboard = () => {
                   backgroundColor: "rgba(255,255,255,0.85)",
                   boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                   textAlign: "center",
+                  minHeight: "210px", // fixed-ish height so it doesn't jump
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                 }}
               >
-                <h3
+                <div>
+                  <h3
+                    style={{
+                      marginTop: 0,
+                      marginBottom: "0.75rem",
+                      fontFamily: "Playfair Display, serif",
+                      fontWeight: 500,
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Recados dos convidados
+                  </h3>
+
+                  {recados.length > 0 && (
+                    <>
+                      <p
+                        style={{
+                          marginBottom: "0.3rem",
+                          fontStyle: "italic",
+                          fontSize: "0.95rem",
+                          color: "#555",
+                          // keep height stable with multi-line text
+                          minHeight: "3.6em",
+                        }}
+                      >
+                        “{recados[currentRecadoIndex].mensagem}”
+                      </p>
+                      <p
+                        style={{
+                          marginTop: 0,
+                          fontWeight: 600,
+                          fontSize: "0.9rem",
+                          color: "#333",
+                        }}
+                      >
+                        — {recados[currentRecadoIndex].nome}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <div
                   style={{
-                    marginTop: 0,
-                    marginBottom: "0.75rem",
-                    fontFamily: "Playfair Display, serif",
-                    fontWeight: 500,
-                    letterSpacing: "0.04em",
-                    textTransform: "uppercase",
-                    fontSize: "1rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    marginTop: "0.75rem",
                   }}
                 >
-                  Recados dos convidados
-                </h3>
-
-                {recados.length > 0 && (
-                  <>
-                    <p
-                      style={{
-                        marginBottom: "0.3rem",
-                        fontStyle: "italic",
-                        fontSize: "0.95rem",
-                        color: "#555",
-                      }}
-                    >
-                      “{recados[currentRecadoIndex].mensagem}”
-                    </p>
-                    <p
-                      style={{
-                        marginTop: 0,
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        color: "#333",
-                      }}
-                    >
-                      — {recados[currentRecadoIndex].nome}
-                    </p>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        marginTop: "0.75rem",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={showPrevRecado}
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          borderRadius: "50%",
-                          border: "none",
-                          backgroundColor: "#e0e0e0",
-                          cursor: "pointer",
-                          fontSize: "1.1rem",
-                          lineHeight: 1,
-                        }}
-                        aria-label="Recado anterior"
-                      >
-                        ‹
-                      </button>
-                      <span
-                        style={{
-                          fontSize: "0.8rem",
-                          color: "#777",
-                        }}
-                      >
-                        {currentRecadoIndex + 1} / {recados.length}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={showNextRecado}
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          borderRadius: "50%",
-                          border: "none",
-                          backgroundColor: "#e0e0e0",
-                          cursor: "pointer",
-                          fontSize: "1.1rem",
-                          lineHeight: 1,
-                        }}
-                        aria-label="Próximo recado"
-                      >
-                        ›
-                      </button>
-                    </div>
-                  </>
-                )}
+                  <button
+                    type="button"
+                    onClick={showPrevRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Recado anterior"
+                  >
+                    ‹
+                  </button>
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#777",
+                    }}
+                  >
+                    {currentRecadoIndex + 1} / {recados.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={showNextRecado}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "none",
+                      backgroundColor: "#e0e0e0",
+                      cursor: "pointer",
+                      fontSize: "1.1rem",
+                      lineHeight: 1,
+                    }}
+                    aria-label="Próximo recado"
+                  >
+                    ›
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1089,7 +1116,7 @@ const Dashboard = () => {
           {/* RIGHT: RSVP form / messages */}
           <div
             style={{
-              flex: "1 1 320px",
+              flex: "1 1 380px",
               maxWidth: "520px",
             }}
           >
@@ -1203,8 +1230,9 @@ const Dashboard = () => {
 
                   <input
                     type="text"
-                    placeholder="Recado para os noivos (opcional)"
+                    placeholder={`Recado para os noivos (opcional, até ${MAX_RECADOS_CHARS} caracteres)`}
                     value={mensagem}
+                    maxLength={MAX_RECADOS_CHARS}
                     onChange={(e) => setMensagem(e.target.value)}
                     onKeyDown={(e) =>
                       e.key === "Enter" && e.preventDefault()

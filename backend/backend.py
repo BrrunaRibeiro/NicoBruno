@@ -165,8 +165,10 @@ def compute_confirmed_list_and_total():
 @app.route("/api/rsvp", methods=["GET"])
 def get_rsvp():
     """
-    Verifica se já existe RSVP para um e-mail.
-    Agora consulta o BANCO em vez do CSV.
+    Busca um RSVP existente pelo e-mail.
+    - 400 se não enviar e-mail.
+    - 404 se não encontrar RSVP.
+    - 200 + dados completos se encontrar.
     """
     email = request.args.get("email", "").strip().lower()
     if not email:
@@ -174,16 +176,18 @@ def get_rsvp():
 
     existing = Rsvp.query.filter_by(email=email).first()
     if not existing:
-        return jsonify({"existe": False}), 200
+        return jsonify({"erro": "Nenhum RSVP encontrado para este e-mail."}), 404
 
     return jsonify({
-        "existe": True,
+        "id": existing.id,
         "nome": existing.nome,
         "email": existing.email,
         "acompanhantes": existing.acompanhantes or 0,
         "criancas": existing.criancas or 0,
         "mensagem": existing.mensagem or "",
         "vai_vir": bool(existing.vai_vir),
+        "created_at": existing.created_at.isoformat() if existing.created_at else None,
+        "updated_at": existing.updated_at.isoformat() if existing.updated_at else None,
     }), 200
 
 
@@ -506,6 +510,26 @@ def get_rsvp_messages():
     ]
 
     return jsonify(result), 200
+
+@app.route("/api/admin/rsvp-clear", methods=["POST"])
+def rsvp_clear():
+    """
+    Apaga TODOS os RSVPs do banco.
+    Protegido por token simples: ?token=Admin7849 (ou o que estiver em ADMIN_TOKEN).
+    USE COM CUIDADO – não tem undo.
+    """
+    token = request.args.get("token", "")
+    if token != ADMIN_TOKEN:
+        return jsonify({"erro": "Não autorizado"}), 401
+
+    try:
+        num_deleted = Rsvp.query.delete()
+        db.session.commit()
+        return jsonify({"status": "ok", "deleted": num_deleted}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"erro": str(e)}), 500
+
 
 
 # ================== RODAR SERVIDOR ==================

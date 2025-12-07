@@ -225,17 +225,17 @@ const Dashboard = () => {
   const typedStrings = useMemo(
     () => [
       "<h3>Família e amigos queridos,</h3>" +
-      "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-      "<br><br>" +
-      "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-      "<br>" +
-      "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-      "<br><br>" +
-      "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-      "<br><br>" +
-      "Com carinho," +
-      "<br><br>" +
-      "<p id='signature'>Nicole e Bruno.</p>",
+        "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+        "<br><br>" +
+        "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+        "<br>" +
+        "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+        "<br><br>" +
+        "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+        "<br><br>" +
+        "Com carinho," +
+        "<br><br>" +
+        "<p id='signature'>Nicole e Bruno.</p>",
     ],
     []
   );
@@ -538,7 +538,7 @@ const Dashboard = () => {
     const urls = [
       `${process.env.PUBLIC_URL}/sunset-nicobruno.webp`,
       `${process.env.PUBLIC_URL}/dresscodephoto.webp`,
-      `${process.env.PUBLIC_URL}/local-photo.webp`, // placeholder; if missing it just errors and continues
+      `${process.env.PUBLIC_URL}/local-photo.webp`,
       ...giftCatalog.map((g) => g.imageUrl).filter(Boolean),
     ];
 
@@ -785,13 +785,10 @@ const Dashboard = () => {
               loading="lazy"
               decoding="async"
             />
-            {/* <h1>Nicole</h1>
-            <h1>&amp; </h1>
-            <h1>Bruno</h1> */}
-            <h5 class="savethedate" id="savedatetext">
+            <h5 className="savethedate" id="savedatetext">
               SAVE THE DATE
             </h5>
-            <h2 class="savethedate">28|03|2026</h2>
+            <h2 className="savethedate">28|03|2026</h2>
           </div>
           <div className="image-right">
             <img
@@ -966,254 +963,287 @@ const Dashboard = () => {
         className="section"
         style={{ minHeight: "100vh", position: "relative" }}
       >
-        {/* RECADOS CAROUSEL */}
-        {!recadosLoading && recados.length > 0 && (
-          <div
-            style={{
-              marginTop: "2rem",
-              maxWidth: "700px",
-              marginLeft: "auto",
-              marginRight: "auto",
-              padding: "1.5rem 2rem",
-              borderRadius: "18px",
-              backgroundColor: "rgba(255,255,255,0.85)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-              textAlign: "center",
-            }}
-          >
-            <h3
+        <div
+          className="confirmar-layout"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "2rem",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            marginTop: "2rem",
+          }}
+        >
+          {/* LEFT: Recados */}
+          {!recadosLoading && recados.length > 0 && (
+            <div
               style={{
-                marginTop: 0,
-                marginBottom: "0.75rem",
-                fontFamily: "Playfair Display, serif",
-                fontWeight: 500,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                fontSize: "1rem",
+                flex: "1 1 320px",
+                maxWidth: "480px",
               }}
             >
-              Recados dos convidados
-            </h3>
-
-            {recados.length > 0 && (
-              <>
-                <p
-                  style={{
-                    marginBottom: "0.3rem",
-                    fontStyle: "italic",
-                    fontSize: "0.95rem",
-                    color: "#555",
-                  }}
-                >
-                  “{recados[currentRecadoIndex].mensagem}”
-                </p>
-                <p
+              <div
+                style={{
+                  padding: "1.5rem 2rem",
+                  borderRadius: "18px",
+                  backgroundColor: "rgba(255,255,255,0.85)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                  textAlign: "center",
+                }}
+              >
+                <h3
                   style={{
                     marginTop: 0,
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    color: "#333",
+                    marginBottom: "0.75rem",
+                    fontFamily: "Playfair Display, serif",
+                    fontWeight: 500,
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    fontSize: "1rem",
                   }}
                 >
-                  — {recados[currentRecadoIndex].nome}
-                </p>
+                  Recados dos convidados
+                </h3>
 
+                {recados.length > 0 && (
+                  <>
+                    <p
+                      style={{
+                        marginBottom: "0.3rem",
+                        fontStyle: "italic",
+                        fontSize: "0.95rem",
+                        color: "#555",
+                      }}
+                    >
+                      “{recados[currentRecadoIndex].mensagem}”
+                    </p>
+                    <p
+                      style={{
+                        marginTop: 0,
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        color: "#333",
+                      }}
+                    >
+                      — {recados[currentRecadoIndex].nome}
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        marginTop: "0.75rem",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={showPrevRecado}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          border: "none",
+                          backgroundColor: "#e0e0e0",
+                          cursor: "pointer",
+                          fontSize: "1.1rem",
+                          lineHeight: 1,
+                        }}
+                        aria-label="Recado anterior"
+                      >
+                        ‹
+                      </button>
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "#777",
+                        }}
+                      >
+                        {currentRecadoIndex + 1} / {recados.length}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={showNextRecado}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          border: "none",
+                          backgroundColor: "#e0e0e0",
+                          cursor: "pointer",
+                          fontSize: "1.1rem",
+                          lineHeight: 1,
+                        }}
+                        aria-label="Próximo recado"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* RIGHT: RSVP form / messages */}
+          <div
+            style={{
+              flex: "1 1 320px",
+              maxWidth: "520px",
+            }}
+          >
+            {emailExists && !isUpdating ? (
+              <div className="confirmation-message">
+                <h2>Esse e-mail já foi usado para confirmar presença.</h2>
+                <p>
+                  Se deseja mudar sua confirmação ou número de convidados, você
+                  pode abaixo:
+                </p>
                 <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    marginTop: "0.75rem",
-                  }}
+                  style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}
                 >
                   <button
-                    type="button"
-                    onClick={showPrevRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
+                    onClick={() => {
+                      setEmailExists(false);
+                      setIsUpdating(true);
                     }}
-                    aria-label="Recado anterior"
                   >
-                    ‹
+                    Alterar Confirmação
                   </button>
-                  <span
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "#777",
-                    }}
-                  >
-                    {currentRecadoIndex + 1} / {recados.length}
-                  </span>
                   <button
-                    type="button"
-                    onClick={showNextRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
+                    onClick={() => {
+                      setEmailExists(false);
+                      scrollToSection(0);
                     }}
-                    aria-label="Próximo recado"
                   >
-                    ›
+                    Voltar à página inicial
                   </button>
                 </div>
+              </div>
+            ) : submitted ? (
+              <div className="confirmation-message">
+                <h2>
+                  {vaiVir === "yes"
+                    ? "Obrigado por confirmar presença!"
+                    : "Sentiremos sua falta!"}
+                </h2>
+                <p>
+                  {vaiVir === "yes"
+                    ? "Estamos muito felizes que você irá compartilhar esse momento tão especial conosco."
+                    : "Que pena que você não poderá comparecer. Obrigada por nos avisar!"}
+                </p>
+                <small>
+                  Você será redirecionado para a página de{" "}
+                  <a href="/Presentes">Presentes</a> em {redirectCountdown}{" "}
+                  segundos...
+                </small>
+              </div>
+            ) : (
+              <>
+                <h2>
+                  {isUpdating
+                    ? "Alterar Confirmação de Presença"
+                    : "Confirme sua Presença"}
+                </h2>
+                <p>Voce virá ao casamento?</p>
+                <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
+                  <div className="toggle-group">
+                    <button
+                      type="button"
+                      className={`toggle-option sim ${
+                        vaiVir === "yes" ? "selected" : ""
+                      }`}
+                      onClick={() => setVaiVir("yes")}
+                    >
+                      Sim
+                    </button>
+                    <button
+                      type="button"
+                      className={`toggle-option nao ${
+                        vaiVir === "no" ? "selected" : ""
+                      }`}
+                      onClick={() => setVaiVir("no")}
+                    >
+                      Não
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Seu nome completo"
+                    required
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Seu e-mail"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+
+                  {(vaiVir === "yes" || isUpdating) && (
+                    <>
+                      <input
+                        type="number"
+                        placeholder="Número de adultos (incluindo você)"
+                        required
+                        value={acompanhantes}
+                        onChange={(e) => setAcompanhantes(e.target.value)}
+                      />
+                      <input
+                        type="number"
+                        placeholder="Número de crianças"
+                        value={criancas}
+                        onChange={(e) => setCriancas(e.target.value)}
+                      />
+                    </>
+                  )}
+
+                  <input
+                    type="text"
+                    placeholder="Recado para os noivos (opcional)"
+                    value={mensagem}
+                    onChange={(e) => setMensagem(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && e.preventDefault()
+                    }
+                  />
+
+                  <button type="submit" disabled={vaiVir === null || submitting}>
+                    {isUpdating
+                      ? "Atualizar Confirmação"
+                      : "Enviar Confirmação"}
+                  </button>
+
+                  {!isUpdating && (
+                    <button
+                      type="button"
+                      className="update-button"
+                      onClick={() => setIsUpdating(true)}
+                    >
+                      Ou deseja alterar sua resposta?
+                    </button>
+                  )}
+
+                  {isUpdating && (
+                    <button
+                      type="button"
+                      className="update-button"
+                      onClick={() => {
+                        setIsUpdating(false);
+                        setEmailExists(false);
+                      }}
+                    >
+                      Voltar para nova confirmação
+                    </button>
+                  )}
+                </form>
               </>
             )}
           </div>
-        )}
-        {emailExists && !isUpdating ? (
-          <div className="confirmation-message">
-            <h2>Esse e-mail já foi usado para confirmar presença.</h2>
-            <p>
-              Se deseja mudar sua confirmação ou número de convidados, você pode
-              abaixo:
-            </p>
-            <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-              <button
-                onClick={() => {
-                  setEmailExists(false);
-                  setIsUpdating(true);
-                }}
-              >
-                Alterar Confirmação
-              </button>
-              <button
-                onClick={() => {
-                  setEmailExists(false);
-                  scrollToSection(0);
-                }}
-              >
-                Voltar à página inicial
-              </button>
-            </div>
-          </div>
-        ) : submitted ? (
-          <div className="confirmation-message">
-            <h2>
-              {vaiVir === "yes"
-                ? "Obrigado por confirmar presença!"
-                : "Sentiremos sua falta!"}
-            </h2>
-            <p>
-              {vaiVir === "yes"
-                ? "Estamos muito felizes que você irá compartilhar esse momento tão especial conosco."
-                : "Que pena que você não poderá comparecer. Obrigada por nos avisar!"}
-            </p>
-            <small>
-              Você será redirecionado para a página de{" "}
-              <a href="/Presentes">Presentes</a> em {redirectCountdown} segundos...
-            </small>
-          </div>
-        ) : (
-          <>
-            <h2>
-              {isUpdating
-                ? "Alterar Confirmação de Presença"
-                : "Confirme sua Presença"}
-            </h2>
-            <p>Voce virá ao casamento?</p>
-            <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
-              <div className="toggle-group">
-                <button
-                  type="button"
-                  className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
-                    }`}
-                  onClick={() => setVaiVir("yes")}
-                >
-                  Sim
-                </button>
-                <button
-                  type="button"
-                  className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
-                    }`}
-                  onClick={() => setVaiVir("no")}
-                >
-                  Não
-                </button>
-              </div>
-              <input
-                type="text"
-                placeholder="Seu nome completo"
-                required
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <input
-                type="email"
-                placeholder="Seu e-mail"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              {(vaiVir === "yes" || isUpdating) && (
-                <>
-                  <input
-                    type="number"
-                    placeholder="Número de adultos (incluindo você)"
-                    required
-                    value={acompanhantes}
-                    onChange={(e) => setAcompanhantes(e.target.value)}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Número de crianças"
-                    value={criancas}
-                    onChange={(e) => setCriancas(e.target.value)}
-                  />
-                </>
-              )}
-
-              <input
-                type="text"
-                placeholder="Recado para os noivos (opcional)"
-                value={mensagem}
-                onChange={(e) => setMensagem(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-              />
-
-              <button type="submit" disabled={vaiVir === null || submitting}>
-                {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
-              </button>
-
-              {!isUpdating && (
-                <button
-                  type="button"
-                  className="update-button"
-                  onClick={() => setIsUpdating(true)}
-                >
-                  Ou deseja alterar sua resposta?
-                </button>
-              )}
-
-              {isUpdating && (
-                <button
-                  type="button"
-                  className="update-button"
-                  onClick={() => {
-                    setIsUpdating(false);
-                    setEmailExists(false);
-                  }}
-                >
-                  Voltar para nova confirmação
-                </button>
-              )}
-            </form>
-          </>
-        )}
+        </div>
 
         <div className="nav-arrows">
           <Arrow direction="up" />
@@ -1229,7 +1259,9 @@ const Dashboard = () => {
         style={{ minHeight: "100vh", position: "relative" }}
       >
         <h2>Lista de Presentes</h2>
-        <p style={{ maxWidth: "80%", margin: "0 auto 1rem", textAlign: "center" }}>
+        <p
+          style={{ maxWidth: "80%", margin: "0 auto 1rem", textAlign: "center" }}
+        >
           Se quiser nos presentear, fique à vontade para escolher um item da
           nossa Lista de Casamento e comprar pelo site ou, se preferir mais
           praticidade, utilize nossa chave PIX abaixo.

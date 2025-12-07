@@ -228,17 +228,17 @@ const Dashboard = () => {
   const typedStrings = useMemo(
     () => [
       "<h3>Família e amigos queridos,</h3>" +
-        "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
-        "<br><br>" +
-        "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
-        "<br>" +
-        "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
-        "<br><br>" +
-        "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
-        "<br><br>" +
-        "Com carinho," +
-        "<br><br>" +
-        "<p id='signature'>Nicole e Bruno.</p>",
+      "Com grande emoção e carinho, convidamos vocês para celebrar conosco um dos momentos mais especiais de nossas vidas:  ^900 o nosso casamento...   ^1000" +
+      "<br><br>" +
+      "Criamos este espaço para tornar tudo mais simples: informações, presentes e um convite aberto para comemorar ao nosso lado.  ^500" +
+      "<br>" +
+      "Ficaremos muito felizes em contar com sua presença, por isso, não deixe de confirmar através do menu ‘Confirmar Presença’.  ^500" +
+      "<br><br>" +
+      "Contamos com vocês ^100 e mal podemos esperar para celebrar juntos!  ^1000" +
+      "<br><br>" +
+      "Com carinho," +
+      "<br><br>" +
+      "<p id='signature'>Nicole e Bruno.</p>",
     ],
     []
   );
@@ -979,133 +979,42 @@ const Dashboard = () => {
         className="section"
         style={{ minHeight: "100vh", position: "relative" }}
       >
-        <div
-          className="confirmar-layout"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "2rem",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            marginTop: "3rem",
-            maxWidth: "1100px",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          {/* LEFT: Recados */}
+        <div className="confirmar-layout">
+          {/* LEFT: Recados – now using CSS classes */}
           {!recadosLoading && recados.length > 0 && (
-            <div
-              style={{
-                flex: "0 1 380px",
-                maxWidth: "420px",
-              }}
-            >
-              <div
-                style={{
-                  padding: "1.5rem 2rem",
-                  borderRadius: "18px",
-                  backgroundColor: "rgba(255,255,255,0.85)",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-                  textAlign: "center",
-                  minHeight: "210px", // fixed-ish height so it doesn't jump
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      marginTop: 0,
-                      marginBottom: "0.75rem",
-                      fontFamily: "Playfair Display, serif",
-                      fontWeight: 500,
-                      letterSpacing: "0.04em",
-                      textTransform: "uppercase",
-                      fontSize: "1rem",
-                    }}
-                  >
-                    Recados dos convidados
-                  </h3>
+            <div className="recados-wrapper">
+              <div className="recados-card">
+                <div className="recados-message">
+                  <h3 className="recados-title">RECADOS DOS CONVIDADOS</h3>
 
                   {recados.length > 0 && (
                     <>
-                      <p
-                        style={{
-                          marginBottom: "0.3rem",
-                          fontStyle: "italic",
-                          fontSize: "0.95rem",
-                          color: "#555",
-                          justifyContent: "center",
-                          minHeight: "3.6em",
-                        }}
-                      >
+                      <p className="recados-text">
                         “{recados[currentRecadoIndex].mensagem}”
                       </p>
-                      <p
-                        style={{
-                          marginTop: 0,
-                          fontWeight: 600,
-                          fontSize: "0.9rem",
-                          color: "#333",
-                          alignItems: "flex-end",
-                          textAlign: "end",
-                        }}
-                      >
+                      <p className="recados-author">
                         — {recados[currentRecadoIndex].nome}
                       </p>
                     </>
                   )}
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    marginTop: "0.75rem",
-                  }}
-                >
+                <div className="recados-controls">
                   <button
                     type="button"
+                    className="recados-arrow-btn"
                     onClick={showPrevRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
-                    }}
                     aria-label="Recado anterior"
                   >
                     ‹
                   </button>
-                  <span
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "#777",
-                    }}
-                  >
+                  <span className="recados-index">
                     {currentRecadoIndex + 1} / {recados.length}
                   </span>
                   <button
                     type="button"
+                    className="recados-arrow-btn"
                     onClick={showNextRecado}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      border: "none",
-                      backgroundColor: "#e0e0e0",
-                      cursor: "pointer",
-                      fontSize: "1.1rem",
-                      lineHeight: 1,
-                    }}
                     aria-label="Próximo recado"
                   >
                     ›
@@ -1116,12 +1025,7 @@ const Dashboard = () => {
           )}
 
           {/* RIGHT: RSVP form / messages */}
-          <div
-            style={{
-              flex: "1 1 380px",
-              maxWidth: "520px",
-            }}
-          >
+          <div style={{ flex: "1 1 420px", maxWidth: "460px" }}>
             {emailExists && !isUpdating ? (
               <div className="confirmation-message">
                 <h2>Esse e-mail já foi usado para confirmar presença.</h2>
@@ -1177,26 +1081,26 @@ const Dashboard = () => {
                 </h2>
                 <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
                   <p id="vocevira">Voce virá ao casamento?</p>
+
                   <div className="toggle-group">
                     <button
                       type="button"
-                      className={`toggle-option sim ${
-                        vaiVir === "yes" ? "selected" : ""
-                      }`}
+                      className={`toggle-option sim ${vaiVir === "yes" ? "selected" : ""
+                        }`}
                       onClick={() => setVaiVir("yes")}
                     >
                       Sim
                     </button>
                     <button
                       type="button"
-                      className={`toggle-option nao ${
-                        vaiVir === "no" ? "selected" : ""
-                      }`}
+                      className={`toggle-option nao ${vaiVir === "no" ? "selected" : ""
+                        }`}
                       onClick={() => setVaiVir("no")}
                     >
                       Não
                     </button>
                   </div>
+
                   <input
                     type="text"
                     placeholder="Seu nome completo"
@@ -1238,15 +1142,11 @@ const Dashboard = () => {
                     value={mensagem}
                     maxLength={MAX_RECADOS_CHARS}
                     onChange={(e) => setMensagem(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && e.preventDefault()
-                    }
+                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                   />
 
                   <button type="submit" disabled={vaiVir === null || submitting}>
-                    {isUpdating
-                      ? "Atualizar Confirmação"
-                      : "Enviar Confirmação"}
+                    {isUpdating ? "Atualizar Confirmação" : "Enviar Confirmação"}
                   </button>
 
                   {!isUpdating && (

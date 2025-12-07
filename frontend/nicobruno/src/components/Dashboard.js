@@ -979,8 +979,13 @@ const Dashboard = () => {
         className="section"
         style={{ minHeight: "100vh", position: "relative" }}
       >
+        {/* Title outside flex, centered above both columns */}
+        <h2 className="confirm-title">
+          {isUpdating ? "Alterar Confirmação de Presença" : "Confirme sua Presença"}
+        </h2>
+
         <div className="confirmar-layout">
-          {/* LEFT: Recados – now using CSS classes */}
+          {/* LEFT: Recados */}
           {!recadosLoading && recados.length > 0 && (
             <div className="recados-wrapper">
               <div className="recados-card">
@@ -1025,7 +1030,7 @@ const Dashboard = () => {
           )}
 
           {/* RIGHT: RSVP form / messages */}
-          <div style={{ flex: "1 1 420px", maxWidth: "460px" }}>
+          <div style={{ flex: "1 1 380px", maxWidth: "520px" }}>
             {emailExists && !isUpdating ? (
               <div className="confirmation-message">
                 <h2>Esse e-mail já foi usado para confirmar presença.</h2>
@@ -1074,11 +1079,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <>
-                <h2 id="confirmtittle">
-                  {isUpdating
-                    ? "Alterar Confirmação de Presença"
-                    : "Confirme sua Presença"}
-                </h2>
+                {/* smaller “question” title INSIDE the card */}
                 <form className="rsvp-form" onSubmit={handleRSVPSubmit}>
                   <p id="vocevira">Voce virá ao casamento?</p>
 
@@ -1182,6 +1183,7 @@ const Dashboard = () => {
           <Arrow direction="down" />
         </div>
       </Element>
+
 
       {/* 5) LISTA DE PRESENTES */}
       <Element

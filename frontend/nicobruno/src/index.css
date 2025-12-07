@@ -283,6 +283,14 @@ body {
   align-items: center;
 }
 
+/* section title above both columns */
+.confirm-title {
+  text-align: center;
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem 0;
+  font-family: "playfair-display", serif;
+}
+
 .rsvp-form {
   align-items: center;
 }
@@ -294,27 +302,25 @@ body {
 .confirmar-layout {
   width: 100%;
   max-width: 1120px;
-  margin: 2.5rem auto 0;
+  margin: 1.8rem auto 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 2.5rem;
-  align-items: center;
+  gap: 2rem;
+  align-items: flex-start;
   justify-content: center;
 }
 
 /* Left column: recados box */
 .recados-wrapper {
-  flex: 1 1 420px;
+  flex: 1 1 380px;
   display: flex;
   justify-content: center;
 }
 
 .recados-card {
   width: 100%;
-  max-width: 460px;
-  min-height: 460px; /* same vertical space as the form */
-  max-height: 460px;
-  padding: 1.6rem 2rem;
+  max-width: 420px;
+  padding: 1.4rem 1.8rem;
   border-radius: 18px;
   background-color: rgba(255, 255, 255, 0.85);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -324,6 +330,8 @@ body {
   text-align: center;
   box-sizing: border-box;
   overflow: hidden; /* hide extra text if user hits max length */
+  min-height: 260px;
+  max-height: 320px;
 }
 
 /* Title at the top of recados box */
@@ -1073,7 +1081,7 @@ h1 {
 
   .recados-card {
     max-width: 100%;
-    min-height: 320px;
+    min-height: 260px;
     max-height: none; /* allow more vertical space when stacked */
   }
 }

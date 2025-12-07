@@ -45,9 +45,8 @@ ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "Admin7849")
 
 # Lista de e-mails dos noivos
 GROOMS_EMAILS = [
-    "brrunarib@gmail.com",
-    "brunaaparecidaribeiro@hotmail.com",
-    # "nicolerealeochove@hotmail.com"  # Uncomment when ready
+    "nicoleochove@gmail.com",
+    "brrunarib@gmail.com"
 ]
 
 # Cabeçalho padrão para exportar CSV

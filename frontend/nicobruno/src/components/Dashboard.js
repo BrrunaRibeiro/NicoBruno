@@ -349,8 +349,7 @@ const Dashboard = () => {
         {
           id: "pao_de_queijo_aeroporto",
           title: "Pão de queijo no aeroporto 😂",
-          price: 5.0,
-          // price: 189.8,
+          price: 189.8,
           imageUrl: `${process.env.PUBLIC_URL}/1.jpg`,
         },
         {

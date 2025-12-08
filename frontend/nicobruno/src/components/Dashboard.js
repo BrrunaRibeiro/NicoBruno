@@ -384,12 +384,6 @@ const Dashboard = () => {
           imageUrl: `${process.env.PUBLIC_URL}/6.jpg`,
         },
         {
-          id: "ajuda_financeira_futuro2",
-          title: "Ajuda financeira para o futuro do casal",
-          price: 504.46,
-          imageUrl: `${process.env.PUBLIC_URL}/22.jpg`,
-        },
-        {
           id: "ajuda_dolar_viagem",
           title: "Ajuda para o casal comprar dólar para a viagem",
           price: 661.63,
